@@ -18,8 +18,26 @@ const App: React.FC = () => {
     setName,
     surname,
     setSurname,
-    nickname,
-    setNickname,
+    id,
+    setId,
+    ethnicity,
+    setEthnicty,
+    nationality,
+    setNationality,
+    religion,
+    setReligion,
+    marriage,
+    setMarriage,
+    education,
+    setEducation,
+    caseDate,
+    setCaseDate,
+    HN,
+    setHN,
+    illness,
+    setIllness,
+    privilege,
+    setPrivilege,
   } = useAppController();
   return (
     <>
@@ -62,17 +80,104 @@ const App: React.FC = () => {
         />
         <TextField
           id="outlined-basic"
-          label="ชื่อเล่น (ไม่จำเป็นต้องระบุ)"
+          label="เลขที่บัตรประชาชน"
           variant="outlined"
           sx={{ minWidth: 250 }}
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          required
         />
       </div>
-      <div>
+      <div className="mt-4 flex gap-4">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker />
+          <DatePicker className="w-1/5" />
         </LocalizationProvider>
+        <TextField
+          id="outlined-basic"
+          label="สัญชาติ"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={nationality}
+          onChange={(e) => setNationality(e.target.value)}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="เชื้อชาติ"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={ethnicity}
+          onChange={(e) => setEthnicty(e.target.value)}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="ศาสนา"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={religion}
+          onChange={(e) => setReligion(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mt-4 flex gap-4">
+        <TextField
+          id="outlined-basic"
+          label="สถานภาพ"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={marriage}
+          onChange={(e) => setMarriage(e.target.value)}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="การศึกษา"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={education}
+          onChange={(e) => setEducation(e.target.value)}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="วันที่รับเคส"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={caseDate}
+          onChange={(e) => setCaseDate(e.target.value)}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="HN"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={HN}
+          onChange={(e) => setHN(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mt-4 flex gap-4">
+        <TextField
+          id="outlined-basic"
+          label="โรค"
+          variant="outlined"
+          sx={{ minWidth: 918 }}
+          value={illness}
+          onChange={(e) => setIllness(e.target.value)}
+          required
+        />
+      </div>
+      <div className="mt-4 flex gap-4">
+        <TextField
+          id="outlined-basic"
+          label="สิทธิการรักษา"
+          variant="outlined"
+          sx={{ minWidth: 200 }}
+          value={illness}
+          onChange={(e) => setIllness(e.target.value)}
+        />
       </div>
     </>
   );

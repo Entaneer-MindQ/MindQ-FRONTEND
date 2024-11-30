@@ -1,33 +1,41 @@
-import React, { useState, useEffect } from "react";
-import "./App.css";
-import { useAppController } from "./AppController";
+import React from "react";
+import "./patientForm.css";
+import { useAppController } from "./patientFormController";
 import { TextField } from "@mui/material";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 const App: React.FC = () => {
   const {
     prefix,
     setPrefix,
+    prefixOptions,
+    // setPrefixOptions,
     name,
     setName,
     surname,
     setSurname,
     id,
     setId,
+    birthdate,
+    setBirthdate,
     ethnicity,
-    setEthnicty,
+    setEthnicity,
     nationality,
     setNationality,
     religion,
     setReligion,
     marriage,
     setMarriage,
+    marital,
+    // setMarital,
     education,
     setEducation,
     caseDate,
@@ -38,28 +46,38 @@ const App: React.FC = () => {
     setIllness,
     privilege,
     setPrivilege,
+    privilegeAvailable,
+    setPrivilegeAvailable,
   } = useAppController();
+
   return (
     <>
       <h1>ส่งแบบฟอร์ม</h1>
       <div className="flex gap-4">
         <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-autowidth-label" required>
-            คำนำหน้า
-          </InputLabel>
+          <InputLabel id="prefix-select-label">คำนำหน้า</InputLabel>
           <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
+            labelId="prefix-select-label"
+            id="prefix-select"
             value={prefix}
             onChange={(e) => setPrefix(e.target.value)}
             autoWidth
-            label="คำนำหน้า * "
+            label="คำนำหน้า *"
           >
-            <MenuItem value={20}>นาย</MenuItem>
-            <MenuItem value={21}>นาง</MenuItem>
-            <MenuItem value={22}>นางสาว</MenuItem>
+            {Array.isArray(prefixOptions) && prefixOptions.length > 0 ? (
+              prefixOptions.map((option) => (
+                <MenuItem key={option.id} value={option.prefix}>
+                  {option.prefix}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="" disabled>
+                ไม่มีข้อมูล
+              </MenuItem>
+            )}
           </Select>
         </FormControl>
+
         <TextField
           id="outlined-basic"
           label="ชื่อ"
@@ -90,7 +108,12 @@ const App: React.FC = () => {
       </div>
       <div className="mt-4 flex gap-4">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker className="w-1/5" />
+          <DatePicker
+            className="w-1/5"
+            label="วัน/เดือน/ปี เกิด"
+            value={birthdate}
+            onChange={(e) => setBirthdate(e)}
+          />
         </LocalizationProvider>
         <TextField
           id="outlined-basic"
@@ -107,7 +130,7 @@ const App: React.FC = () => {
           variant="outlined"
           sx={{ minWidth: 200 }}
           value={ethnicity}
-          onChange={(e) => setEthnicty(e.target.value)}
+          onChange={(e) => setEthnicity(e.target.value)}
           required
         />
         <TextField
@@ -121,15 +144,29 @@ const App: React.FC = () => {
         />
       </div>
       <div className="mt-4 flex gap-4">
-        <TextField
-          id="outlined-basic"
-          label="สถานภาพ"
-          variant="outlined"
-          sx={{ minWidth: 200 }}
-          value={marriage}
-          onChange={(e) => setMarriage(e.target.value)}
-          required
-        />
+        <FormControl sx={{ minWidth: 120 }}>
+          <InputLabel id="marital-select-label">สถานภาพ</InputLabel>
+          <Select
+            labelId="marital-select-label"
+            id="marital-select"
+            value={marriage}
+            onChange={(e) => setMarriage(e.target.value)}
+            autoWidth
+            label="สถานภาพ *"
+          >
+            {Array.isArray(marital) && marital.length > 0 ? (
+              marital.map((option) => (
+                <MenuItem key={option.id} value={option.maritalStatus}>
+                  {option.maritalStatus}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="" disabled>
+                ไม่มีข้อมูล
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
         <TextField
           id="outlined-basic"
           label="การศึกษา"
@@ -139,15 +176,14 @@ const App: React.FC = () => {
           onChange={(e) => setEducation(e.target.value)}
           required
         />
-        <TextField
-          id="outlined-basic"
-          label="วันที่รับเคส"
-          variant="outlined"
-          sx={{ minWidth: 200 }}
-          value={caseDate}
-          onChange={(e) => setCaseDate(e.target.value)}
-          required
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            className="w-1/5"
+            label="วันที่รับเคส"
+            value={caseDate}
+            onChange={(e) => setCaseDate(e)}
+          />
+        </LocalizationProvider>
         <TextField
           id="outlined-basic"
           label="HN"
@@ -175,9 +211,22 @@ const App: React.FC = () => {
           label="สิทธิการรักษา"
           variant="outlined"
           sx={{ minWidth: 200 }}
-          value={illness}
-          onChange={(e) => setIllness(e.target.value)}
+          value={privilege}
+          onChange={(e) => setPrivilege(e.target.value)}
         />
+        {privilege ? (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={privilegeAvailable}
+                onChange={(e) => setPrivilegeAvailable(e.target.checked)}
+              />
+            }
+            label="ใช้สิทธิ์ได้"
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );

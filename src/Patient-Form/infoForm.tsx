@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./patientForm.css";
 import { useAppController } from "./patientFormController";
 import {
@@ -17,7 +17,7 @@ import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import SendIcon from "@mui/icons-material/Send";
 
-const App: React.FC = () => {
+const InfoForm: React.FC = () => {
   const {
     prefix,
     setPrefix,
@@ -36,6 +36,8 @@ const App: React.FC = () => {
     setNationality,
     religion,
     setReligion,
+    education,
+    setEducation,
     marriage,
     setMarriage,
     marital,
@@ -45,27 +47,8 @@ const App: React.FC = () => {
     errors,
     setErrors,
     handleChange,
+    handleSubmit,
   } = useAppController();
-
-  const handleSubmit = () => {
-    const newErrors = {
-      name: !name,
-      surname: !surname,
-      id: !id,
-      nationality: !nationality,
-      ethnicity: !ethnicity,
-      religion: !religion,
-      prefix: !prefix,
-      marriage: !marriage,
-      birthdate: birthdate === null, // Check if birthdate is null
-    };
-    setErrors(newErrors);
-
-    // Check if there are no errors before submitting
-    if (!Object.values(newErrors).some((error) => error)) {
-      console.log("Form submitted!");
-    }
-  };
 
   return (
     <>
@@ -79,7 +62,17 @@ const App: React.FC = () => {
           >
             {steps.map((label) => (
               <Step key={label}>
-                <StepLabel StepIconComponent={QontoStepIcon}>{label}</StepLabel>
+                <StepLabel
+                  StepIconComponent={QontoStepIcon}
+                  sx={{
+                    "& .MuiStepLabel-label": {
+                      // fontFamily: "Noto Serif Thai",
+                      fontSize: 17,
+                    },
+                  }}
+                >
+                  {label}
+                </StepLabel>
               </Step>
             ))}
           </Stepper>
@@ -127,7 +120,7 @@ const App: React.FC = () => {
           }}
         >
           <InputLabel
-            id="marital-select-label"
+            id="prefix-select-label"
             sx={{
               color: errors.prefix
                 ? "red" // Error label color
@@ -139,16 +132,20 @@ const App: React.FC = () => {
               },
             }}
           >
-            คำนำหน้า
+            คำนำหน้า *
           </InputLabel>
           <Select
-            labelId="marital-select-label"
-            id="marital-select"
+            labelId="prefix-select-label"
+            id="prefix-select"
             value={prefix}
-            onChange={(e) => setPrefix(e.target.value)}
+            onChange={(e) => {
+              setPrefix(e.target.value); // Update name state
+              if (errors.prefix) {
+                setErrors({ ...errors, prefix: false }); // Clear the error as the user starts typing
+              }
+            }}
             autoWidth
             label="สถานภาพ *"
-            onBlur={() => handleChange("prefix", prefix)}
             sx={{
               // Apply border color and focus/hover states
               "& .MuiOutlinedInput-root": {
@@ -236,8 +233,12 @@ const App: React.FC = () => {
             },
           }}
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => handleChange("name", name)}
+          onChange={(e) => {
+            setName(e.target.value); // Update name state
+            if (errors.name) {
+              setErrors({ ...errors, name: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
 
@@ -284,8 +285,12 @@ const App: React.FC = () => {
             },
           }}
           value={surname}
-          onChange={(e) => setSurname(e.target.value)}
-          onBlur={() => handleChange("surname", surname)}
+          onChange={(e) => {
+            setSurname(e.target.value); // Update name state
+            if (errors.surname) {
+              setErrors({ ...errors, surname: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
         <TextField
@@ -331,8 +336,12 @@ const App: React.FC = () => {
             },
           }}
           value={id}
-          onChange={(e) => setId(e.target.value)}
-          onBlur={() => handleChange("id", id)}
+          onChange={(e) => {
+            setId(e.target.value); // Update name state
+            if (errors.id) {
+              setErrors({ ...errors, id: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
       </div>
@@ -340,10 +349,10 @@ const App: React.FC = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             className="w-1/5"
-            label="วัน/เดือน/ปี เกิด"
+            label="วัน/เดือน/ปี เกิด *"
             value={birthdate}
             sx={{
-              maxWidth: 160,
+              maxWidth: 167,
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
                   borderColor: errors.birthdate
@@ -380,10 +389,19 @@ const App: React.FC = () => {
                 },
               },
             }}
+            onAccept={(e) =>
+              e
+                ? handleChange("birthdate", e)
+                : handleChange("birthdate", birthdate)
+            }
             onChange={(e) => {
               setBirthdate(e);
               handleChange("birthdate", e); // Perform validation directly on change
+              if (errors.birthdate) {
+                setErrors({ ...errors, birthdate: false }); // Clear the error as the user starts typing
+              }
             }}
+            disableFuture
           />
         </LocalizationProvider>
 
@@ -392,7 +410,7 @@ const App: React.FC = () => {
           label="สัญชาติ"
           variant="outlined"
           sx={{
-            maxWidth: 155,
+            maxWidth: 120,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.nationality
@@ -430,8 +448,12 @@ const App: React.FC = () => {
             },
           }}
           value={nationality}
-          onChange={(e) => setNationality(e.target.value)}
-          onBlur={() => handleChange("nationality", nationality)}
+          onChange={(e) => {
+            setNationality(e.target.value); // Update name state
+            if (errors.nationality) {
+              setErrors({ ...errors, nationality: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
         <TextField
@@ -439,7 +461,7 @@ const App: React.FC = () => {
           label="เชื้อชาติ"
           variant="outlined"
           sx={{
-            maxWidth: 155,
+            maxWidth: 120,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.ethnicity
@@ -477,8 +499,12 @@ const App: React.FC = () => {
             },
           }}
           value={ethnicity}
-          onChange={(e) => setEthnicity(e.target.value)}
-          onBlur={() => handleChange("ethnicity", ethnicity)}
+          onChange={(e) => {
+            setEthnicity(e.target.value); // Update name state
+            if (errors.ethnicity) {
+              setErrors({ ...errors, ethnicity: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
         <TextField
@@ -486,7 +512,7 @@ const App: React.FC = () => {
           label="ศาสนา"
           variant="outlined"
           sx={{
-            maxWidth: 155,
+            maxWidth: 120,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.religion
@@ -524,8 +550,63 @@ const App: React.FC = () => {
             },
           }}
           value={religion}
-          onChange={(e) => setReligion(e.target.value)}
-          onBlur={() => handleChange("religion", religion)}
+          onChange={(e) => {
+            setReligion(e.target.value); // Update name state
+            if (errors.religion) {
+              setErrors({ ...errors, religion: false }); // Clear the error as the user starts typing
+            }
+          }}
+          required
+        />
+        <TextField
+          id="outlined-basic"
+          label="การศึกษา"
+          variant="outlined"
+          sx={{
+            maxWidth: 120,
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: errors.education
+                  ? "red" // If there is an error, set border color to red
+                  : education // If ethnicity is filled, set border color to #784af4, else #787878
+                  ? "#784af4"
+                  : "#787878", // If ethnicity is unfilled and not focused, set to #787878
+                borderWidth: "2px",
+              },
+              "& .MuiInputBase-input": {
+                color: errors.education ? "red" : "#784af4", // Set text color to #784af4 when filled
+              },
+              "&:hover fieldset": {
+                borderColor: errors.education
+                  ? "red" // Hover state with error
+                  : education // If ethnicity is filled, set border color to #784af4
+                  ? "#784af4"
+                  : "#787878", // Hover state with empty input
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: errors.education
+                  ? "red" // If there is an error, keep red on focus
+                  : "#784af4", // Focused border color when filled
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: errors.education
+                ? "red" // Label color in error state
+                : education // If ethnicity is filled, label color will be #784af4
+                ? "#784af4"
+                : "#787878", // Label color if unfilled and not focused (#787878)
+              "&.Mui-focused": {
+                color: errors.education ? "red" : "#784af4", // Focused label color when filled or error state
+              },
+            },
+          }}
+          value={education}
+          onChange={(e) => {
+            setEducation(e.target.value); // Update name state
+            if (errors.education) {
+              setErrors({ ...errors, education: false }); // Clear the error as the user starts typing
+            }
+          }}
           required
         />
         <FormControl
@@ -581,16 +662,20 @@ const App: React.FC = () => {
               },
             }}
           >
-            สถานภาพ
+            สถานภาพ *
           </InputLabel>
           <Select
             labelId="marital-select-label"
             id="marital-select"
             value={marriage}
-            onChange={(e) => setMarriage(e.target.value)}
+            onChange={(e) => {
+              setMarriage(e.target.value); // Update name state
+              if (errors.marriage) {
+                setErrors({ ...errors, marriage: false }); // Clear the error as the user starts typing
+              }
+            }}
             autoWidth
             label="สถานภาพ *"
-            onBlur={() => handleChange("marriage", marriage)}
             sx={{
               // Apply border color and focus/hover states
               "& .MuiOutlinedInput-root": {
@@ -655,4 +740,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default InfoForm;

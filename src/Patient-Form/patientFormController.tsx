@@ -7,6 +7,7 @@ import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import { StepIconProps } from "@mui/material/StepIcon";
+import { useNavigate } from "react-router-dom";
 
 export const useAppController = () => {
   const [prefix, setPrefix] = useState(""); // set patient's prefix
@@ -38,10 +39,12 @@ export const useAppController = () => {
     nationality: false,
     ethnicity: false,
     religion: false,
+    education: false,
     prefix: false,
     marriage: false,
     birthdate: false,
   });
+  const navigate = useNavigate();
 
   const handleChange = (field: keyof typeof errors, value: any) => {
     // Validate non-DatePicker fields
@@ -55,6 +58,25 @@ export const useAppController = () => {
         ...prev,
         [field]: !value || value.toString().trim() === "", // Check if value is empty or blank
       }));
+    }
+  };
+
+  const handleSubmit = () => {
+    const newErrors = {
+      name: !name,
+      surname: !surname,
+      id: !id,
+      nationality: !nationality,
+      ethnicity: !ethnicity,
+      religion: !religion,
+      education: !education,
+      prefix: !prefix,
+      marriage: !marriage,
+      birthdate: birthdate === null, // Check if birthdate is null
+    };
+    setErrors(newErrors);
+    if (!Object.values(newErrors).some((error) => error)) {
+      navigate("/2");
     }
   };
 
@@ -129,7 +151,12 @@ export const useAppController = () => {
     );
   }
 
-  const steps = ["", "", ""];
+  const steps = [
+    "ประวัติผู้ป่วย",
+    "รายละเอียดเคส",
+    "ข้อมูลที่อยู่ผู้ป่วย",
+    "การประเมินปัญหา",
+  ];
 
   useEffect(() => {
     const fetchPrefixes = async () => {
@@ -198,5 +225,6 @@ export const useAppController = () => {
     errors,
     setErrors,
     handleChange,
+    handleSubmit,
   };
 };

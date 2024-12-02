@@ -3,16 +3,23 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
-import InfoForm from "./Patient-Form/infoForm"; // Correct component naming convention (capitalize)
-import PatientForm2 from "./Patient-Form/patientForm2"; // Correct component naming convention (capitalize)
+import PersonalInfo from "./Patient-Form/personalInfoForm";
+import CaseInfo from "./Patient-Form/caseInfoForm";
+import App from "./App";
+import { PatientProvider } from "./context/patientContext";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <Router>
     <Routes>
-      <Route path="/" element={<InfoForm />} />
-      <Route path="/2" element={<PatientForm2 />} />
+      <Route path="/" element={<App />} />
+      <Route path="/patient-form/2" element={<CaseInfo />} />
     </Routes>
+    <PatientProvider>
+      <Routes>
+        <Route path="/patient-form" element={<PersonalInfo />} />
+      </Routes>
+    </PatientProvider>
   </Router>
 );

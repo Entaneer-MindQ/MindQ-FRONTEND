@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import "./patientForm.css";
 import { useAppController } from "./patientFormController";
 import {
@@ -15,9 +15,20 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import SendIcon from "@mui/icons-material/Send";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import PatientContext from "../context/patientContext";
 
 const InfoForm: React.FC = () => {
+  const {
+    QontoConnector,
+    QontoStepIcon,
+    steps,
+    errors,
+    setErrors,
+    handleChange,
+    handlePersonalInfoSubmit,
+  } = useAppController();
+
   const {
     prefix,
     setPrefix,
@@ -38,17 +49,12 @@ const InfoForm: React.FC = () => {
     setReligion,
     education,
     setEducation,
+    phoneNumber,
+    setPhoneNumber,
     marriage,
     setMarriage,
     marital,
-    QontoConnector,
-    QontoStepIcon,
-    steps,
-    errors,
-    setErrors,
-    handleChange,
-    handleSubmit,
-  } = useAppController();
+  } = useContext(PatientContext);
 
   return (
     <>
@@ -78,10 +84,10 @@ const InfoForm: React.FC = () => {
           </Stepper>
         </Stack>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 ">
         <FormControl
           sx={{
-            minWidth: 155,
+            minWidth: 110,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.prefix
@@ -145,7 +151,7 @@ const InfoForm: React.FC = () => {
               }
             }}
             autoWidth
-            label="สถานภาพ *"
+            label="คำนำหน้า *"
             sx={{
               // Apply border color and focus/hover states
               "& .MuiOutlinedInput-root": {
@@ -189,13 +195,12 @@ const InfoForm: React.FC = () => {
             )}
           </Select>
         </FormControl>
-
         <TextField
           id="outlined-basic"
           label="ชื่อ"
           variant="outlined"
           sx={{
-            minWidth: 250,
+            minWidth: 150,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.name
@@ -241,13 +246,12 @@ const InfoForm: React.FC = () => {
           }}
           required
         />
-
         <TextField
           id="outlined-basic"
           label="นามสกุล"
           variant="outlined"
           sx={{
-            minWidth: 250,
+            minWidth: 150,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.surname
@@ -298,7 +302,7 @@ const InfoForm: React.FC = () => {
           label="เลขที่บัตรประชาชน"
           variant="outlined"
           sx={{
-            minWidth: 250,
+            minWidth: 150,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.id
@@ -609,9 +613,11 @@ const InfoForm: React.FC = () => {
           }}
           required
         />
+      </div>
+      <div className="mt-4 flex gap-4 justify-center">
         <FormControl
           sx={{
-            minWidth: 155,
+            minWidth: 230,
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: errors.marriage
@@ -719,6 +725,57 @@ const InfoForm: React.FC = () => {
             )}
           </Select>
         </FormControl>
+        <TextField
+          id="outlined-basic"
+          label="หมายเลขโทรศัพท์"
+          variant="outlined"
+          sx={{
+            minWidth: 150,
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: errors.phoneNumber
+                  ? "red" // If there is an error, set border color to red
+                  : phoneNumber // If phoneNumber is filled, set border color to #784af4, else #787878
+                  ? "#784af4"
+                  : "#787878", // If phoneNumber is unfilled and not focused, set to #787878
+                borderWidth: "2px",
+              },
+              "& .MuiInputBase-input": {
+                color: errors.phoneNumber ? "red" : "#784af4", // Set text color to #784af4 when filled
+              },
+              "&:hover fieldset": {
+                borderColor: errors.phoneNumber
+                  ? "red" // Hover state with error
+                  : phoneNumber // If phoneNumber is filled, set border color to #784af4
+                  ? "#784af4"
+                  : "#787878", // Hover state with empty input
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: errors.phoneNumber
+                  ? "red" // If there is an error, keep red on focus
+                  : "#784af4", // Focused border color when filled
+              },
+            },
+            "& .MuiInputLabel-root": {
+              color: errors.phoneNumber
+                ? "red" // Label color in error state
+                : phoneNumber // If phoneNumber is filled, label color will be #784af4
+                ? "#784af4"
+                : "#787878", // Label color if unfilled and not focused (#787878)
+              "&.Mui-focused": {
+                color: errors.phoneNumber ? "red" : "#784af4", // Focused label color when filled or error state
+              },
+            },
+          }}
+          value={phoneNumber}
+          onChange={(e) => {
+            setPhoneNumber(e.target.value); // Update name state
+            if (errors.phoneNumber) {
+              setErrors({ ...errors, phoneNumber: false }); // Clear the error as the user starts typing
+            }
+          }}
+          required
+        />
       </div>
       <div className="mt-10">
         <Button
@@ -729,9 +786,12 @@ const InfoForm: React.FC = () => {
             fontSize: "1.25rem",
             minWidth: "150px",
             backgroundColor: "#784af4",
+            "&:focus": {
+              outline: "none",
+            },
           }}
-          onClick={handleSubmit}
-          endIcon={<SendIcon />}
+          onClick={handlePersonalInfoSubmit}
+          endIcon={<ArrowForwardIosIcon />}
         >
           ต่อไป
         </Button>

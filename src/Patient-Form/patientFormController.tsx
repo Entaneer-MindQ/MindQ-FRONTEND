@@ -1,5 +1,5 @@
 import { Dayjs } from "dayjs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import Check from "@mui/icons-material/Check";
@@ -8,24 +8,24 @@ import StepConnector, {
 } from "@mui/material/StepConnector";
 import { StepIconProps } from "@mui/material/StepIcon";
 import { useNavigate } from "react-router-dom";
+import PatientContext from "../context/patientContext";
 
 export const useAppController = () => {
-  const [prefix, setPrefix] = useState(""); // set patient's prefix
-  const [prefixOptions, setPrefixOptions] = useState<
-    { id: number; prefix: string }[]
-  >([]);
-  const [name, setName] = useState(""); // set patient's name
-  const [surname, setSurname] = useState(""); // set patient's surname
-  const [id, setId] = useState(""); // set patient's nickname
-  const [birthdate, setBirthdate] = useState<Dayjs | null>(null);
-  const [ethnicity, setEthnicity] = useState(""); // set patient's ethnicity
-  const [nationality, setNationality] = useState(""); // set patient's nationality
-  const [religion, setReligion] = useState(""); // set patient's religion
-  const [marriage, setMarriage] = useState(""); // set patient's marriage
-  const [marital, setMarital] = useState<
-    { id: number; maritalStatus: string }[]
-  >([]);
-  const [education, setEducation] = useState(""); // set patient's education
+  const {
+    prefix,
+    name,
+    surname,
+    id,
+    birthdate,
+    ethnicity,
+    nationality,
+    religion,
+    marriage,
+    education,
+    phoneNumber,
+    setPrefixOptions,
+    setMarital,
+  } = useContext(PatientContext);
   const [caseDate, setCaseDate] = useState<Dayjs | null>(null); // set case date
   const [HN, setHN] = useState(""); // set hospital's number
   const [illness, setIllness] = useState(""); // set patient's illness
@@ -43,6 +43,7 @@ export const useAppController = () => {
     prefix: false,
     marriage: false,
     birthdate: false,
+    phoneNumber: false,
   });
   const navigate = useNavigate();
 
@@ -61,7 +62,7 @@ export const useAppController = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handlePersonalInfoSubmit = () => {
     const newErrors = {
       name: !name,
       surname: !surname,
@@ -73,10 +74,11 @@ export const useAppController = () => {
       prefix: !prefix,
       marriage: !marriage,
       birthdate: birthdate === null, // Check if birthdate is null
+      phoneNumber: !phoneNumber,
     };
     setErrors(newErrors);
     if (!Object.values(newErrors).some((error) => error)) {
-      navigate("/2");
+      navigate("/patient-form/2");
     }
   };
 
@@ -152,9 +154,9 @@ export const useAppController = () => {
   }
 
   const steps = [
-    "ประวัติผู้ป่วย",
-    "รายละเอียดเคส",
+    "ข้อมูลส่วนตัวผู้ป่วย",
     "ข้อมูลที่อยู่ผู้ป่วย",
+    "รายละเอียดเคส",
     "การประเมินปัญหา",
   ];
 
@@ -185,30 +187,6 @@ export const useAppController = () => {
   }, []);
 
   return {
-    prefix,
-    setPrefix,
-    prefixOptions,
-    setPrefixOptions,
-    name,
-    setName,
-    surname,
-    setSurname,
-    id,
-    setId,
-    birthdate,
-    setBirthdate,
-    ethnicity,
-    setEthnicity,
-    nationality,
-    setNationality,
-    religion,
-    setReligion,
-    marriage,
-    setMarriage,
-    marital,
-    setMarital,
-    education,
-    setEducation,
     caseDate,
     setCaseDate,
     HN,
@@ -225,6 +203,6 @@ export const useAppController = () => {
     errors,
     setErrors,
     handleChange,
-    handleSubmit,
+    handlePersonalInfoSubmit,
   };
 };

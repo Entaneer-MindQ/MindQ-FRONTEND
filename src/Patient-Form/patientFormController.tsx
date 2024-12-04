@@ -47,6 +47,42 @@ export const useAppController = () => {
   });
   const navigate = useNavigate();
 
+  const sharedStyles = (error: any, value: any) => ({
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: error
+          ? "red" // If there is an error, set border color to red
+          : value
+          ? "#784af4" // If value is filled, set border color to #784af4
+          : "#787878", // If value is unfilled and not focused, set to #787878
+        borderWidth: "2px",
+      },
+      "& .MuiInputBase-input": {
+        color: error ? "red" : "#784af4", // Set text color to #784af4 when filled
+      },
+      "&:hover fieldset": {
+        borderColor: error
+          ? "red" // Hover state with error
+          : value
+          ? "#784af4" // If value is filled, set border color to #784af4
+          : "#787878", // Hover state with empty input
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: error ? "red" : "#784af4", // Focused border color
+      },
+    },
+    "& .MuiInputLabel-root": {
+      color: error
+        ? "red" // Label color in error state
+        : value
+        ? "#784af4" // Label color when filled
+        : "#787878", // Label color if unfilled and not focused
+      "&.Mui-focused": {
+        color: error ? "red" : "#784af4", // Focused label color
+      },
+    },
+  });
+
   const handleChange = (field: keyof typeof errors, value: any) => {
     // Validate non-DatePicker fields
     if (field === "birthdate") {
@@ -202,6 +238,7 @@ export const useAppController = () => {
     steps,
     errors,
     setErrors,
+    sharedStyles,
     handleChange,
     handlePersonalInfoSubmit,
   };

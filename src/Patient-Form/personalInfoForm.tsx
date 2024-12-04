@@ -23,10 +23,10 @@ const InfoForm: React.FC = () => {
     QontoConnector,
     QontoStepIcon,
     steps,
-    errors,
-    setErrors,
+    infoErrors,
+    setInfoErrors,
     sharedStyles,
-    handleChange,
+    handleBirthdateChange,
     handlePersonalInfoSubmit,
   } = useAppController();
 
@@ -55,6 +55,7 @@ const InfoForm: React.FC = () => {
     marriage,
     setMarriage,
     marital,
+    edu,
   } = useContext(PatientContext);
 
   return (
@@ -89,7 +90,7 @@ const InfoForm: React.FC = () => {
         <FormControl
           sx={{
             minWidth: 117,
-            ...sharedStyles(errors.prefix, prefix),
+            ...sharedStyles(infoErrors.prefix, prefix),
           }}
         >
           <InputLabel id="prefix-select-label">คำนำหน้า *</InputLabel>
@@ -100,8 +101,8 @@ const InfoForm: React.FC = () => {
             value={prefix}
             onChange={(e) => {
               setPrefix(e.target.value); // Update name state
-              if (errors.prefix) {
-                setErrors({ ...errors, prefix: false }); // Clear the error as the user starts typing
+              if (infoErrors.prefix) {
+                setInfoErrors({ ...infoErrors, prefix: false }); // Clear the error as the user starts typing
               }
             }}
           >
@@ -124,15 +125,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             minWidth: 167,
-            ...sharedStyles(errors.name, name),
+            ...sharedStyles(infoErrors.name, name),
           }}
           value={name}
           onChange={(e) => {
             setName(e.target.value);
-            if (errors.name) {
-              setErrors({ ...errors, name: false }); // Clear the error as the user starts typing
+            if (infoErrors.name) {
+              setInfoErrors({ ...infoErrors, name: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
         <TextField
           id="surname"
@@ -140,15 +142,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             minWidth: 167,
-            ...sharedStyles(errors.surname, surname),
+            ...sharedStyles(infoErrors.surname, surname),
           }}
           value={surname}
           onChange={(e) => {
             setSurname(e.target.value);
-            if (errors.surname) {
-              setErrors({ ...errors, surname: false }); // Clear the error as the user starts typing
+            if (infoErrors.surname) {
+              setInfoErrors({ ...infoErrors, surname: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
         <TextField
           id="outlined-basic"
@@ -156,15 +159,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             minWidth: 167,
-            ...sharedStyles(errors.id, id),
+            ...sharedStyles(infoErrors.id, id),
           }}
           value={id}
           onChange={(e) => {
             setId(e.target.value);
-            if (errors.id) {
-              setErrors({ ...errors, id: false }); // Clear the error as the user starts typing
+            if (infoErrors.id) {
+              setInfoErrors({ ...infoErrors, id: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
       </div>
       <div className="mt-4 flex gap-4">
@@ -175,18 +179,18 @@ const InfoForm: React.FC = () => {
             value={birthdate}
             sx={{
               minWidth: 167,
-              ...sharedStyles(errors.birthdate, birthdate),
+              ...sharedStyles(infoErrors.birthdate, birthdate),
             }}
             onAccept={(e) =>
               e
-                ? handleChange("birthdate", e)
-                : handleChange("birthdate", birthdate)
+                ? handleBirthdateChange("birthdate", e)
+                : handleBirthdateChange("birthdate", birthdate)
             }
             onChange={(e) => {
               setBirthdate(e);
-              handleChange("birthdate", e); // Perform validation directly on change
-              if (errors.birthdate) {
-                setErrors({ ...errors, birthdate: false }); // Clear the error as the user starts typing
+              handleBirthdateChange("birthdate", e); // Perform validation directly on change
+              if (infoErrors.birthdate) {
+                setInfoErrors({ ...infoErrors, birthdate: false }); // Clear the error as the user starts typing
               }
             }}
             disableFuture
@@ -199,15 +203,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             maxWidth: 120,
-            ...sharedStyles(errors.nationality, nationality),
+            ...sharedStyles(infoErrors.nationality, nationality),
           }}
           value={nationality}
           onChange={(e) => {
             setNationality(e.target.value);
-            if (errors.nationality) {
-              setErrors({ ...errors, nationality: false }); // Clear the error as the user starts typing
+            if (infoErrors.nationality) {
+              setInfoErrors({ ...infoErrors, nationality: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
         <TextField
           id="outlined-basic"
@@ -215,15 +220,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             maxWidth: 120,
-            ...sharedStyles(errors.ethnicity, ethnicity),
+            ...sharedStyles(infoErrors.ethnicity, ethnicity),
           }}
           value={ethnicity}
           onChange={(e) => {
             setEthnicity(e.target.value);
-            if (errors.ethnicity) {
-              setErrors({ ...errors, ethnicity: false }); // Clear the error as the user starts typing
+            if (infoErrors.ethnicity) {
+              setInfoErrors({ ...infoErrors, ethnicity: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
         <TextField
           id="outlined-basic"
@@ -231,38 +237,55 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             maxWidth: 120,
-            ...sharedStyles(errors.religion, religion),
+            ...sharedStyles(infoErrors.religion, religion),
           }}
           value={religion}
           onChange={(e) => {
             setReligion(e.target.value);
-            if (errors.religion) {
-              setErrors({ ...errors, religion: false }); // Clear the error as the user starts typing
+            if (infoErrors.religion) {
+              setInfoErrors({ ...infoErrors, religion: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
-        <TextField
-          id="outlined-basic"
-          label="การศึกษา"
-          variant="outlined"
+        <FormControl
           sx={{
-            maxWidth: 120,
-            ...sharedStyles(errors.education, education),
+            minWidth: 137,
+            ...sharedStyles(infoErrors.education, education),
           }}
-          value={education}
-          onChange={(e) => {
-            setEducation(e.target.value);
-            if (errors.education) {
-              setErrors({ ...errors, education: false }); // Clear the error as the user starts typing
-            }
-          }}
-        />
+        >
+          <InputLabel id="education-select-label">การศึกษา *</InputLabel>
+          <Select
+            labelId="education-select-label"
+            id="education-select"
+            label="การศึกษา *"
+            value={education}
+            onChange={(e) => {
+              setEducation(e.target.value); // Update name state
+              if (infoErrors.education) {
+                setInfoErrors({ ...infoErrors, education: false }); // Clear the error as the user starts typing
+              }
+            }}
+          >
+            {Array.isArray(edu) && edu.length > 0 ? (
+              edu.map((option) => (
+                <MenuItem key={option.id} value={option.education}>
+                  {option.education}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="" disabled>
+                ไม่มีข้อมูล
+              </MenuItem>
+            )}
+          </Select>
+        </FormControl>
       </div>
       <div className="mt-4 flex gap-4 justify-center">
         <FormControl
           sx={{
             minWidth: 230,
-            ...sharedStyles(errors.marriage, marriage),
+            ...sharedStyles(infoErrors.marriage, marriage),
           }}
         >
           <InputLabel id="marital-select-label">สถานภาพ *</InputLabel>
@@ -272,8 +295,8 @@ const InfoForm: React.FC = () => {
             value={marriage}
             onChange={(e) => {
               setMarriage(e.target.value); // Update name state
-              if (errors.marriage) {
-                setErrors({ ...errors, marriage: false }); // Clear the error as the user starts typing
+              if (infoErrors.marriage) {
+                setInfoErrors({ ...infoErrors, marriage: false }); // Clear the error as the user starts typing
               }
             }}
             label="สถานภาพ *"
@@ -297,15 +320,16 @@ const InfoForm: React.FC = () => {
           variant="outlined"
           sx={{
             minWidth: 150,
-            ...sharedStyles(errors.phoneNumber, phoneNumber),
+            ...sharedStyles(infoErrors.phoneNumber, phoneNumber),
           }}
           value={phoneNumber}
           onChange={(e) => {
             setPhoneNumber(e.target.value); // Update name state
-            if (errors.phoneNumber) {
-              setErrors({ ...errors, phoneNumber: false }); // Clear the error as the user starts typing
+            if (infoErrors.phoneNumber) {
+              setInfoErrors({ ...infoErrors, phoneNumber: false }); // Clear the error as the user starts typing
             }
           }}
+          required
         />
       </div>
       <div className="mt-10">

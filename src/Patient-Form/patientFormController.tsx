@@ -22,9 +22,12 @@ export const useAppController = () => {
     religion,
     marriage,
     education,
+    province,
     phoneNumber,
     setPrefixOptions,
     setMarital,
+    setEdu,
+    setProvs,
   } = useContext(PatientContext);
   const [caseDate, setCaseDate] = useState<Dayjs | null>(null); // set case date
   const [HN, setHN] = useState(""); // set hospital's number
@@ -32,7 +35,8 @@ export const useAppController = () => {
   const [privilege, setPrivilege] = useState(""); // set hospital's number
   const [privilegeAvailable, setPrivilegeAvailable] =
     useState<boolean>(Boolean); // check if the privilege is still available
-  const [errors, setErrors] = useState({
+
+  const [infoErrors, setInfoErrors] = useState({
     name: false,
     surname: false,
     id: false,
@@ -45,6 +49,41 @@ export const useAppController = () => {
     birthdate: false,
     phoneNumber: false,
   });
+
+  const handlePersonalInfoSubmit = () => {
+    const newinfoErrors = {
+      name: !name,
+      surname: !surname,
+      id: !id,
+      nationality: !nationality,
+      ethnicity: !ethnicity,
+      religion: !religion,
+      education: !education,
+      prefix: !prefix,
+      marriage: !marriage,
+      birthdate: birthdate === null, // Check if birthdate is null
+      phoneNumber: !phoneNumber,
+    };
+    setInfoErrors(newinfoErrors);
+    if (!Object.values(newinfoErrors).some((error) => error)) {
+      navigate("/patient-form/2");
+    }
+  };
+
+  const [addressErrors, setAddressErrors] = useState({
+    province: false,
+  });
+
+  const handleAddressInfoSubmit = () => {
+    const newAddressErrors = {
+      province: !province,
+    };
+    setAddressErrors(newAddressErrors);
+    if (!Object.values(newAddressErrors).some((error) => error)) {
+      navigate("/patient-form/2");
+    }
+  };
+
   const navigate = useNavigate();
 
   const sharedStyles = (error: any, value: any) => ({
@@ -83,38 +122,21 @@ export const useAppController = () => {
     },
   });
 
-  const handleChange = (field: keyof typeof errors, value: any) => {
+  const handleBirthdateChange = (
+    field: keyof typeof infoErrors,
+    value: any
+  ) => {
     // Validate non-DatePicker fields
     if (field === "birthdate") {
-      setErrors((prev) => ({
+      setInfoErrors((prev) => ({
         ...prev,
         [field]: value === null, // Check if birthdate is null
       }));
     } else {
-      setErrors((prev) => ({
+      setInfoErrors((prev) => ({
         ...prev,
         [field]: !value || value.toString().trim() === "", // Check if value is empty or blank
       }));
-    }
-  };
-
-  const handlePersonalInfoSubmit = () => {
-    const newErrors = {
-      name: !name,
-      surname: !surname,
-      id: !id,
-      nationality: !nationality,
-      ethnicity: !ethnicity,
-      religion: !religion,
-      education: !education,
-      prefix: !prefix,
-      marriage: !marriage,
-      birthdate: birthdate === null, // Check if birthdate is null
-      phoneNumber: !phoneNumber,
-    };
-    setErrors(newErrors);
-    if (!Object.values(newErrors).some((error) => error)) {
-      navigate("/patient-form/2");
     }
   };
 
@@ -218,8 +240,35 @@ export const useAppController = () => {
         setMarital([]); // Fallback to an empty array
       }
     };
+
+    const fetchEducations = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/api/educations"
+        ); // Adjust endpoint if necessary
+        // console.log("API Response:", response.data); // Debugging step
+        setEdu(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error("Error fetching maritals:", error);
+        setEdu([]); // Fallback to an empty array
+      }
+    };
+
+    const fetchProvinces = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/api/provinces"); // Adjust endpoint if necessary
+        // console.log("API Response:", response.data); // Debugging step
+        setProvs(Array.isArray(response.data) ? response.data : []);
+      } catch (error) {
+        console.error("Error fetching maritals:", error);
+        setProvs([]); // Fallback to an empty array
+      }
+    };
+
     fetchPrefixes();
     fetchMaritals();
+    fetchEducations();
+    fetchProvinces();
   }, []);
 
   return {
@@ -236,10 +285,13 @@ export const useAppController = () => {
     QontoConnector,
     QontoStepIcon,
     steps,
-    errors,
-    setErrors,
+    infoErrors,
+    setInfoErrors,
+    addressErrors,
+    setAddressErrors,
     sharedStyles,
-    handleChange,
+    handleBirthdateChange,
     handlePersonalInfoSubmit,
+    handleAddressInfoSubmit,
   };
 };

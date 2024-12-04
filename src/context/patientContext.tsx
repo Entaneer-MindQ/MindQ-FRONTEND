@@ -27,10 +27,16 @@ interface PatientContextProps {
   setBirthdate: (birthdate: Dayjs | null) => void;
   phoneNumber: StringOrNull;
   setPhoneNumber: (phoneNumber: StringOrNull) => void;
+  province: StringOrNull;
+  setProvince: (province: StringOrNull) => void;
   prefixOptions: { id: number; prefix: string }[];
   setPrefixOptions: (prefixOptions: { id: number; prefix: string }[]) => void;
   marital: { id: number; maritalStatus: string }[];
   setMarital: (marital: { id: number; maritalStatus: string }[]) => void;
+  edu: { id: number; education: string }[];
+  setEdu: (edu: { id: number; education: string }[]) => void;
+  provs: { id: number; province: string }[];
+  setProvs: (edu: { id: number; province: string }[]) => void;
 }
 
 // Create the context with default values
@@ -57,10 +63,16 @@ const PatientContext = createContext<PatientContextProps>({
   setBirthdate: () => {},
   phoneNumber: null,
   setPhoneNumber: () => {},
+  province: null,
+  setProvince: () => {},
   prefixOptions: [],
   setPrefixOptions: () => {},
   marital: [],
   setMarital: () => {},
+  edu: [],
+  setEdu: () => {},
+  provs: [],
+  setProvs: () => {},
 });
 
 interface PatientProviderProps {
@@ -83,12 +95,15 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
   const [marriage, setMarriage] = useState<StringOrNull>(null); // set patient's marriage
   const [education, setEducation] = useState<StringOrNull>(null); // set patient's education
   const [phoneNumber, setPhoneNumber] = useState<StringOrNull>(null); // set patient's phone number
+  const [province, setProvince] = useState<StringOrNull>(null); // set patient's phone number
   const [prefixOptions, setPrefixOptions] = useState<
     { id: number; prefix: string }[]
   >([]);
   const [marital, setMarital] = useState<
     { id: number; maritalStatus: string }[]
   >([]);
+  const [edu, setEdu] = useState<{ id: number; education: string }[]>([]);
+  const [provs, setProvs] = useState<{ id: number; province: string }[]>([]);
   return (
     <PatientContext.Provider
       value={{
@@ -114,10 +129,16 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
         setEducation,
         phoneNumber,
         setPhoneNumber,
+        province,
+        setProvince,
         prefixOptions,
         setPrefixOptions,
         marital,
         setMarital,
+        edu,
+        setEdu,
+        provs,
+        setProvs,
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import PersonalInfo from "./Patient-Form/personalInfoForm";
-import CaseInfo from "./Patient-Form/caseInfoForm";
+import CaseInfo from "./Patient-Form/AddressInfoForm";
 import App from "./App";
 import { PatientProvider } from "./context/patientContext";
 

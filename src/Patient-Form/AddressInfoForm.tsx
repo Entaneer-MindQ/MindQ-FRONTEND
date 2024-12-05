@@ -12,15 +12,14 @@ import {
   Stepper,
   Step,
   StepLabel,
+  Autocomplete,
 } from "@mui/material";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIos";
 import PatientContext from "../context/patientContext";
 import { useNavigate } from "react-router-dom";
 
-const CaseForm: React.FC = () => {
+const AddressForm: React.FC = () => {
   const {
     QontoConnector,
     QontoStepIcon,
@@ -37,8 +36,8 @@ const CaseForm: React.FC = () => {
 
   return (
     <>
-      <h1>ส่งแบบฟอร์ม</h1>
-      <div className="mt-10 mb-10">
+      <div className="fixed-stepper">
+        <h1 className="mb-5">ส่งแบบฟอร์ม</h1>
         <Stack sx={{ width: "100%" }} spacing={4}>
           <Stepper
             alternativeLabel
@@ -66,38 +65,33 @@ const CaseForm: React.FC = () => {
       <div className="flex gap-4">
         <FormControl
           sx={{
-            minWidth: 117,
+            minWidth: 200,
             ...sharedStyles(addressErrors.province, province),
           }}
         >
-          <InputLabel id="province-select-label">คำนำหน้า *</InputLabel>
-          <Select
-            labelId="province-select-label"
-            id="province-select"
-            label="คำนำหน้า *"
-            value={province}
-            onChange={(e) => {
-              setProvince(e.target.value); // Update name state
+          <Autocomplete
+            id="province-autocomplete"
+            options={provs.map((option) => option.province)} // Array of options
+            value={province} // Current selected value
+            onChange={(e, newValue) => {
+              setProvince(newValue || ""); // Update name state
               if (addressErrors.province) {
                 setAddressErrors({ ...addressErrors, province: false }); // Clear the error as the user starts typing
               }
             }}
-          >
-            {Array.isArray(provs) && provs.length > 0 ? (
-              provs.map((option) => (
-                <MenuItem key={option.id} value={option.province}>
-                  {option.province}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem value="" disabled>
-                ไม่มีข้อมูล
-              </MenuItem>
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="จังหวัด *"
+                error={!!addressErrors.province} // Display error state
+                helperText={addressErrors.province ? "กรุณาเลือกจังหวัด" : ""}
+              />
             )}
-          </Select>
+            noOptionsText="ไม่มีข้อมูล" // Display when no options are available
+          />
         </FormControl>
       </div>
-      <div className="mt-10 flex gap-4 justify-center">
+      <div className="fixed-bottom-bar">
         <Button
           variant="contained"
           size="large"
@@ -137,4 +131,4 @@ const CaseForm: React.FC = () => {
   );
 };
 
-export default CaseForm;
+export default AddressForm;

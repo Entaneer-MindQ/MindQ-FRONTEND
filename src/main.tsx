@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import PersonalInfo from "./Patient-Form/personalInfoForm";
-import CaseInfo from "./Patient-Form/AddressInfoForm";
+import AddressInfo from "./Patient-Form/AddressInfoForm";
 import App from "./App";
 import { PatientProvider } from "./context/patientContext";
 
@@ -14,11 +14,11 @@ root.render(
   <Router>
     <Routes>
       <Route path="/" element={<App />} />
-      <Route path="/patient-form/2" element={<CaseInfo />} />
     </Routes>
     <PatientProvider>
       <Routes>
         <Route path="/patient-form" element={<PersonalInfo />} />
+        <Route path="/patient-form/2" element={<AddressInfo />} />
       </Routes>
     </PatientProvider>
   </Router>

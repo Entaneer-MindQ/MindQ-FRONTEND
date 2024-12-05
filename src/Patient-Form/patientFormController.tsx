@@ -249,7 +249,7 @@ export const useAppController = () => {
         // console.log("API Response:", response.data); // Debugging step
         setEdu(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
-        console.error("Error fetching maritals:", error);
+        console.error("Error fetching educations:", error);
         setEdu([]); // Fallback to an empty array
       }
     };
@@ -260,11 +260,12 @@ export const useAppController = () => {
         // console.log("API Response:", response.data); // Debugging step
         setProvs(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
-        console.error("Error fetching maritals:", error);
+        console.error("Error fetching provinces:", error);
         setProvs([]); // Fallback to an empty array
       }
     };
 
+    // Example usage: fetch amphures when province changes
     fetchPrefixes();
     fetchMaritals();
     fetchEducations();

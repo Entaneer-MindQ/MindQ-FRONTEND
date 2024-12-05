@@ -60,8 +60,8 @@ const InfoForm: React.FC = () => {
 
   return (
     <>
-      <h1>ส่งแบบฟอร์ม</h1>
-      <div className="mt-10 mb-10">
+      <div className="fixed-stepper">
+        <h1 className="mb-5">ส่งแบบฟอร์ม</h1>
         <Stack sx={{ width: "100%" }} spacing={4}>
           <Stepper
             alternativeLabel
@@ -332,7 +332,7 @@ const InfoForm: React.FC = () => {
           required
         />
       </div>
-      <div className="mt-10">
+      <div className="fixed-bottom-bar">
         <Button
           variant="contained"
           size="large"

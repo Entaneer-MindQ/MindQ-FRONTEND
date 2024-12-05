@@ -1,7 +1,7 @@
 import React, { createContext, useState, ReactNode } from "react";
 import { Dayjs } from "dayjs";
 
-type StringOrNull = string | null;
+type StringOrNull = string | "";
 
 // Define the shape of the context
 interface PatientContextProps {
@@ -20,7 +20,7 @@ interface PatientContextProps {
   religion: StringOrNull;
   setReligion: (religion: StringOrNull) => void;
   education: StringOrNull;
-  setEducation: (id: StringOrNull) => void;
+  setEducation: (education: StringOrNull) => void;
   marriage: StringOrNull;
   setMarriage: (marriage: StringOrNull) => void;
   birthdate: Dayjs | null;
@@ -29,6 +29,8 @@ interface PatientContextProps {
   setPhoneNumber: (phoneNumber: StringOrNull) => void;
   province: StringOrNull;
   setProvince: (province: StringOrNull) => void;
+  amphure: StringOrNull;
+  setAmphure: (amphure: StringOrNull) => void;
   prefixOptions: { id: number; prefix: string }[];
   setPrefixOptions: (prefixOptions: { id: number; prefix: string }[]) => void;
   marital: { id: number; maritalStatus: string }[];
@@ -36,35 +38,39 @@ interface PatientContextProps {
   edu: { id: number; education: string }[];
   setEdu: (edu: { id: number; education: string }[]) => void;
   provs: { id: number; province: string }[];
-  setProvs: (edu: { id: number; province: string }[]) => void;
+  setProvs: (provs: { id: number; province: string }[]) => void;
+  amphs: { id: number; amphure: string }[];
+  setAmphs: (amphs: { id: number; amphure: string }[]) => void;
 }
 
 // Create the context with default values
 const PatientContext = createContext<PatientContextProps>({
-  prefix: null,
+  prefix: "",
   setPrefix: () => {},
-  name: null,
+  name: "",
   setName: () => {},
-  surname: null,
+  surname: "",
   setSurname: () => {},
-  id: null,
+  id: "",
   setId: () => {},
-  nationality: null,
+  nationality: "",
   setNationality: () => {},
-  ethnicity: null,
+  ethnicity: "",
   setEthnicity: () => {},
-  religion: null,
+  religion: "",
   setReligion: () => {},
-  education: null,
+  education: "",
   setEducation: () => {},
-  marriage: null,
+  marriage: "",
   setMarriage: () => {},
   birthdate: null,
   setBirthdate: () => {},
-  phoneNumber: null,
+  phoneNumber: "",
   setPhoneNumber: () => {},
-  province: null,
+  province: "",
   setProvince: () => {},
+  amphure: "",
+  setAmphure: () => {},
   prefixOptions: [],
   setPrefixOptions: () => {},
   marital: [],
@@ -73,6 +79,8 @@ const PatientContext = createContext<PatientContextProps>({
   setEdu: () => {},
   provs: [],
   setProvs: () => {},
+  amphs: [],
+  setAmphs: () => {},
 });
 
 interface PatientProviderProps {
@@ -84,18 +92,19 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
   children,
 }) => {
   // Initialize state with the value from sessionStorage
-  const [prefix, setPrefix] = useState<StringOrNull>(null); // set patient's prefix
-  const [name, setName] = useState<StringOrNull>(null); // set patient's name
-  const [surname, setSurname] = useState<StringOrNull>(null); // set patient's surname
-  const [id, setId] = useState<StringOrNull>(null); // set patient's nickname
+  const [prefix, setPrefix] = useState<StringOrNull>(""); // set patient's prefix
+  const [name, setName] = useState<StringOrNull>(""); // set patient's name
+  const [surname, setSurname] = useState<StringOrNull>(""); // set patient's surname
+  const [id, setId] = useState<StringOrNull>(""); // set patient's nickname
   const [birthdate, setBirthdate] = useState<Dayjs | null>(null);
-  const [ethnicity, setEthnicity] = useState<StringOrNull>(null); // set patient's ethnicity
-  const [nationality, setNationality] = useState<StringOrNull>(null); // set patient's nationality
-  const [religion, setReligion] = useState<StringOrNull>(null); // set patient's religion
-  const [marriage, setMarriage] = useState<StringOrNull>(null); // set patient's marriage
-  const [education, setEducation] = useState<StringOrNull>(null); // set patient's education
-  const [phoneNumber, setPhoneNumber] = useState<StringOrNull>(null); // set patient's phone number
-  const [province, setProvince] = useState<StringOrNull>(null); // set patient's phone number
+  const [ethnicity, setEthnicity] = useState<StringOrNull>(""); // set patient's ethnicity
+  const [nationality, setNationality] = useState<StringOrNull>(""); // set patient's nationality
+  const [religion, setReligion] = useState<StringOrNull>(""); // set patient's religion
+  const [marriage, setMarriage] = useState<StringOrNull>(""); // set patient's marriage
+  const [education, setEducation] = useState<StringOrNull>(""); // set patient's education
+  const [phoneNumber, setPhoneNumber] = useState<StringOrNull>(""); // set patient's phone number
+  const [province, setProvince] = useState<StringOrNull>(""); // set patient's province
+  const [amphure, setAmphure] = useState<StringOrNull>(""); // set patient's amphures
   const [prefixOptions, setPrefixOptions] = useState<
     { id: number; prefix: string }[]
   >([]);
@@ -104,6 +113,7 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
   >([]);
   const [edu, setEdu] = useState<{ id: number; education: string }[]>([]);
   const [provs, setProvs] = useState<{ id: number; province: string }[]>([]);
+  const [amphs, setAmphs] = useState<{ id: number; amphure: string }[]>([]);
   return (
     <PatientContext.Provider
       value={{
@@ -131,6 +141,8 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
         setPhoneNumber,
         province,
         setProvince,
+        amphure,
+        setAmphure,
         prefixOptions,
         setPrefixOptions,
         marital,
@@ -139,6 +151,8 @@ export const PatientProvider: React.FC<PatientProviderProps> = ({
         setEdu,
         provs,
         setProvs,
+        amphs,
+        setAmphs,
       }}
     >
       {children}

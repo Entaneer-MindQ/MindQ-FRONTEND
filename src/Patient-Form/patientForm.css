@@ -40,3 +40,27 @@
 .read-the-docs {
   color: #888;
 }
+
+.fixed-stepper {
+  position: fixed;
+  top: 5%;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #fff;
+  margin-top: 10;
+  margin-bottom: 10;
+}
+
+.fixed-bottom-bar {
+  position: fixed;
+  bottom: 100px;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #fff;
+  margin-top: 10px;
+  display: flex;
+  gap: 1rem; /* Adjust the gap as per your design */
+  justify-content: center;
+}

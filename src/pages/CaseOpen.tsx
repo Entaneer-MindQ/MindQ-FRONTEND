@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { post } from "../services/api";
+import { useNavigate } from "react-router-dom";
 import {
   TextField,
   Checkbox,
@@ -12,17 +14,36 @@ import {
   Paper,
 } from "@mui/material";
 
+interface CaseData {
+  personalID: string;
+  topic: string[];
+  description: string;
+  role: "Student" | "Employee";
+  approve: boolean;
+}
+
+interface FormErrors {
+  personalID: boolean;
+  topic: boolean;
+  description: boolean;
+  role: boolean;
+}
+
 const CaseOpen: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<CaseData>({
-    url: "",
-    categories: [],
-    details: "",
+    personalID: "",
+    topic: [],
+    description: "",
+    role: "Student", // default value
+    approve: false, // default value
   });
 
-  const [errors, setErrors] = useState({
-    url: false,
-    categories: false,
-    details: false,
+  const [errors, setErrors] = useState<FormErrors>({
+    personalID: false,
+    topic: false,
+    description: false,
+    role: false,
   });
 
   const categories = [
@@ -37,18 +58,19 @@ const CaseOpen: React.FC = () => {
   const handleCategoryChange = (category: string) => {
     setFormData((prev) => ({
       ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter((c) => c !== category)
-        : [...prev.categories, category],
+      topic: prev.topic.includes(category)
+        ? prev.topic.filter((c) => c !== category)
+        : [...prev.topic, category],
     }));
-    setErrors((prev) => ({ ...prev, categories: false }));
+    setErrors((prev) => ({ ...prev, topic: false }));
   };
 
   const validateForm = (): boolean => {
     const newErrors = {
-      url: formData.url.trim() === "",
-      categories: formData.categories.length === 0,
-      details: formData.details.trim() === "",
+      personalID: formData.personalID.trim() === "",
+      topic: formData.topic.length === 0,
+      description: formData.description.trim() === "",
+      role: false, // role always has a default value
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error);
@@ -58,28 +80,16 @@ const CaseOpen: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await fetch("YOUR_API_ENDPOINT/case", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error("Failed to submit case");
-
-      // Clear form after successful submission
-      setFormData({
-        url: "",
-        categories: [],
-        details: "",
-      });
-
-      // You might want to show a success message or redirect
+      const response = await post<{ message: string }>(
+        "/api/createCase",
+        formData
+      );
+      localStorage.setItem("personalID", formData.personalID); // Store personalID for case view
       alert("เคสถูกสร้างเรียบร้อยแล้ว");
+      navigate("/case"); // Navigate to case view
     } catch (error) {
       console.error("Error submitting case:", error);
-      alert("เกิดข้อผิดพลาดในการสร้างเคส กรุณาลองใหม่อีกครั้ง");
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง");
     }
   };
 
@@ -93,24 +103,20 @@ const CaseOpen: React.FC = () => {
         <Box sx={{ mb: 3 }}>
           <TextField
             fullWidth
-            label="Facebook URL"
-            value={formData.url}
+            label="รหัสประจำตัว"
+            value={formData.personalID}
             onChange={(e) => {
-              setFormData((prev) => ({ ...prev, url: e.target.value }));
-              setErrors((prev) => ({ ...prev, url: false }));
+              setFormData((prev) => ({ ...prev, personalID: e.target.value }));
+              setErrors((prev) => ({ ...prev, personalID: false }));
             }}
-            error={errors.url}
-            helperText={errors.url ? "กรุณากรอก URL" : ""}
+            error={errors.personalID}
+            helperText={errors.personalID ? "กรุณากรอกรหัสประจำตัว" : ""}
           />
         </Box>
 
-        <FormControl
-          component="fieldset"
-          error={errors.categories}
-          sx={{ mb: 3 }}
-        >
+        <FormControl component="fieldset" error={errors.topic} sx={{ mb: 3 }}>
           <FormLabel component="legend">
-            Category/หมวดหมู่ของคำปรึกษา (เลือกได้หลายหมวดหมู่)*
+            หมวดหมู่ของคำปรึกษา (เลือกได้หลายหมวดหมู่)*
           </FormLabel>
           <FormGroup>
             <Box
@@ -125,7 +131,7 @@ const CaseOpen: React.FC = () => {
                   key={category}
                   control={
                     <Checkbox
-                      checked={formData.categories.includes(category)}
+                      checked={formData.topic.includes(category)}
                       onChange={() => handleCategoryChange(category)}
                     />
                   }
@@ -134,7 +140,7 @@ const CaseOpen: React.FC = () => {
               ))}
             </Box>
           </FormGroup>
-          {errors.categories && (
+          {errors.topic && (
             <Typography color="error" variant="caption">
               กรุณาเลือกอย่างน้อย 1 หมวดหมู่
             </Typography>
@@ -147,15 +153,43 @@ const CaseOpen: React.FC = () => {
             multiline
             rows={4}
             label="รายละเอียด"
-            value={formData.details}
+            value={formData.description}
             onChange={(e) => {
-              setFormData((prev) => ({ ...prev, details: e.target.value }));
-              setErrors((prev) => ({ ...prev, details: false }));
+              setFormData((prev) => ({ ...prev, description: e.target.value }));
+              setErrors((prev) => ({ ...prev, description: false }));
             }}
-            error={errors.details}
-            helperText={errors.details ? "กรุณากรอกรายละเอียด" : ""}
+            error={errors.description}
+            helperText={errors.description ? "กรุณากรอกรายละเอียด" : ""}
           />
         </Box>
+
+        <FormControl component="fieldset" sx={{ mb: 3 }}>
+          <FormLabel component="legend">สถานะ</FormLabel>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.role === "Student"}
+                  onChange={() =>
+                    setFormData((prev) => ({ ...prev, role: "Student" }))
+                  }
+                />
+              }
+              label="นักศึกษา"
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.role === "Employee"}
+                  onChange={() =>
+                    setFormData((prev) => ({ ...prev, role: "Employee" }))
+                  }
+                />
+              }
+              label="บุคลากร"
+            />
+          </FormGroup>
+        </FormControl>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button

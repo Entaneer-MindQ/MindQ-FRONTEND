@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -8,6 +8,8 @@ interface NavItem {
 }
 
 const Navbar: React.FC = () => {
+  const location = useLocation();
+
   const navItems: NavItem[] = [
     {
       icon: (
@@ -58,7 +60,7 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "home",
-      path: "/home",
+      path: "/",
     },
     {
       icon: (
@@ -148,7 +150,15 @@ const Navbar: React.FC = () => {
         <Link
           key={index}
           to={item.path}
-          className="p-4 text-white hover:bg-[#FFE3E3] hover:text-black flex flex-col items-center justify-center"
+          className={`
+            p-4 flex flex-col items-center justify-center
+            transition-all duration-200
+            ${
+              location.pathname === item.path
+                ? "bg-[#FFE3E3] text-black"
+                : "text-white hover:bg-[#B33D3D] hover:text-white"
+            }
+          `}
         >
           {item.icon}
           <span className="text-xs mt-1">{item.label}</span>

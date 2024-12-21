@@ -1,6 +1,7 @@
 // BookingPage.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -26,15 +27,22 @@ interface BookingFormData {
 }
 
 const BookingPage = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState<BookingFormData>({
-    month: "December/2024",
-    date: 6,
-    dayOfWeek: "Friday",
-    categories: [],
-    timeSlot: "",
-    details: "",
-  });
+  const location = useLocation();
+  const { state } = location;
+
+  // log เพื่อตรวจสอบข้อมูลที่ได้รับ
+  console.log("Received state:", state);
+
+  const [formData, setFormData] = useState<BookingFormData>(
+    state || {
+      month: "December/2024",
+      date: 6,
+      dayOfWeek: "Friday",
+      categories: [],
+      timeSlot: "",
+      details: "",
+    }
+  );
 
   const [errors, setErrors] = useState<Record<string, boolean>>({
     categories: false,

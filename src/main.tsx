@@ -14,15 +14,17 @@ import CaseView from "./pages/CaseView";
 import BookingPage from "./pages/BookingPage";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import Calendar from "./pages/Calendar";
+import Account from "./pages/Account";
+import { UserProvider } from "./context/UserContext";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
   <Router>
-    <PatientProvider>
+    <UserProvider>
       <Navbar />
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/non" element={<App />} />
         <Route path="/case-open" element={<Opencase />} />
         <Route path="/patient-form" element={<PersonalInfo />} />
@@ -31,7 +33,8 @@ root.render(
         <Route path="/booking" element={<BookingPage />} />
         <Route path="/bookingC" element={<ConfirmBookingPage />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/account" element={<Account />} />
       </Routes>
-    </PatientProvider>
+    </UserProvider>
   </Router>
 );

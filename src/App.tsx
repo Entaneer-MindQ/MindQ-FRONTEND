@@ -1,32 +1,56 @@
 import React from "react";
-import { Button } from "@mui/material";
+import { Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAppController } from "./App_controller";
 
-const App: React.FC = () => {
+const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-
+  const { handleCMULogin } = useAppController();
   return (
-    <>
-      <div className="mt-10 flex gap-4 justify-center">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        backgroundColor: "#fff",
+      }}
+    >
+      <Box sx={{ display: "flex", gap: "16px" }}>
         <Button
           variant="contained"
-          size="large"
           sx={{
-            padding: "16px 32px",
-            fontSize: "1.25rem",
-            minWidth: "150px",
-            backgroundColor: "#784af4",
-            "&:focus": {
-              outline: "none",
+            backgroundColor: "#b0a4a4",
+            color: "#fff",
+            fontSize: "1rem",
+            padding: "12px 24px",
+            "&:hover": {
+              backgroundColor: "#a09595",
             },
           }}
-          onClick={() => navigate("/patient-form")}
+          onClick={handleCMULogin}
         >
-          กรอกแบบประวัติผู้ป่วย
+          login as student
         </Button>
-      </div>
-    </>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: "#7a2929",
+            color: "#fff",
+            fontSize: "1rem",
+            padding: "12px 24px",
+            "&:hover": {
+              backgroundColor: "#7a2929",
+            },
+          }}
+          onClick={handleCMULogin}
+        >
+          login as employee
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
-export default App;
+export default LoginPage;

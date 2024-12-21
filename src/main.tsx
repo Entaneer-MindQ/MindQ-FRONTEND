@@ -16,6 +16,7 @@ import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import Calendar from "./pages/Calendar";
 import Account from "./pages/Account";
 import { UserProvider } from "./context/UserContext";
+import History from "./pages/HistoryPage";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -34,6 +35,7 @@ root.render(
         <Route path="/bookingC" element={<ConfirmBookingPage />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/history" element={<History />} />
       </Routes>
     </UserProvider>
   </Router>

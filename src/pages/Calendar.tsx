@@ -1,45 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  IconButton,
-  MenuItem,
-  Select,
-  Grid,
-  Button,
-  CircularProgress,
-  Tooltip,
-  Fade,
-  SelectChangeEvent,
-} from "@mui/material";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 
 interface Holiday {
   date: string;
   description: string;
-}
-interface MyHoraHoliday {
-  holiday_date_id: string;
-  holiday_name: string;
-  holiday_date: string;
-  holiday_datename: string;
   lunardate: string;
-  sidereal: string;
-  zodiac: string;
-  sidereal_hours: string;
 }
-const Calendar = () => {
+
+interface CalendarResponse {
+  VCALENDAR: [
+    {
+      VEVENT: Array<{
+        "DTSTART;VALUE=DATE": string;
+        SUMMARY: string;
+        DESCRIPTION: string;
+      }>;
+    }
+  ];
+}
+
+interface AvailableMonth {
+  date: Date;
+  label: string;
+}
+
+const Calendar: React.FC = () => {
   const navigate = useNavigate();
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [holidays, setHolidays] = useState<Holiday[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [showSelect, setShowSelect] = useState<boolean>(false);
 
   const months = [
     "มกราคม",
@@ -56,21 +46,6 @@ const Calendar = () => {
     "ธันวาคม",
   ];
 
-  const monthsEN = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const days = [
     "อาทิตย์",
     "จันทร์",
@@ -80,52 +55,88 @@ const Calendar = () => {
     "ศุกร์",
     "เสาร์",
   ];
-  const daysEN = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
 
-  // สร้างตัวเลือกเดือนสำหรับ dropdown
-  const getAvailableMonths = () => {
+  // Function to check if a date is in the past
+  const isPastDate = (day: number): boolean => {
+    const checkDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return checkDate < today;
+  };
+
+  // Function to check if date is available for booking
+  const isDateAvailable = (day: number): boolean => {
+    const availableDates = getAvailableDates();
+    const isAvailableDay = availableDates.includes(day);
+    const notPastDate = !isPastDate(day);
+    const notHoliday = !isHoliday(day);
+
+    return isAvailableDay && notPastDate && notHoliday;
+  };
+
+  const getAvailableMonths = (): AvailableMonth[] => {
     const currentMonth = new Date();
-    const months = [];
-
-    // เพิ่มเดือนก่อนหน้า 4 เดือน
+    const monthsList: AvailableMonth[] = [];
     for (let i = -4; i <= 4; i++) {
       const date = new Date(currentMonth);
       date.setMonth(currentMonth.getMonth() + i);
-      months.push({
+      monthsList.push({
         date: date,
         label: `${months[date.getMonth()]} ${date.getFullYear()}`,
       });
     }
-
-    return months;
+    return monthsList;
   };
 
   const availableMonths = getAvailableMonths();
 
-  const fetchHolidays = async () => {
+  const handlePreviousMonth = (): void => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() - 1);
+    if (newDate >= availableMonths[0].date) {
+      setCurrentDate(newDate);
+    }
+  };
+
+  const handleNextMonth = (): void => {
+    const newDate = new Date(currentDate);
+    newDate.setMonth(currentDate.getMonth() + 1);
+    if (newDate <= availableMonths[availableMonths.length - 1].date) {
+      setCurrentDate(newDate);
+    }
+  };
+
+  const handleMonthChange = (value: string): void => {
+    const selectedMonth = availableMonths.find(
+      (month) => month.label === value
+    );
+    if (selectedMonth) {
+      setCurrentDate(selectedMonth.date);
+    }
+    setShowSelect(false);
+  };
+
+  const fetchHolidays = async (): Promise<void> => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await fetch(
-        "https://www.myhora.com/calendar/ical/holiday.aspx?latest.json"
+        "https://api.allorigins.win/get?url=" +
+          encodeURIComponent(
+            "https://www.myhora.com/calendar/ical/holiday.aspx?latest.json"
+          )
       );
-      const data = await response.json();
-
-      // แปลงข้อมูลจาก MyHora API ให้อยู่ในรูปแบบที่ต้องการ
-      const formattedHolidays = data.map((holiday: MyHoraHoliday) => ({
-        date: holiday.holiday_date,
-        description: holiday.holiday_name,
-        datename: holiday.holiday_datename,
-        lunardate: holiday.lunardate,
+      const proxyResponse = await response.json();
+      const data: CalendarResponse = JSON.parse(proxyResponse.contents);
+      const events = data.VCALENDAR[0].VEVENT;
+      const formattedHolidays = events.map((event) => ({
+        date: event["DTSTART;VALUE=DATE"],
+        description: event.SUMMARY,
+        lunardate: event.DESCRIPTION,
       }));
-
       setHolidays(formattedHolidays);
     } catch (error) {
       console.error("Error fetching holidays:", error);
@@ -136,92 +147,37 @@ const Calendar = () => {
 
   useEffect(() => {
     fetchHolidays();
-  }, [currentDate]);
+  }, []);
 
-  const isHoliday = (day: number) => {
-    const dateStr = `${currentDate.getFullYear()}-${String(
+  const isHoliday = (day: number): Holiday | undefined => {
+    const dateStr = `${currentDate.getFullYear()}${String(
       currentDate.getMonth() + 1
-    ).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-    return holidays.find((holiday) => {
-      const holidayDate = new Date(holiday.date);
-      return holidayDate.toISOString().split("T")[0] === dateStr;
-    });
+    ).padStart(2, "0")}${String(day).padStart(2, "0")}`;
+    return holidays.find((holiday) => holiday.date === dateStr);
   };
 
-  const getAvailableDates = () => {
-    const availableDates = [4, 5, 6, 13, 20, 23, 24, 26, 27, 30];
-    return availableDates;
+  const getAvailableDates = (): number[] => {
+    return [4, 5, 6, 13, 20, 23, 24, 26, 27, 30];
   };
 
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
-  const firstDayOfMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    1
-  ).getDay();
-
-  const handleMonthChange = (event: SelectChangeEvent<string>) => {
-    const selectedMonth = availableMonths.find(
-      (month) => month.label === event.target.value
-    );
-    if (selectedMonth) {
-      setCurrentDate(selectedMonth.date);
-    }
-  };
-
-  const handlePreviousMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(currentDate.getMonth() - 1);
-    if (newDate >= availableMonths[0].date) {
-      setCurrentDate(newDate);
-    }
-  };
-
-  const handleNextMonth = () => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(currentDate.getMonth() + 1);
-    if (newDate <= availableMonths[availableMonths.length - 1].date) {
-      setCurrentDate(newDate);
-    }
-  };
-
-  const handleDateClick = (dayNumber: number) => {
-    const selectedDate = new Date(
+  const generateCalendarDays = (): JSX.Element[] => {
+    const calendarDays: JSX.Element[] = [];
+    const daysInMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0
+    ).getDate();
+    const firstDayOfMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      dayNumber
-    );
-    const dayOfWeek = daysEN[selectedDate.getDay()];
-    const monthYear = `${
-      monthsEN[currentDate.getMonth()]
-    }/${currentDate.getFullYear()}`;
-
-    navigate("/booking", {
-      state: {
-        month: monthYear,
-        date: dayNumber,
-        dayOfWeek: dayOfWeek,
-        categories: [],
-        timeSlot: "",
-        details: "",
-      },
-    });
-  };
-
-  const generateCalendarDays = () => {
-    const availableDates = getAvailableDates();
-    const calendarDays = [];
+      1
+    ).getDay();
     const totalDays = Math.ceil((daysInMonth + firstDayOfMonth) / 7) * 7;
 
     for (let i = 0; i < totalDays; i++) {
       const dayNumber = i - firstDayOfMonth + 1;
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
-      const isAvailable = availableDates.includes(dayNumber);
-      const holiday = isCurrentMonth ? isHoliday(dayNumber) : null;
+      const holiday = isCurrentMonth ? isHoliday(dayNumber) : undefined;
       const isToday =
         isCurrentMonth &&
         new Date().getDate() === dayNumber &&
@@ -229,192 +185,190 @@ const Calendar = () => {
         new Date().getFullYear() === currentDate.getFullYear();
 
       calendarDays.push(
-        <Paper
+        <div
           key={i}
-          elevation={isCurrentMonth ? 1 : 0}
-          sx={{
-            p: 2,
-            height: "120px", // เพิ่มความสูงเพื่อรองรับข้อมูลเพิ่มเติม
-            bgcolor: isCurrentMonth ? "white" : "grey.100",
-            position: "relative",
-            border: isToday ? 2 : 1,
-            borderColor: isToday ? "primary.main" : "grey.200",
-            "&:hover": isCurrentMonth && {
-              boxShadow: 3,
-            },
-          }}
+          className={`p-4 h-32 relative border rounded-lg transition-all duration-200
+            ${isCurrentMonth ? "bg-white" : "bg-gray-100"}
+            ${isToday ? "border-red-900 border-2" : "border-gray-200"}
+            ${isCurrentMonth ? "hover:shadow-md" : ""}`}
         >
           {isCurrentMonth && (
-            <Box sx={{ height: "100%", position: "relative" }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: isToday ? "bold" : "normal",
-                  color: holiday ? "error.main" : "text.primary",
-                }}
+            <div className="h-full relative">
+              <span
+                className={`inline-block w-8 h-8 leading-8 text-center rounded-full
+                  ${holiday ? "bg-red-100 text-red-900" : "text-gray-900"}
+                  ${
+                    isToday
+                      ? "font-bold bg-white text-red-900 border-2 border-red-900"
+                      : ""
+                  }`}
               >
                 {dayNumber}
-              </Typography>
+              </span>
 
               {holiday && (
-                <Tooltip
-                  title={
-                    <React.Fragment>
-                      <Typography variant="body2">
+                <div className="relative group mt-1">
+                  <div className="p-1 bg-red-50 rounded-md">
+                    <p className="text-xs text-red-900 line-clamp-2 cursor-help">
+                      {holiday.description}
+                    </p>
+                  </div>
+                  <div className="hidden group-hover:block absolute z-50 bottom-full left-0 w-48 p-2 bg-white border rounded-lg shadow-lg">
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium text-red-900">
                         {holiday.description}
-                      </Typography>
-                      {holiday.datename && (
-                        <Typography variant="caption">
-                          {holiday.datename}
-                        </Typography>
-                      )}
+                      </p>
                       {holiday.lunardate && (
-                        <Typography variant="caption" display="block">
+                        <p className="text-xs text-gray-600">
                           จันทรคติ: {holiday.lunardate}
-                        </Typography>
+                        </p>
                       )}
-                    </React.Fragment>
-                  }
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: "error.main",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      cursor: "help",
-                    }}
-                  >
-                    {holiday.description}
-                  </Typography>
-                </Tooltip>
+                    </div>
+                  </div>
+                </div>
               )}
 
-              {isAvailable && (
-                <Box
-                  sx={{ position: "absolute", bottom: 0, left: 0, right: 0 }}
-                >
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    onClick={() => handleDateClick(dayNumber)}
-                    startIcon={<EventAvailableIcon />}
-                    disabled={holiday !== null}
-                    sx={{
-                      color: holiday ? "grey.500" : "#943131",
-                      borderColor: holiday ? "grey.300" : "#943131",
-                      "&:hover": {
-                        backgroundColor: holiday ? "grey.100" : "#f5e6e6",
-                        borderColor: holiday ? "grey.400" : "#7a2828",
-                      },
+              {isDateAvailable(dayNumber) && (
+                <div className="absolute bottom-0 left-0 right-0">
+                  <button
+                    className="w-full px-4 py-1.5 rounded-md text-sm font-medium 
+                      bg-red-900 hover:bg-red-800 text-white shadow-sm hover:shadow"
+                    onClick={() => {
+                      // Get day of week for the selected date
+                      const selectedDate = new Date(
+                        currentDate.getFullYear(),
+                        currentDate.getMonth(),
+                        dayNumber
+                      );
+                      const dayOfWeek = days[selectedDate.getDay()];
+
+                      navigate("/bookingC", {
+                        state: {
+                          date: dayNumber,
+                          month: `${
+                            months[currentDate.getMonth()]
+                          }/${currentDate.getFullYear()}`,
+                          dayOfWeek: dayOfWeek,
+                          // Default values that will be updated in the booking form
+                          categories: [
+                            "การเรียน",
+                            "ความเครียด",
+                            "ความสัมพันธ์",
+                          ],
+                          timeSlot: "13.00",
+                          details: "",
+                        },
+                      });
                     }}
                   >
-                    {holiday ? "วันหยุด" : "ว่าง"}
-                  </Button>
-                </Box>
+                    ว่าง
+                  </button>
+                </div>
               )}
-            </Box>
+            </div>
           )}
-        </Paper>
+        </div>
       );
     }
     return calendarDays;
   };
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 4, ml: "100px" }}>
-      <Fade in timeout={800}>
-        <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-          {/* Header */}
-          <Box sx={{ bgcolor: "#943131", color: "white", p: 3 }}>
-            <Typography
-              variant="h5"
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <CalendarMonthIcon />
-              ปฏิทินการจองคิว
-            </Typography>
-          </Box>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-red-900 border-t-transparent"></div>
+          <p className="mt-2 text-red-900">กำลังโหลดข้อมูลวันหยุด...</p>
+        </div>
+      </div>
+    );
+  }
 
-          <Box sx={{ p: 3 }}>
-            {/* Controls */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 3,
-              }}
-            >
-              <Select
-                value={`${
+  return (
+    <div className="container mx-auto py-8 ml-24">
+      <div className="w-full bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-red-900 text-white p-6">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-semibold">ปฏิทินการจองคิว</span>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="relative">
+              <button
+                onClick={() => setShowSelect(!showSelect)}
+                className="w-52 px-4 py-2 text-left bg-white border border-red-900 text-red-900 rounded-lg hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-900"
+              >
+                {`${
                   months[currentDate.getMonth()]
                 } ${currentDate.getFullYear()}`}
-                onChange={handleMonthChange}
-                sx={{ minWidth: 200 }}
+              </button>
+
+              {showSelect && (
+                <div className="absolute z-50 w-52 mt-1 bg-white border border-red-900 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {availableMonths.map((month, index) => (
+                    <button
+                      key={index}
+                      className="w-full px-4 py-2 text-left text-red-900 bg-white hover:bg-red-50 first:rounded-t-lg last:rounded-b-lg"
+                      onClick={() => handleMonthChange(month.label)}
+                    >
+                      {month.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                className="p-2 rounded-lg bg-white text-red-900 border border-red-900 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handlePreviousMonth}
+                disabled={currentDate <= availableMonths[0].date}
               >
-                {availableMonths.map((month, index) => (
-                  <MenuItem key={index} value={month.label}>
-                    {month.label}
-                  </MenuItem>
-                ))}
-              </Select>
+                ←
+              </button>
+              <button
+                className="p-2 rounded-lg bg-white text-red-900 border border-red-900 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={fetchHolidays}
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-red-900 border-t-transparent"></div>
+                ) : (
+                  "↻"
+                )}
+              </button>
+              <button
+                className="p-2 rounded-lg bg-white text-red-900 border border-red-900 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleNextMonth}
+                disabled={
+                  currentDate >=
+                  availableMonths[availableMonths.length - 1].date
+                }
+              >
+                →
+              </button>
+            </div>
+          </div>
 
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <IconButton
-                  onClick={handlePreviousMonth}
-                  disabled={currentDate <= availableMonths[0].date}
-                >
-                  <ArrowBackIosNewIcon />
-                </IconButton>
-                <IconButton onClick={fetchHolidays} disabled={loading}>
-                  {loading ? <CircularProgress size={24} /> : <RefreshIcon />}
-                </IconButton>
-                <IconButton
-                  onClick={handleNextMonth}
-                  disabled={
-                    currentDate >=
-                    availableMonths[availableMonths.length - 1].date
-                  }
-                >
-                  <ArrowForwardIosIcon />
-                </IconButton>
-              </Box>
-            </Box>
+          <div className="grid grid-cols-7 gap-4">
+            {days.map((day) => (
+              <div
+                key={day}
+                className="p-2 text-center bg-red-900 text-white rounded-lg shadow-sm"
+              >
+                <span className="text-sm font-medium">{day}</span>
+              </div>
+            ))}
+          </div>
 
-            {/* Day Headers */}
-            <Grid container spacing={1}>
-              {days.map((day) => (
-                <Grid item xs key={day}>
-                  <Paper
-                    sx={{
-                      p: 1,
-                      textAlign: "center",
-                      bgcolor: "#943131",
-                      color: "white",
-                    }}
-                  >
-                    <Typography variant="subtitle2">{day}</Typography>
-                  </Paper>
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Calendar Grid */}
-            <Grid container spacing={1} sx={{ mt: 1 }}>
-              {generateCalendarDays().map((day, index) => (
-                <Grid item xs key={index}>
-                  {day}
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Paper>
-      </Fade>
-    </Container>
+          <div className="grid grid-cols-7 gap-4 mt-4">
+            {generateCalendarDays()}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

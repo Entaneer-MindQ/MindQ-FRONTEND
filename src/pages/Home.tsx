@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -17,8 +18,10 @@ import CaseOpenIcon from "@mui/icons-material/AddBox";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [userProfile, setUserProfile] = React.useState(null);
 
   React.useEffect(() => {
@@ -36,29 +39,37 @@ const Home = () => {
     setUserProfile(mockUserData);
   }, []);
 
-  const steps = [
+  const handleCaseOpen = () => {
+    navigate("/case-open");
+  };
+
+  const approvalSteps = [
     {
       label: "เปิดเคส",
       description: "เริ่มต้นด้วยการเปิดเคสของคุณ",
       icon: <CaseOpenIcon />,
       content: (
         <Box sx={{ width: "100%", mt: 2 }}>
-          <img
-            src="src\utils\image 3 (1).png"
-            alt="Example 1"
-            style={{
-              width: "100%",
-              height: "auto",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          <Button
+            variant="contained"
+            startIcon={<CaseOpenIcon />}
+            onClick={handleCaseOpen}
+            sx={{
+              backgroundColor: "#943131",
+              "&:hover": {
+                backgroundColor: "#7a2929",
+              },
+              mb: 2,
             }}
-          />
+          >
+            เริ่มต้นเปิดเคส
+          </Button>
         </Box>
       ),
     },
     {
       label: "เข้า Facebook",
-      description: "ติดตาม Facebook Page เพื่อรับสิทธิ์ในการจองคิว",
+      description: "ทักแชท Facebook Page เพื่อรับสิทธิ์ในการจองคิว",
       icon: <FacebookIcon />,
       content: (
         <Box sx={{ mt: 2 }}>
@@ -72,16 +83,40 @@ const Home = () => {
               "&:hover": {
                 backgroundColor: "#365899",
               },
+              mb: 2,
             }}
           >
             EntaneerMindFriend CMU
           </Button>
+          <img
+            src="src\utils\facebook_Photo.png"
+            alt="Example 1"
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          />
         </Box>
       ),
     },
     {
       label: "รอการยืนยัน",
       description: "รอการตรวจสอบและยืนยันสิทธิ์",
+      icon: <CheckCircleIcon />,
+    },
+  ];
+
+  const bookingSteps = [
+    {
+      label: "เลือกวันเวลาที่ต้องการ",
+      description: "เลือกช่วงเวลาที่สะดวกในการรับคำปรึกษา",
+      icon: <CalendarMonthIcon />,
+    },
+    {
+      label: "ยืนยันการจอง",
+      description: "ตรวจสอบและยืนยันการจองของคุณ",
       icon: <CheckCircleIcon />,
     },
   ];
@@ -103,6 +138,7 @@ const Home = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4, ml: "100px" }}>
+      {/* Rest of the component remains the same */}
       {/* Welcome Section */}
       <Paper
         elevation={0}
@@ -146,116 +182,102 @@ const Home = () => {
           ขั้นตอนการใช้งาน
         </Typography>
 
-        <Stepper
-          orientation="vertical"
-          sx={{
-            "& .MuiStepLabel-root": {
-              py: 2,
-            },
-          }}
-        >
-          {steps.map((step, index) => (
-            <Step key={index} active={true}>
-              <StepLabel
-                StepIconComponent={() => (
-                  <Box
-                    sx={{
-                      color: "#943131",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    {step.icon}
-                  </Box>
-                )}
-              >
-                <Typography variant="h6" color="primary">
-                  {step.label}
-                </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  {step.description}
-                </Typography>
-                {step.content}
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Paper>
-
-      {/* Profile Card */}
-      <Paper
-        elevation={3}
-        sx={{
-          borderRadius: 2,
-          overflow: "hidden",
-        }}
-      >
-        <Box
-          sx={{
-            bgcolor: "#943131",
-            color: "white",
-            p: 2,
-          }}
-        >
-          <Typography variant="h6" align="center">
-            ข้อมูลนักศึกษา
+        {/* ส่วนที่ 1: การขอสิทธิ์ */}
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#943131",
+              mb: 2,
+              borderBottom: "2px solid #943131",
+              pb: 1,
+            }}
+          >
+            ส่วนที่ 1: การดำเนินการเพื่อให้ได้รับสิทธิ์
           </Typography>
+          <Stepper
+            orientation="vertical"
+            sx={{
+              "& .MuiStepLabel-root": {
+                py: 2,
+              },
+            }}
+          >
+            {approvalSteps.map((step, index) => (
+              <Step key={index} active={true}>
+                <StepLabel
+                  StepIconComponent={() => (
+                    <Box
+                      sx={{
+                        color: "#943131",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {step.icon}
+                    </Box>
+                  )}
+                >
+                  <Typography variant="h6" color="primary">
+                    {step.label}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {step.description}
+                  </Typography>
+                  {step.content}
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
         </Box>
-        <Box sx={{ p: 3 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  ชื่อ-นามสกุล
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.firstname_TH} {userProfile.lastname_TH}
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Name-Surname
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.firstname_EN} {userProfile.lastname_EN}
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  รหัสนักศึกษา
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.student_id}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  คณะ
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.organization_name_TH}
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  CMU IT Account
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.cmuitaccount}
-                </Typography>
-              </Box>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  สถานะ
-                </Typography>
-                <Typography variant="body1">
-                  {userProfile.itaccounttype_TH}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
+
+        {/* ส่วนที่ 2: การจองคิว */}
+        <Box>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#943131",
+              mb: 2,
+              borderBottom: "2px solid #943131",
+              pb: 1,
+            }}
+          >
+            ส่วนที่ 2: การจองคิวหลังจากได้รับการอนุมัติสิทธิ์
+          </Typography>
+          <Stepper
+            orientation="vertical"
+            sx={{
+              "& .MuiStepLabel-root": {
+                py: 2,
+              },
+            }}
+          >
+            {bookingSteps.map((step, index) => (
+              <Step key={index} active={true}>
+                <StepLabel
+                  StepIconComponent={() => (
+                    <Box
+                      sx={{
+                        color: "#943131",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {step.icon}
+                    </Box>
+                  )}
+                >
+                  <Typography variant="h6" color="primary">
+                    {step.label}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary">
+                    {step.description}
+                  </Typography>
+                  {step.content}
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
         </Box>
       </Paper>
     </Container>

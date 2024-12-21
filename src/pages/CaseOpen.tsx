@@ -27,6 +27,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 interface CaseData {
+  personalID: string;
   facebookURL: string;
   topic: string[];
   description: string;
@@ -50,6 +51,7 @@ interface StepStatus {
 const CaseOpen: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<CaseData>({
+    personalID: "650610804",
     facebookURL: "",
     topic: [],
     description: "",

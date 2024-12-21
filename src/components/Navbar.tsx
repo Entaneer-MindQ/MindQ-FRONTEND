@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -8,6 +8,8 @@ interface NavItem {
 }
 
 const Navbar: React.FC = () => {
+  const location = useLocation();
+
   const navItems: NavItem[] = [
     {
       icon: (
@@ -18,7 +20,7 @@ const Navbar: React.FC = () => {
         />
       ),
       label: "",
-      path: "/",
+      path: "/home",
     },
     {
       icon: (
@@ -58,7 +60,7 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "home",
-      path: "/home",
+      path: "/",
     },
     {
       icon: (
@@ -93,6 +95,46 @@ const Navbar: React.FC = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      ),
+      label: "All Cases",
+      path: "/case",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+      label: "Calendar",
+      path: "/calendar",
+    },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
@@ -108,7 +150,15 @@ const Navbar: React.FC = () => {
         <Link
           key={index}
           to={item.path}
-          className="p-4 text-white hover:bg-[#FFE3E3] hover:text-black flex flex-col items-center justify-center"
+          className={`
+            p-4 flex flex-col items-center justify-center
+            transition-all duration-200
+            ${
+              location.pathname === item.path
+                ? "bg-[#FFE3E3] text-black"
+                : "text-white hover:bg-[#B33D3D] hover:text-white"
+            }
+          `}
         >
           {item.icon}
           <span className="text-xs mt-1">{item.label}</span>

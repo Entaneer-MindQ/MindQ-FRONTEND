@@ -6,10 +6,16 @@ import "./index.css";
 // import PersonalInfo from "./Patient-Form/personalInfoForm";
 // import AddressInfo from "./Patient-Form/AddressInfoForm";
 import App from "./App";
-import { UserProvider } from "./context/UserContext";
+// import { PatientProvider } from "./context/patientContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import Case from "./pages/CaseOpen";
+import Opencase from "./pages/CaseOpen";
+import CaseView from "./pages/CaseView";
+import BookingPage from "./pages/BookingPage";
+import ConfirmBookingPage from "./pages/ConfirmBookingPage";
+import Account from "./pages/Account";
+import Calendar from "./pages/Calendar";
+import { UserProvider } from "./context/UserContext";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -18,14 +24,17 @@ root.render(
     <UserProvider>
       <Navbar />
       <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/auth/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/non" element={<App />} />
-        <Route path="/case-open" element={<Case />} />
-        <Route path="/" element={<CMUcallback />} />
+        <Route path="/case-open" element={<Opencase />} />
         {/* <Route path="/patient-form" element={<PersonalInfo />} />
         <Route path="/patient-form/2" element={<AddressInfo />} /> */}
+        <Route path="/case" element={<CaseView />} />
+        <Route path="/booking" element={<BookingPage />} />
+        <Route path="/bookingC" element={<ConfirmBookingPage />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/account" element={<Account />} />
+        {/* <Route path="/cmuOAuthCallback" element={<Home />} /> */}
       </Routes>
     </UserProvider>
   </Router>

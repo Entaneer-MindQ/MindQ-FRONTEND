@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -10,6 +10,11 @@ import {
   Container,
   Grid,
   Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -31,6 +36,9 @@ interface Appointment {
 }
 
 const Account: React.FC = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
+
   const userProfile: UserProfile = {
     name: "ธีระพันธุ์ พันธุ์วรระนะสิน",
     id: "2024/001",
@@ -47,8 +55,19 @@ const Account: React.FC = () => {
     status: "จองตัวแล้ว",
   };
 
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCancellationReason("");
+  };
+
   const handleCancelAppointment = () => {
-    console.log("Cancelling appointment...");
+    console.log("Cancellation reason:", cancellationReason);
+    // Add your cancellation logic here
+    handleCloseDialog();
   };
 
   return (
@@ -191,7 +210,7 @@ const Account: React.FC = () => {
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={handleCancelAppointment}
+                      onClick={handleOpenDialog}
                       sx={{
                         backgroundColor: "#943131",
                         "&:hover": {
@@ -210,6 +229,56 @@ const Account: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Cancellation Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ color: "#943131" }}>ยกเลิกการนัดหมาย</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            กรุณาระบุสาเหตุการยกเลิกนัด
+          </Typography>
+          <TextField
+            autoFocus
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            placeholder="ระบุสาเหตุการยกเลิกนัด"
+            value={cancellationReason}
+            onChange={(e) => setCancellationReason(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button
+            onClick={handleCloseDialog}
+            sx={{
+              color: "#943131",
+              "&:hover": {
+                backgroundColor: "rgba(148, 49, 49, 0.04)",
+              },
+            }}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            onClick={handleCancelAppointment}
+            variant="contained"
+            sx={{
+              backgroundColor: "#943131",
+              "&:hover": {
+                backgroundColor: "#B22222",
+              },
+            }}
+          >
+            ยืนยัน
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

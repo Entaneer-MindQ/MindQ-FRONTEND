@@ -140,6 +140,7 @@ const CaseOpen: React.FC = () => {
         formData
       );
       localStorage.setItem("facebookURL", formData.facebookURL);
+      localStorage.setItem("personalID", "650610804");
       alert("เคสถูกสร้างเรียบร้อยแล้ว");
       navigate("/case");
     } catch (error) {

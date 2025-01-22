@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { post } from "../services/api";
+import { useCookies } from "react-cookie";
 
 interface LocationState {
   month: string;
   date: number;
 }
 
-const ConfirmBookingPage = () => {
+const ConfirmBookingPage = ({ cid }: { cid: number }) => {
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [cookies, _] = useCookies(['auth_token']);
   // State for form data
   const [formData, setFormData] = useState({
     timeSlot: "",
@@ -20,6 +22,7 @@ const ConfirmBookingPage = () => {
   // Check for required data from calendar
   useEffect(() => {
     const state = location.state as LocationState;
+    console.log(cid);
     if (!state?.month || !state?.date) {
       navigate("/case");
     }
@@ -90,6 +93,14 @@ const ConfirmBookingPage = () => {
     try {
       // Here you would typically make an API call to confirm the booking
       // await post('/api/confirm-booking', { ...location.state, ...formData });
+      const responseData = {
+        cid:cid,
+        token: cookies['auth_token'],
+        formData
+      }
+      await post('/api/insertQueue', {
+        responseData
+      })
       alert("จองคิวสำเร็จ");
       navigate("/account");
     } catch (error) {
@@ -311,3 +322,4 @@ const ConfirmBookingPage = () => {
 };
 
 export default ConfirmBookingPage;
+

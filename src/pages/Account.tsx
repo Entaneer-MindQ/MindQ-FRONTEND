@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -19,12 +19,13 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import { useCookies } from "react-cookie";
+import { post } from "../services/api";
+import UserProfile from "../types/user";
 
-interface UserProfile {
-  name: string;
-  id: string;
-  email: string;
-  position: string;
+interface ApiResponse {
+  status:number,
+  data: [UserProfile]
 }
 
 interface Appointment {
@@ -38,13 +39,52 @@ interface Appointment {
 const Account: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [cancellationReason, setCancellationReason] = useState("");
+  const [cookies, _] = useCookies(['auth_token']);
+  const [userProfile , setUserProfile] = useState<UserProfile|null>(null);
 
-  const userProfile: UserProfile = {
-    name: "ธีระพันธุ์ พันธุ์วรระนะสิน",
-    id: "2024/001",
-    email: "theeraphan_p@cmu.ac.th",
-    position: "นักศึกษา",
-  };
+  useEffect(() => {
+      const fetchUserProfile = async () => {
+        // Log the token being sent
+        console.log("Sending cookies:", cookies);
+        
+        try {
+          const response = await post(
+            "/api/user/profile",
+            {
+              token: cookies['auth_token'],
+            },
+          ) as ApiResponse;
+          if (response.status === 200 && response.data) {
+            setUserProfile({
+              personalID: response.data[0].personalID,
+              mind_code: response.data[0].mind_code,
+              email: response.data[0].email,
+              faculty: response.data[0].faculty,
+              major: response.data[0].major,
+              degree: response.data[0].degree,
+              role: response.data[0].role,
+              temp_status: response.data[0].temp_status,
+              name: response.data[0].name,
+              name_EN: response.data[0].name_EN,
+            });
+            console.log("Updated userProfile:", response.data);
+          } else if (response.status === 404) {
+            // setError(response.message || "No cases found");
+            console.log("No user profile found");
+          }
+        } catch (error) {
+          console.error("Error details:", {
+            message: (error as any).message,
+            response: (error as any).response?.data,
+            status: (error as any).response?.status
+          });
+        }
+      };
+  
+      // Call the fetch function
+      fetchUserProfile();
+      
+    }, [cookies['auth_token']]); // Re-run if the cookie changes
 
   const currentAppointment: Appointment = {
     topic: "การเงิน",
@@ -122,18 +162,18 @@ const Account: React.FC = () => {
                 <AccountCircleIcon sx={{ fontSize: 60 }} />
               </Avatar>
               <Typography variant="h6" align="center" gutterBottom>
-                {userProfile.name}
+                {userProfile?.name}
               </Typography>
             </Box>
             <Box sx={{ mt: 2 }}>
               <Typography variant="body1" sx={{ mb: 1.5 }}>
-                <strong>เลขประจำตัวคนไข้:</strong> {userProfile.id}
+                <strong>เลขประจำตัวคนไข้:</strong> {userProfile?.mind_code}
               </Typography>
               <Typography variant="body1" sx={{ mb: 1.5 }}>
-                <strong>CMU IT Account:</strong> {userProfile.email}
+                <strong>CMU IT Account:</strong> {userProfile?.email}
               </Typography>
               <Typography variant="body1">
-                <strong>ตำแหน่ง:</strong> {userProfile.position}
+                <strong>ตำแหน่ง:</strong> {userProfile?.role}
               </Typography>
             </Box>
           </Paper>

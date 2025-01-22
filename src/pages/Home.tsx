@@ -1,43 +1,86 @@
-import React from "react";
+import { useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import {
-  Card,
-  CardContent,
   Typography,
   Box,
   Container,
-  Grid,
   Stepper,
   Step,
   StepLabel,
   Paper,
   Button,
-  Divider,
 } from "@mui/material";
 import CaseOpenIcon from "@mui/icons-material/AddBox";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { post } from "../services/api";
+import UserProfile from "../types/user";
+
+interface ApiResponse {
+  status:number,
+  data: [UserProfile]
+}
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = React.useState(null);
+  const [userProfile, setUserProfile] = useState<UserProfile|null>(null);
+  const [cookies, _] = useCookies(['auth_token']);
 
-  React.useEffect(() => {
-    const mockUserData = {
-      cmuitaccount_name: "watunyoo_phana",
-      cmuitaccount: "watunyoo_phana@cmu.ac.th",
-      student_id: "650610804",
-      firstname_TH: "วทัญญู",
-      firstname_EN: "WATUNYOO",
-      lastname_TH: "พนาไพศาลสกุล",
-      lastname_EN: "PHANAPAISARNSAKUL",
-      organization_name_TH: "คณะวิศวกรรมศาสตร์",
-      itaccounttype_TH: "นักศึกษาปัจจุบัน",
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      // Log the token being sent
+      console.log("Sending cookies:", cookies);
+      
+      try {
+        const response = await post(
+          "/api/user/profile",
+          {
+            token: cookies['auth_token'],
+          },
+        ) as ApiResponse;
+        if (response.status === 200 && response.data) {
+          setUserProfile({
+            personalID: response.data[0].personalID,
+            mind_code: response.data[0].mind_code,
+            email: response.data[0].email,
+            faculty: response.data[0].faculty,
+            major: response.data[0].major,
+            degree: response.data[0].degree,
+            role: response.data[0].role,
+            temp_status: response.data[0].temp_status,
+            name: response.data[0].name,
+            name_EN: response.data[0].name_EN,
+          });
+          console.log("Updated userProfile:", response.data);
+        } else if (response.status === 404) {
+          console.error("User not found");
+          navigate("/login");
+        } else if (response.status === 401) {
+          console.error("Unauthorized access");
+          navigate("/login");
+        } else if (response.status === 302) {
+            console.error("Redirecting to login");
+            navigate("/login");
+        } else {
+          console.error("Unknown error");
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Error details:", {
+          message: (error as any).message,
+          response: (error as any).response?.data,
+          status: (error as any).response?.status
+        });
+      }
     };
-    setUserProfile(mockUserData);
-  }, []);
+
+    // Call the fetch function
+    fetchUserProfile();
+    
+  }, [cookies['auth_token']]); // Re-run if the cookie changes
 
   const handleCaseOpen = () => {
     navigate("/case-open");
@@ -154,7 +197,7 @@ const Home = () => {
           ยินดีต้อนรับ
         </Typography>
         <Typography variant="h6">
-          {userProfile.firstname_TH} {userProfile.lastname_TH}
+          {userProfile.name}
         </Typography>
       </Paper>
 
@@ -273,7 +316,6 @@ const Home = () => {
                   <Typography variant="body1" color="text.secondary">
                     {step.description}
                   </Typography>
-                  {step.content}
                 </StepLabel>
               </Step>
             ))}

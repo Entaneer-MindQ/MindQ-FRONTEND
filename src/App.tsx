@@ -1,10 +1,8 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useAppController } from "./App_controller";
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
   const { handleCMULogin } = useAppController();
   return (
     <Box

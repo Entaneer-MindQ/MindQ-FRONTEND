@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
         />
       ),
       label: "",
-      path: "/home",
+      path: "/",
     },
     {
       icon: (
@@ -139,6 +139,7 @@ const Navbar: React.FC = () => {
           />
         </svg>
       ),
+
       label: "History",
       path: "/history",
     },

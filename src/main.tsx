@@ -3,10 +3,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
-import PersonalInfo from "./Patient-Form/personalInfoForm";
-import AddressInfo from "./Patient-Form/AddressInfoForm";
 import App from "./App";
-import { PatientProvider } from "./context/patientContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Opencase from "./pages/CaseOpen";
@@ -17,6 +14,7 @@ import Calendar from "./pages/Calendar";
 import Account from "./pages/Account";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
+import Admin from "./pages/admin/Admin_Request";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -26,10 +24,9 @@ root.render(
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/non" element={<App />} />
+        <Route path="/login" element={<App />} />
+        <Route path="/admin/request" element={<Admin />} />
         <Route path="/case-open" element={<Opencase />} />
-        <Route path="/patient-form" element={<PersonalInfo />} />
-        <Route path="/patient-form/2" element={<AddressInfo />} />
         <Route path="/case" element={<CaseView />} />
         <Route path="/booking" element={<BookingPage />} />
         <Route path="/bookingC" element={<ConfirmBookingPage />} />

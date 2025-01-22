@@ -48,6 +48,8 @@ interface Queue {
   slot: string;
   qid: string;
   case_id: string;
+  description: string;
+  topic: string[];
 }
 const Account: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -60,6 +62,8 @@ const Account: React.FC = () => {
     slot: "",
     qid: "",
     case_id: "",
+    description: "",
+    topic: [],
   });
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -78,6 +82,8 @@ const Account: React.FC = () => {
             slot: queueInfo.slot,
             qid: queueInfo.qid,
             case_id: queueInfo.case_id,
+            description: queueInfo.description,
+            topic: queueInfo.topic,
           });
         }
         const response = (await post("/api/user/profile", {
@@ -220,7 +226,10 @@ const Account: React.FC = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={8}>
                     <Typography variant="subtitle1" gutterBottom>
-                      <strong>หัวข้อ:</strong> {queue.topic}
+                      <strong>หัวข้อ:</strong>{" "}
+                      {Array.isArray(queue.topic)
+                        ? queue.topic.join(", ")
+                        : queue.topic}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -252,7 +261,7 @@ const Account: React.FC = () => {
                           fontSize: "0.875rem",
                         }}
                       >
-                        {queue.status}
+                        จองแล้ว
                       </Box>
                     </Typography>
                   </Grid>

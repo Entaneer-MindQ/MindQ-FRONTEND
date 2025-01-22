@@ -247,7 +247,7 @@ const Calendar: React.FC = () => {
                           date: dayNumber,
                           month: `${
                             months[currentDate.getMonth()]
-                          }/${currentDate.getFullYear()}`,
+                          } ${currentDate.getFullYear()}`,
                           dayOfWeek: dayOfWeek,
                           // Default values that will be updated in the booking form
                           categories: [

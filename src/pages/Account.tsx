@@ -30,6 +30,10 @@ interface ApiResponse {
     cmuBasicInfo: responseData;
   };
 }
+interface ApiResponse2 {
+  status: number;
+  data: Queue;
+}
 
 interface Appointment {
   topic: string;
@@ -38,22 +42,48 @@ interface Appointment {
   time: string;
   status: string;
 }
-
+interface Queue {
+  mind_code: string;
+  date: string;
+  slot: string;
+  qid: string;
+  case_id: string;
+}
 const Account: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [cancellationReason, setCancellationReason] = useState("");
   const [cookies, _] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
+  const [queue, setQueue] = useState<Queue>({
+    mind_code: "",
+    date: "",
+    slot: "",
+    qid: "",
+    case_id: "",
+  });
   useEffect(() => {
     const fetchUserProfile = async () => {
       // Log the token being sent
       console.log("Sending cookies:", cookies);
 
       try {
+        const queueResponse = (await post("/api/getCurrentQueue", {
+          token: cookies["auth_token"],
+        })) as ApiResponse2;
+        if (queueResponse.status === 200 && queueResponse?.data) {
+          const queueInfo = queueResponse.data;
+          setQueue({
+            mind_code: queueInfo.mind_code,
+            date: queueInfo.date,
+            slot: queueInfo.slot,
+            qid: queueInfo.qid,
+            case_id: queueInfo.case_id,
+          });
+        }
         const response = (await post("/api/user/profile", {
           token: cookies["auth_token"],
         })) as ApiResponse;
+
         if (response.status === 200 && response.data?.cmuBasicInfo) {
           const basicInfo = response.data.cmuBasicInfo;
           const name = basicInfo.firstname_TH.concat(
@@ -87,15 +117,6 @@ const Account: React.FC = () => {
     // Call the fetch function
     fetchUserProfile();
   }, [cookies["auth_token"]]); // Re-run if the cookie changes
-
-  const currentAppointment: Appointment = {
-    topic: "การเงิน",
-    description:
-      "efdsjqfoisjfldsdlifjlsdjfisjdfjisofijilsdfjisdjfoijsiodfijosdf",
-    date: "Friday, 6th December 2024",
-    time: "10.00 - 11.00",
-    status: "จองตัวแล้ว",
-  };
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -199,7 +220,7 @@ const Account: React.FC = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={8}>
                     <Typography variant="subtitle1" gutterBottom>
-                      <strong>หัวข้อ:</strong> {currentAppointment.topic}
+                      <strong>หัวข้อ:</strong> {queue.topic}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -210,14 +231,13 @@ const Account: React.FC = () => {
                         wordWrap: "break-word",
                       }}
                     >
-                      <strong>รายละเอียด:</strong>{" "}
-                      {currentAppointment.description}
+                      <strong>รายละเอียด:</strong> {queue.description}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>วันที่:</strong> {currentAppointment.date}
+                      <strong>วันที่:</strong> {queue.date}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>เวลา:</strong> {currentAppointment.time}
+                      <strong>เวลา:</strong> {queue.slot}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                       <strong>สถานะ:</strong>{" "}
@@ -232,7 +252,7 @@ const Account: React.FC = () => {
                           fontSize: "0.875rem",
                         }}
                       >
-                        {currentAppointment.status}
+                        {queue.status}
                       </Box>
                     </Typography>
                   </Grid>

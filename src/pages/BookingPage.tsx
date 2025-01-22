@@ -1,5 +1,5 @@
 // BookingPage.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import {
@@ -29,7 +29,7 @@ interface BookingFormData {
 const BookingPage = () => {
   const location = useLocation();
   const { state } = location;
-
+  const navigate = useNavigate();
   // log เพื่อตรวจสอบข้อมูลที่ได้รับ
   console.log("Received state:", state);
 

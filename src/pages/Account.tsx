@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -19,12 +19,20 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import { useCookies } from "react-cookie";
+import { post } from "../services/api";
+import UserProfile from "../types/user";
+import responseData from "../types/response";
 
-interface UserProfile {
-  name: string;
-  id: string;
-  email: string;
-  position: string;
+interface ApiResponse {
+  status: number;
+  data: {
+    cmuBasicInfo: responseData;
+  };
+}
+interface ApiResponse2 {
+  status: number;
+  data: Queue;
 }
 
 interface Appointment {
@@ -34,26 +42,87 @@ interface Appointment {
   time: string;
   status: string;
 }
-
+interface Queue {
+  mind_code: string;
+  date: string;
+  slot: string;
+  qid: string;
+  case_id: string;
+  description: string;
+  topic: string[];
+}
 const Account: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [cancellationReason, setCancellationReason] = useState("");
+  const [cookies, _] = useCookies(["auth_token"]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [queue, setQueue] = useState<Queue>({
+    mind_code: "",
+    date: "",
+    slot: "",
+    qid: "",
+    case_id: "",
+    description: "",
+    topic: [],
+  });
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      // Log the token being sent
+      console.log("Sending cookies:", cookies);
 
-  const userProfile: UserProfile = {
-    name: "ธีระพันธุ์ พันธุ์วรระนะสิน",
-    id: "2024/001",
-    email: "theeraphan_p@cmu.ac.th",
-    position: "นักศึกษา",
-  };
+      try {
+        const queueResponse = (await post("/api/getCurrentQueue", {
+          token: cookies["auth_token"],
+        })) as ApiResponse2;
+        if (queueResponse.status === 200 && queueResponse?.data) {
+          const queueInfo = queueResponse.data;
+          setQueue({
+            mind_code: queueInfo.mind_code,
+            date: queueInfo.date,
+            slot: queueInfo.slot,
+            qid: queueInfo.qid,
+            case_id: queueInfo.case_id,
+            description: queueInfo.description,
+            topic: queueInfo.topic,
+          });
+        }
+        const response = (await post("/api/user/profile", {
+          token: cookies["auth_token"],
+        })) as ApiResponse;
 
-  const currentAppointment: Appointment = {
-    topic: "การเงิน",
-    description:
-      "efdsjqfoisjfldsdlifjlsdjfisjdfjisofijilsdfjisdjfoijsiodfijosdf",
-    date: "Friday, 6th December 2024",
-    time: "10.00 - 11.00",
-    status: "จองตัวแล้ว",
-  };
+        if (response.status === 200 && response.data?.cmuBasicInfo) {
+          const basicInfo = response.data.cmuBasicInfo;
+          const name = basicInfo.firstname_TH.concat(
+            " ",
+            basicInfo.lastname_TH
+          );
+          setUserProfile({
+            personalID: basicInfo.student_id,
+            email: basicInfo.cmuitaccount,
+            faculty: basicInfo.organization_name_TH,
+            major: basicInfo.organization_name_EN,
+            degree: basicInfo.organization_code,
+            role: basicInfo.itaccounttype_TH,
+            name: name,
+            name_EN: basicInfo.cmuitaccount_name,
+          });
+          console.log("Updated userProfile:", response.data);
+        } else if (response.status === 404) {
+          // setError(response.message || "No cases found");
+          console.log("No user profile found");
+        }
+      } catch (error) {
+        console.error("Error details:", {
+          message: (error as any).message,
+          response: (error as any).response?.data,
+          status: (error as any).response?.status,
+        });
+      }
+    };
+
+    // Call the fetch function
+    fetchUserProfile();
+  }, [cookies["auth_token"]]); // Re-run if the cookie changes
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -122,18 +191,15 @@ const Account: React.FC = () => {
                 <AccountCircleIcon sx={{ fontSize: 60 }} />
               </Avatar>
               <Typography variant="h6" align="center" gutterBottom>
-                {userProfile.name}
+                {userProfile?.name}
               </Typography>
             </Box>
             <Box sx={{ mt: 2 }}>
               <Typography variant="body1" sx={{ mb: 1.5 }}>
-                <strong>เลขประจำตัวคนไข้:</strong> {userProfile.id}
-              </Typography>
-              <Typography variant="body1" sx={{ mb: 1.5 }}>
-                <strong>CMU IT Account:</strong> {userProfile.email}
+                <strong>CMU IT Account:</strong> {userProfile?.email}
               </Typography>
               <Typography variant="body1">
-                <strong>ตำแหน่ง:</strong> {userProfile.position}
+                <strong>สถานะ:</strong> {userProfile?.role}
               </Typography>
             </Box>
           </Paper>
@@ -160,7 +226,10 @@ const Account: React.FC = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={8}>
                     <Typography variant="subtitle1" gutterBottom>
-                      <strong>หัวข้อ:</strong> {currentAppointment.topic}
+                      <strong>หัวข้อ:</strong>{" "}
+                      {Array.isArray(queue.topic)
+                        ? queue.topic.join(", ")
+                        : queue.topic}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -171,14 +240,13 @@ const Account: React.FC = () => {
                         wordWrap: "break-word",
                       }}
                     >
-                      <strong>รายละเอียด:</strong>{" "}
-                      {currentAppointment.description}
+                      <strong>รายละเอียด:</strong> {queue.description}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>วันที่:</strong> {currentAppointment.date}
+                      <strong>วันที่:</strong> {queue.date}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>เวลา:</strong> {currentAppointment.time}
+                      <strong>เวลา:</strong> {queue.slot}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                       <strong>สถานะ:</strong>{" "}
@@ -193,7 +261,7 @@ const Account: React.FC = () => {
                           fontSize: "0.875rem",
                         }}
                       >
-                        {currentAppointment.status}
+                        จองแล้ว
                       </Box>
                     </Typography>
                   </Grid>

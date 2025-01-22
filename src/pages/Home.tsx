@@ -1,43 +1,88 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import {
-  Card,
-  CardContent,
   Typography,
   Box,
   Container,
-  Grid,
   Stepper,
   Step,
   StepLabel,
   Paper,
   Button,
-  Divider,
 } from "@mui/material";
 import CaseOpenIcon from "@mui/icons-material/AddBox";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { post } from "../services/api";
+import UserProfile from "../types/user";
+import responseData from "../types/response";
+
+interface ApiResponse {
+  status: number;
+  data: {
+    cmuBasicInfo: responseData;
+  };
+}
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = React.useState(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [cookies, _] = useCookies(["auth_token"]);
 
-  React.useEffect(() => {
-    const mockUserData = {
-      cmuitaccount_name: "watunyoo_phana",
-      cmuitaccount: "watunyoo_phana@cmu.ac.th",
-      student_id: "650610804",
-      firstname_TH: "วทัญญู",
-      firstname_EN: "WATUNYOO",
-      lastname_TH: "พนาไพศาลสกุล",
-      lastname_EN: "PHANAPAISARNSAKUL",
-      organization_name_TH: "คณะวิศวกรรมศาสตร์",
-      itaccounttype_TH: "นักศึกษาปัจจุบัน",
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      console.log("Sending cookies:", cookies);
+
+      try {
+        const response = (await post("/api/user/profile", {
+          token: cookies["auth_token"],
+        })) as ApiResponse;
+
+        if (response.status === 200 && response.data?.cmuBasicInfo) {
+          const basicInfo = response.data.cmuBasicInfo;
+          const name = basicInfo.firstname_TH.concat(
+            " ",
+            basicInfo.lastname_TH
+          );
+          setUserProfile({
+            personalID: basicInfo.student_id,
+            email: basicInfo.cmuitaccount,
+            faculty: basicInfo.organization_name_TH,
+            major: basicInfo.organization_name_EN,
+            degree: basicInfo.organization_code,
+            role: basicInfo.itaccounttype_EN,
+            name: name,
+            name_EN: basicInfo.cmuitaccount_name,
+          });
+          console.log("Updated userProfile:", basicInfo);
+        } else if (response.status === 404) {
+          console.error("User not found");
+          navigate("/login");
+        } else if (response.status === 401) {
+          console.error("Unauthorized access");
+          navigate("/login");
+        } else if (response.status === 302) {
+          console.error("Redirecting to login");
+          navigate("/login");
+        } else {
+          console.error("Unknown error");
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Error details:", {
+          message: (error as any).message,
+          response: (error as any).response?.data,
+          status: (error as any).response?.status,
+        });
+        navigate("/login");
+      }
     };
-    setUserProfile(mockUserData);
-  }, []);
+
+    fetchUserProfile();
+  }, [cookies["auth_token"], navigate]);
 
   const handleCaseOpen = () => {
     navigate("/case-open");
@@ -153,9 +198,7 @@ const Home = () => {
         <Typography variant="h4" gutterBottom>
           ยินดีต้อนรับ
         </Typography>
-        <Typography variant="h6">
-          {userProfile.firstname_TH} {userProfile.lastname_TH}
-        </Typography>
+        <Typography variant="h6">{userProfile.name}</Typography>
       </Paper>
 
       {/* Steps Section */}
@@ -273,7 +316,6 @@ const Home = () => {
                   <Typography variant="body1" color="text.secondary">
                     {step.description}
                   </Typography>
-                  {step.content}
                 </StepLabel>
               </Step>
             ))}

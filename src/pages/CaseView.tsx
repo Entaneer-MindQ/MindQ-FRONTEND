@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { get, post } from "../services/api";
+import { post } from "../services/api";
 import {
   Box,
   Typography,
@@ -11,66 +11,65 @@ import {
   CircularProgress,
   Button,
   Container,
-  Chip,
-  IconButton,
   Fade,
   Grow,
 } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubjectIcon from "@mui/icons-material/Subject";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PendingIcon from "@mui/icons-material/Pending";
+import { useCookies } from "react-cookie";
 
 interface CaseData {
-  topic: string;
+  cid: number;
+  personalID: string;
+  name: string;
+  topic: string[];
   description: string;
-  status: string;
-  approve: boolean;
+  role: string;
+  facebook: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+  mind_code?: string; // เพิ่ม mind_code เป็น optional
 }
 
 interface ApiResponse {
-  status: number;
-  data: CaseData[];
-  message?: string;
+  message: string;
+  data: CaseData;
 }
 
 const CaseView = () => {
   const [cases, setCases] = useState<CaseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cookies] = useCookies(["auth_token"]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        const personalID = localStorage.getItem("personalID");
-        if (!personalID) {
-          setError("No personal ID found. Please fill out the form first.");
-          setLoading(false);
-          return;
-        }
+        const token = cookies["auth_token"];
+        console.log("Sending token:", token);
 
-        const response = await post<ApiResponse>("/api/getcases", {
-          personalID: parseInt(personalID),
+        const response = await post("/api/getCase", {
+          token: token,
         });
 
-        if (response.status === 200 && response.data) {
-          setCases(response.data);
-        } else if (response.status === 404) {
-          setError(response.message || "No cases found");
+        console.log("API Response:", response);
+
+        if (response.data) {
+          setCases([response.data]);
+          setLoading(false);
         }
       } catch (err) {
-        setError("Failed to load cases. Please try again later.");
         console.error("Error fetching cases:", err);
-      } finally {
+        setError("ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่อีกครั้ง");
         setLoading(false);
       }
     };
 
     fetchCases();
-  }, []);
+  }, [cookies]);
 
   const handleBooking = () => {
     navigate("/calendar");
@@ -156,7 +155,7 @@ const CaseView = () => {
             ) : (
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 {cases.map((caseItem, index) => (
-                  <Grow in timeout={500 * (index + 1)} key={index}>
+                  <Grow in timeout={500 * (index + 1)} key={caseItem.cid}>
                     <Card
                       sx={{
                         borderRadius: 2,
@@ -178,7 +177,9 @@ const CaseView = () => {
                         >
                           <SubjectIcon color="primary" />
                           <Typography variant="h6" color="primary">
-                            {caseItem.topic}
+                            {Array.isArray(caseItem.topic)
+                              ? caseItem.topic.join(", ")
+                              : caseItem.topic}
                           </Typography>
                         </Box>
 
@@ -201,27 +202,17 @@ const CaseView = () => {
                             mt: 2,
                           }}
                         >
-                          <Chip
-                            icon={
-                              caseItem.approve ? (
-                                <CheckCircleIcon />
-                              ) : (
-                                <PendingIcon />
-                              )
-                            }
-                            label={
-                              caseItem.approve ? "อนุมัติแล้ว" : "รอการอนุมัติ"
-                            }
-                            color={caseItem.approve ? "success" : "warning"}
-                            sx={{
-                              borderRadius: 2,
-                              "& .MuiChip-icon": {
-                                fontSize: "1.2rem",
-                              },
-                            }}
-                          />
+                          <Box>
+                            <Typography variant="body2" color="text.secondary">
+                              วันที่สร้าง:{" "}
+                              {new Date(caseItem.created_at).toLocaleDateString(
+                                "th-TH"
+                              )}
+                            </Typography>
+                          </Box>
 
-                          {caseItem.approve && (
+                          {/* แสดงปุ่มจองคิวเฉพาะเมื่อ mind_code มีค่า */}
+                          {caseItem.mind_code && (
                             <Button
                               variant="contained"
                               onClick={handleBooking}
@@ -230,16 +221,14 @@ const CaseView = () => {
                                 backgroundColor: "#943131",
                                 "&:hover": {
                                   backgroundColor: "#7a2828",
+                                  transform: "translateY(-2px)",
+                                  boxShadow: 4,
                                 },
                                 borderRadius: 2,
                                 px: 3,
                                 py: 1,
                                 boxShadow: 2,
                                 transition: "all 0.2s",
-                                "&:hover": {
-                                  transform: "translateY(-2px)",
-                                  boxShadow: 4,
-                                },
                               }}
                             >
                               จองคิว
@@ -277,22 +266,6 @@ const CaseView = () => {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 เคสทั้งหมด
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="h6" color="success.main">
-                {cases.filter((c) => c.approve).length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                อนุมัติแล้ว
-              </Typography>
-            </Box>
-            <Box sx={{ textAlign: "center" }}>
-              <Typography variant="h6" color="warning.main">
-                {cases.filter((c) => !c.approve).length}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                รอการอนุมัติ
               </Typography>
             </Box>
           </Paper>

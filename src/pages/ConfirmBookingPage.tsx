@@ -1,42 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { post } from "../services/api";
+import { useCookies } from "react-cookie";
 
 interface LocationState {
   month: string;
   date: number;
 }
 
-const ConfirmBookingPage = () => {
+const ConfirmBookingPage = ({ cid }: { cid: number }) => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  // State for form data
+  const [cookies] = useCookies(["auth_token"]);
   const [formData, setFormData] = useState({
-    timeSlot: "",
-    categories: [] as string[],
+    timeSlot: "", // เวลา เช่น 09.00
+    date: "", // วันที่ เช่น 23 มกราคม 2025
     details: "",
   });
 
-  // Check for required data from calendar
   useEffect(() => {
     const state = location.state as LocationState;
     if (!state?.month || !state?.date) {
       navigate("/case");
+    } else {
+      // Set initial date when component mounts
+      setFormData((prev) => ({
+        ...prev,
+        date: `${state.date} ${state.month} `,
+      }));
     }
   }, [location.state, navigate]);
 
-  // Available time slots
   const timeSlots = ["09.00", "10.00", "11.00", "13.00", "14.00", "15.00"];
-
-  // Available categories
-  const availableCategories = [
-    "การเรียน",
-    "ความเครียด",
-    "ความสัมพันธ์",
-    "ครอบครัว",
-    "การปรับตัว",
-    "อื่นๆ",
-  ];
 
   const handleTimeSlotChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -45,23 +40,6 @@ const ConfirmBookingPage = () => {
       ...prev,
       timeSlot: event.target.value,
     }));
-  };
-
-  const handleCategoryToggle = (category: string) => {
-    setFormData((prev) => {
-      const currentCategories = [...prev.categories];
-      if (currentCategories.includes(category)) {
-        return {
-          ...prev,
-          categories: currentCategories.filter((c) => c !== category),
-        };
-      } else {
-        return {
-          ...prev,
-          categories: [...currentCategories, category],
-        };
-      }
-    });
   };
 
   const handleDetailsChange = (
@@ -78,18 +56,27 @@ const ConfirmBookingPage = () => {
       alert("กรุณาเลือกเวลานัด");
       return;
     }
-    if (formData.categories.length === 0) {
-      alert("กรุณาเลือกหมวดหมู่อย่างน้อย 1 หมวด");
-      return;
-    }
+
     if (!formData.details.trim()) {
       alert("กรุณากรอกรายละเอียด");
       return;
     }
 
     try {
-      // Here you would typically make an API call to confirm the booking
-      // await post('/api/confirm-booking', { ...location.state, ...formData });
+      const responseData = {
+        cid: cid,
+        token: cookies["auth_token"],
+        formData,
+      };
+
+      console.log("Sending data:", responseData);
+
+      const response = await post("/api/insertQueue", {
+        responseData,
+      });
+
+      console.log("API Response:", response);
+
       alert("จองคิวสำเร็จ");
       navigate("/account");
     } catch (error) {
@@ -104,16 +91,14 @@ const ConfirmBookingPage = () => {
   };
 
   if (!location.state) {
-    return null; // Component will unmount due to useEffect redirect
+    return null;
   }
 
   const { month, date } = location.state as LocationState;
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-6 md:py-8">
-      {/* ปรับ container ให้ responsive */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* ปรับ max-width และ margin ให้ responsive */}
         <div className="max-w-full md:max-w-3xl lg:max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
           {/* Header */}
           <div className="bg-red-900 text-white p-4 sm:p-6">
@@ -145,9 +130,7 @@ const ConfirmBookingPage = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">วันที่</p>
-                  <p className="font-medium text-gray-900">
-                    {date} {month}
-                  </p>
+                  <p className="font-medium text-gray-900">{formData.date}</p>
                 </div>
               </div>
             </div>
@@ -189,45 +172,6 @@ const ConfirmBookingPage = () => {
               </select>
             </div>
 
-            {/* Categories Selection */}
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-center space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-red-900"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                  />
-                </svg>
-                <h2 className="text-base sm:text-lg font-medium text-gray-900">
-                  หมวดหมู่การปรึกษา
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {availableCategories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryToggle(category)}
-                    className={`px-2 sm:px-3 py-1 rounded-full text-sm transition-colors
-                      ${
-                        formData.categories.includes(category)
-                          ? "bg-red-900 text-white"
-                          : "bg-red-50 text-red-900 hover:bg-red-100"
-                      }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Details Input */}
             <div className="space-y-2 sm:space-y-3">
               <div className="flex items-center space-x-2">
@@ -255,37 +199,6 @@ const ConfirmBookingPage = () => {
                 placeholder="กรุณาระบุรายละเอียดเพิ่มเติม..."
                 className="w-full h-24 sm:h-32 bg-white p-2 sm:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-900 focus:border-red-900"
               />
-            </div>
-
-            {/* Important Notice */}
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 sm:p-4">
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800">
-                    โปรดทราบ
-                  </h3>
-                  <div className="mt-2 text-xs sm:text-sm text-yellow-700">
-                    <p>
-                      กรุณามาถึงก่อนเวลานัด 5-10 นาที หากไม่สามารถมาตามนัดได้
-                      กรุณาแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
 
             {/* Action Buttons */}

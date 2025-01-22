@@ -6,7 +6,6 @@ import "./index.css";
 import PersonalInfo from "./Patient-Form/personalInfoForm";
 import AddressInfo from "./Patient-Form/AddressInfoForm";
 import App from "./App";
-import { PatientProvider } from "./context/patientContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Opencase from "./pages/CaseOpen";
@@ -25,8 +24,9 @@ root.render(
     <UserProvider>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/non" element={<App />} />
+        <Route path="/" element={<App />} />
+        <Route path="/login" element={<App />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/case-open" element={<Opencase />} />
         <Route path="/patient-form" element={<PersonalInfo />} />
         <Route path="/patient-form/2" element={<AddressInfo />} />

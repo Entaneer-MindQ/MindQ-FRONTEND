@@ -130,42 +130,39 @@ const CaseOpen: React.FC = () => {
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error);
   };
-  const [cookies, _] = useCookies(['auth_token']);
+  const [cookies, _] = useCookies(["auth_token"]);
   const handleSubmit = async () => {
-    console.log('Starting handleSubmit...'); // Debug point 1
-    
+    console.log("Starting handleSubmit..."); // Debug point 1
+
     if (!validateForm()) {
-      console.log('Form validation failed'); // Debug point 2
+      console.log("Form validation failed"); // Debug point 2
       return;
     }
-  
+
     try {
-      console.log('Cookies:', cookies); // Debug point 3
-      console.log('Form Data:', formData); // Debug point 4
-  
+      console.log("Cookies:", cookies); // Debug point 3
+      console.log("Form Data:", formData); // Debug point 4
+
       const requestData = {
-        token: cookies['auth_token'],
+        token: cookies["auth_token"],
         facebookURL: formData.facebookURL,
         topic: formData.topic,
         description: formData.description,
-        role: formData.role
+        role: formData.role,
       };
-  
-      console.log('Request Data:', requestData); // Debug point 5
-  
+
+      console.log("Request Data:", requestData); // Debug point 5
+
       // Check if the token exists
-      if (!cookies['auth_token']) {
-        console.error('No auth token found in cookies');
-        throw new Error('Authentication token not found');
+      if (!cookies["auth_token"]) {
+        console.error("No auth token found in cookies");
+        throw new Error("Authentication token not found");
       }
-  
-      const response = await post<ApiResponse>(
-        '/api/createCase',
-        requestData
-      );
-  
-      console.log('Response received:', response); // Debug point 6
-  
+
+      const response = await post<ApiResponse>("/api/insertCase", requestData);
+
+      console.log("Response received:", response); // Debug point 6
+
       if (response.status === 200) {
         alert("เคสถูกสร้างเรียบร้อยแล้ว");
         navigate("/case");
@@ -175,12 +172,12 @@ const CaseOpen: React.FC = () => {
       console.error("Full error object:", error);
       console.error("Error message:", error.message);
       console.error("Error stack:", error.stack);
-      
+
       if (error.response) {
         console.error("Response status:", error.response.status);
         console.error("Response data:", error.response.data);
       }
-      
+
       alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง");
     }
   };

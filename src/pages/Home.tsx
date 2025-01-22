@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import {
@@ -18,43 +18,46 @@ import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { post } from "../services/api";
 import UserProfile from "../types/user";
+import responseData from "../types/response";
 
 interface ApiResponse {
-  status:number,
-  data: [UserProfile]
+  status: number;
+  data: {
+    cmuBasicInfo: responseData;
+  };
 }
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState<UserProfile|null>(null);
-  const [cookies, _] = useCookies(['auth_token']);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [cookies, _] = useCookies(["auth_token"]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Log the token being sent
       console.log("Sending cookies:", cookies);
-      
+
       try {
-        const response = await post(
-          "/api/user/profile",
-          {
-            token: cookies['auth_token'],
-          },
-        ) as ApiResponse;
-        if (response.status === 200 && response.data) {
+        const response = (await post("/api/user/profile", {
+          token: cookies["auth_token"],
+        })) as ApiResponse;
+
+        if (response.status === 200 && response.data?.cmuBasicInfo) {
+          const basicInfo = response.data.cmuBasicInfo;
+          const name = basicInfo.firstname_TH.concat(
+            " ",
+            basicInfo.lastname_TH
+          );
           setUserProfile({
-            personalID: response.data[0].personalID,
-            mind_code: response.data[0].mind_code,
-            email: response.data[0].email,
-            faculty: response.data[0].faculty,
-            major: response.data[0].major,
-            degree: response.data[0].degree,
-            role: response.data[0].role,
-            temp_status: response.data[0].temp_status,
-            name: response.data[0].name,
-            name_EN: response.data[0].name_EN,
+            personalID: basicInfo.student_id,
+            email: basicInfo.cmuitaccount,
+            faculty: basicInfo.organization_name_TH,
+            major: basicInfo.organization_name_EN,
+            degree: basicInfo.organization_code,
+            role: basicInfo.itaccounttype_EN,
+            name: name,
+            name_EN: basicInfo.cmuitaccount_name,
           });
-          console.log("Updated userProfile:", response.data);
+          console.log("Updated userProfile:", basicInfo);
         } else if (response.status === 404) {
           console.error("User not found");
           navigate("/login");
@@ -62,8 +65,8 @@ const Home = () => {
           console.error("Unauthorized access");
           navigate("/login");
         } else if (response.status === 302) {
-            console.error("Redirecting to login");
-            navigate("/login");
+          console.error("Redirecting to login");
+          navigate("/login");
         } else {
           console.error("Unknown error");
           navigate("/login");
@@ -72,15 +75,14 @@ const Home = () => {
         console.error("Error details:", {
           message: (error as any).message,
           response: (error as any).response?.data,
-          status: (error as any).response?.status
+          status: (error as any).response?.status,
         });
+        navigate("/login");
       }
     };
 
-    // Call the fetch function
     fetchUserProfile();
-    
-  }, [cookies['auth_token']]); // Re-run if the cookie changes
+  }, [cookies["auth_token"], navigate]);
 
   const handleCaseOpen = () => {
     navigate("/case-open");
@@ -196,9 +198,7 @@ const Home = () => {
         <Typography variant="h4" gutterBottom>
           ยินดีต้อนรับ
         </Typography>
-        <Typography variant="h6">
-          {userProfile.name}
-        </Typography>
+        <Typography variant="h6">{userProfile.name}</Typography>
       </Paper>
 
       {/* Steps Section */}

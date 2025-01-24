@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { Box } from "@mui/material";
-import RefreshIcon from "@mui/icons-material/Refresh";
+import { Button } from "@mui/material";
+import { Approve } from "./Admin_Request_Controller";
 
 const Admin = () => {
   return (
@@ -10,7 +8,6 @@ const Admin = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
-        width: "100%",
       }}
     >
       <div>
@@ -21,13 +18,35 @@ const Admin = () => {
             p: 2,
             border: "2px solid black",
             borderRadius: 2,
-            width: "100%",
+            width: "1200px",
+            position: "relative", // Allow absolute positioning inside
           }}
         >
           <div>Name: John Doe</div>
           <div>Status: </div>
           <div>Topic: </div>
           <div>Description: </div>
+          <div style={{ marginTop: "10px", textAlign: "end" }}>
+            <Approve></Approve>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#D72525",
+                color: "white",
+                width: "120px",
+                height: "40px",
+                "&:focus": {
+                  outline: "none", // Remove the outline on focus
+                },
+                "&:active": {
+                  outline: "none", // Remove outline when active
+                  boxShadow: "none", // Remove any active shadow
+                },
+              }}
+            >
+              Disapprove
+            </Button>
+          </div>
         </Box>
       </div>
     </Box>

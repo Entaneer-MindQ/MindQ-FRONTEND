@@ -8,10 +8,10 @@ interface LocationState {
   date: number;
 }
 
-const ConfirmBookingPage = ({ cid }: { cid: number }) => {
+const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [cookies, _] = useCookies(['auth_token']);
+  const [cookies, _] = useCookies(["auth_token"]);
   // State for form data
   const [formData, setFormData] = useState({
     timeSlot: "",
@@ -94,13 +94,13 @@ const ConfirmBookingPage = ({ cid }: { cid: number }) => {
       // Here you would typically make an API call to confirm the booking
       // await post('/api/confirm-booking', { ...location.state, ...formData });
       const responseData = {
-        cid:cid,
-        token: cookies['auth_token'],
-        formData
-      }
-      await post('/api/insertQueue', {
-        responseData
-      })
+        cid: cid,
+        token: cookies["auth_token"],
+        formData,
+      };
+      await post("/api/insertQueue", {
+        responseData,
+      });
       alert("จองคิวสำเร็จ");
       navigate("/account");
     } catch (error) {
@@ -322,4 +322,3 @@ const ConfirmBookingPage = ({ cid }: { cid: number }) => {
 };
 
 export default ConfirmBookingPage;
-

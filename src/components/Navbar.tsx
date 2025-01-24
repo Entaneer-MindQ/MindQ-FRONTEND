@@ -1,5 +1,10 @@
 import React from "react";
+import UserProfile from "../types/user";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import responseData from "../types/response";
+import { post } from "../services/api";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -7,21 +12,62 @@ interface NavItem {
   path: string;
 }
 
+interface ApiResponse {
+  status: number;
+  data: {
+    cmuBasicInfo: responseData;
+  };
+}
+
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const [cookies, _] = useCookies(["auth_token"]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  console.log(userProfile?.personalID);
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      // Log the token being sent
+      console.log("Sending cookies:", cookies);
+
+      try {
+        const response = (await post("/api/user/profile", {
+          token: cookies["auth_token"],
+        })) as ApiResponse;
+        if (response.status === 200 && response.data?.cmuBasicInfo) {
+          const basicInfo = response.data.cmuBasicInfo;
+          const name = basicInfo.firstname_TH.concat(
+            " ",
+            basicInfo.lastname_TH
+          );
+          setUserProfile({
+            personalID: basicInfo.student_id,
+            email: basicInfo.cmuitaccount,
+            faculty: basicInfo.organization_name_TH,
+            major: basicInfo.organization_name_EN,
+            degree: basicInfo.organization_code,
+            role: basicInfo.itaccounttype_TH,
+            name: name,
+            name_EN: basicInfo.cmuitaccount_name,
+          });
+          console.log("Updated userProfile:", response.data);
+        } else if (response.status === 404) {
+          // setError(response.message || "No cases found");
+          console.log("No user profile found");
+        }
+      } catch (error) {
+        console.error("Error details:", {
+          message: (error as any).message,
+          response: (error as any).response?.data,
+          status: (error as any).response?.status,
+        });
+      }
+    };
+
+    // Call the fetch function
+    fetchUserProfile();
+  }, [cookies["auth_token"]]); // Re-run if the cookie changes
 
   const navItems: NavItem[] = [
-    {
-      icon: (
-        <img
-          src="src\utils\IMG_0363 1.png"
-          alt="Logo"
-          className="w-full h-auto"
-        />
-      ),
-      label: "",
-      path: "/",
-    },
     {
       icon: (
         <svg
@@ -59,8 +105,8 @@ const Navbar: React.FC = () => {
           />
         </svg>
       ),
-      label: "home",
-      path: "/home",
+      label: "Home",
+      path: "/",
     },
     {
       icon: (
@@ -79,7 +125,7 @@ const Navbar: React.FC = () => {
           />
         </svg>
       ),
-      label: "Case Open",
+      label: "New",
       path: "/case-open",
     },
     {
@@ -99,7 +145,7 @@ const Navbar: React.FC = () => {
           />
         </svg>
       ),
-      label: "All Cases",
+      label: "Cases",
       path: "/case",
     },
     {
@@ -139,14 +185,47 @@ const Navbar: React.FC = () => {
           />
         </svg>
       ),
-
       label: "History",
       path: "/history",
     },
+    ...(userProfile?.personalID === "650610749"
+      ? [
+          {
+            icon: (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                />
+              </svg>
+            ),
+            label: "Request",
+            path: "/admin-request",
+          },
+        ]
+      : []),
   ];
 
   return (
     <nav className="fixed left-0 top-0 h-full w-20 bg-[#943131] flex flex-col">
+      <img
+        src="src\utils\IMG_0363 1.png"
+        alt="Logo"
+        style={{
+          width: "80%",
+          marginLeft: "7px",
+          marginBottom: "7px",
+          marginTop: "7px",
+        }}
+      />
       {navItems.map((item, index) => (
         <Link
           key={index}
@@ -155,7 +234,7 @@ const Navbar: React.FC = () => {
             p-4 flex flex-col items-center justify-center
             transition-all duration-200
             ${
-              (location.pathname === item.path) && item.label !== ""
+              location.pathname === item.path && item.label !== ""
                 ? "bg-[#FFE3E3] text-black"
                 : "text-white hover:bg-[#B33D3D] hover:text-white"
             }

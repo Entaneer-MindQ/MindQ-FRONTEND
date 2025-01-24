@@ -17,18 +17,14 @@ import History from "./pages/HistoryPage";
 import Admin from "./pages/admin/Admin_Request";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
-
 root.render(
   <Router>
     <UserProvider>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<App />} />
-        <Route path="/admin/request" element={<Admin />} />
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<App />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<App />} />
         <Route path="/case-open" element={<Opencase />} />
         <Route path="/case" element={<CaseView />} />
         <Route path="/booking" element={<BookingPage />} />
@@ -36,6 +32,7 @@ root.render(
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/account" element={<Account />} />
         <Route path="/history" element={<History />} />
+        <Route path="/admin-request" element={<Admin />} />
       </Routes>
     </UserProvider>
   </Router>

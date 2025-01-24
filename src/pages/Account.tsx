@@ -44,7 +44,7 @@ const Account: React.FC = () => {
   const [cancellationReason, setCancellationReason] = useState("");
   const [cookies, _] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-
+  console.log(userProfile?.personalID);
   useEffect(() => {
     const fetchUserProfile = async () => {
       // Log the token being sent
@@ -131,7 +131,6 @@ const Account: React.FC = () => {
         <ArrowBackIcon sx={{ mr: 1 }} />
         <Typography>ย้อนกลับ</Typography>
       </Link>
-
       <Grid container spacing={4}>
         {/* User Profile Section */}
         <Grid item xs={12} md={4}>
@@ -268,7 +267,6 @@ const Account: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
-
       {/* Cancellation Dialog */}
       <Dialog
         open={openDialog}

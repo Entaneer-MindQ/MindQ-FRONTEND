@@ -34,7 +34,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      console.log("Sending cookies:", cookies);
+      console.log("Sending cookies: ", cookies);
 
       try {
         const response = (await post("/api/user/profile", {

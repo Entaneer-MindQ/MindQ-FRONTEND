@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "../context/UserContext"; // Import your context hook
 
 interface NavItem {
   icon: React.ReactNode;
@@ -9,6 +10,7 @@ interface NavItem {
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const { logout } = useUser(); // Access the logout function from context
 
   const navItems: NavItem[] = [
     {
@@ -142,27 +144,67 @@ const Navbar: React.FC = () => {
       label: "History",
       path: "/history",
     },
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 16l4-4m0 0l-4-4m4 4H3"
+          />
+        </svg>
+      ),
+      label: "Logout",
+      path: "/Logout",
+    }
   ];
 
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
-    <nav className="fixed left-0 top-0 h-full w-20 bg-[#943131] flex flex-col">
+    <nav className="fixed text-center left-0 top-0 h-full w-20 bg-[#943131] flex flex-col">
       {navItems.map((item, index) => (
-        <Link
-          key={index}
-          to={item.path}
-          className={`
-            p-4 flex flex-col items-center justify-center
-            transition-all duration-200
-            ${
-              (location.pathname === item.path) && item.label !== ""
-                ? "bg-[#FFE3E3] text-black"
-                : "text-white hover:bg-[#B33D3D] hover:text-white"
-            }
-          `}
-        >
-          {item.icon}
-          <span className="text-xs mt-1">{item.label}</span>
-        </Link>
+        <div key={index}>
+          {item.label === "Logout" ? (
+            <button
+              onClick={handleLogout}
+              className={`
+                p-4 flex flex-col items-center justify-center w-full
+                transition-all duration-200 bg-[#943131] text-white
+                hover:bg-[#B33D3D] hover:text-white
+                focus:outline-none border-none rounded-none
+              `}
+            >
+              {item.icon}
+              <span className="text-xs mt-1">{item.label}</span>
+            </button>
+          ) : (
+            <Link
+              to={item.path}
+              className={`
+                p-4 flex flex-col items-center justify-center
+                transition-all duration-200
+                ${
+                  location.pathname === item.path && item.label !== ""
+                    ? "bg-[#FFE3E3] text-black"
+                    : "text-white hover:bg-[#B33D3D] hover:text-white"
+                }
+              `}
+            >
+              {item.icon}
+              <span className="text-xs mt-1">{item.label}</span>
+            </Link>
+          )}
+        </div>
       ))}
     </nav>
   );

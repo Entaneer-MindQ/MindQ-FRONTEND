@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Button,
-  Link,
   Card,
   CardContent,
   Container,
@@ -16,7 +15,6 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useCookies } from "react-cookie";
@@ -33,14 +31,6 @@ interface ApiResponse {
 interface ApiResponse2 {
   status: number;
   data: Queue;
-}
-
-interface Appointment {
-  topic: string;
-  description: string;
-  date: string;
-  time: string;
-  status: string;
 }
 interface Queue {
   mind_code: string;
@@ -67,9 +57,6 @@ const Account: React.FC = () => {
   });
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Log the token being sent
-      console.log("Sending cookies:", cookies);
-
       try {
         const queueResponse = (await post("/api/getCurrentQueue", {
           token: cookies["auth_token"],
@@ -140,25 +127,7 @@ const Account: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, ml: "100px", mr: 4 }}>
-      {/* Back Button */}
-      <Link
-        href="/"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          mb: 4,
-          textDecoration: "none",
-          color: "inherit",
-          "&:hover": {
-            color: "#943131",
-          },
-        }}
-      >
-        <ArrowBackIcon sx={{ mr: 1 }} />
-        <Typography>ย้อนกลับ</Typography>
-      </Link>
-
+    <Container className="w-full mt-40">
       <Grid container spacing={4}>
         {/* User Profile Section */}
         <Grid item xs={12} md={4}>

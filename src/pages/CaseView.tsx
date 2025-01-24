@@ -53,7 +53,7 @@ const CaseView = () => {
 
         const response = await post("/api/getCase", {
           token: token,
-        });
+        }) as ApiResponse;
 
         console.log("API Response:", response);
 
@@ -114,7 +114,7 @@ const CaseView = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4, ml: "100px" }}>
+    <Container className="w-full mt-5">
       <Fade in timeout={800}>
         <Paper
           elevation={3}

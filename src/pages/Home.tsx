@@ -182,7 +182,7 @@ const Home = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4, ml: "100px" }}>
+    <Container className="w-full mt-5 text-center">
       {/* Rest of the component remains the same */}
       {/* Welcome Section */}
       <Paper

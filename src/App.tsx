@@ -1,9 +1,19 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
 import { useAppController } from "./App_controller";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
   const { handleCMULogin } = useAppController();
+  useEffect(() => {
+    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='));
+    if (token) {
+      // Redirect to home if token exists
+      navigate('/home');
+    }
+  }, [navigate]);
   return (
     <Box
       sx={{

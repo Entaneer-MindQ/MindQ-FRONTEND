@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { get, post } from "../services/api";
+import { post } from "../services/api";
 import {
   Box,
   Typography,
@@ -12,18 +12,18 @@ import {
   Button,
   Container,
   Chip,
-  IconButton,
   Fade,
   Grow,
 } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubjectIcon from "@mui/icons-material/Subject";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PendingIcon from "@mui/icons-material/Pending";
+import { useCookies } from "react-cookie";
 
 interface CaseData {
+  cid: number;
   topic: string;
   description: string;
   status: string;
@@ -40,27 +40,19 @@ const CaseView = () => {
   const [cases, setCases] = useState<CaseData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cookies, _] = useCookies(['auth_token']);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const responsedata = {
+      token : cookies['auth_token'],
+    }
     const fetchCases = async () => {
       try {
-        const personalID = localStorage.getItem("personalID");
-        if (!personalID) {
-          setError("No personal ID found. Please fill out the form first.");
-          setLoading(false);
-          return;
-        }
-
         const response = await post<ApiResponse>("/api/getcases", {
-          personalID: parseInt(personalID),
+          responsedata,
         });
-
-        if (response.status === 200 && response.data) {
-          setCases(response.data);
-        } else if (response.status === 404) {
-          setError(response.message || "No cases found");
-        }
+        setCases(response.data);
       } catch (err) {
         setError("Failed to load cases. Please try again later.");
         console.error("Error fetching cases:", err);
@@ -190,7 +182,7 @@ const CaseView = () => {
                             pl: 4,
                           }}
                         >
-                          {caseItem.description}
+                          {caseItem.description} {caseItem.cid}
                         </Typography>
 
                         <Box
@@ -230,16 +222,14 @@ const CaseView = () => {
                                 backgroundColor: "#943131",
                                 "&:hover": {
                                   backgroundColor: "#7a2828",
+                                  transform: "translateY(-2px)",
+                                  boxShadow: 4,
                                 },
                                 borderRadius: 2,
                                 px: 3,
                                 py: 1,
                                 boxShadow: 2,
                                 transition: "all 0.2s",
-                                "&:hover": {
-                                  transform: "translateY(-2px)",
-                                  boxShadow: 4,
-                                },
                               }}
                             >
                               จองคิว

@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "home",
-      path: "/",
+      path: "/home",
     },
     {
       icon: (
@@ -155,7 +155,7 @@ const Navbar: React.FC = () => {
             p-4 flex flex-col items-center justify-center
             transition-all duration-200
             ${
-              location.pathname === item.path
+              (location.pathname === item.path) && item.label !== ""
                 ? "bg-[#FFE3E3] text-black"
                 : "text-white hover:bg-[#B33D3D] hover:text-white"
             }

@@ -26,6 +26,9 @@ root.render(
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<App />} />
         <Route path="/admin/request" element={<Admin />} />
+        <Route path="/" element={<App />} />
+        <Route path="/login" element={<App />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/case-open" element={<Opencase />} />
         <Route path="/case" element={<CaseView />} />
         <Route path="/booking" element={<BookingPage />} />

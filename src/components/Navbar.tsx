@@ -1,5 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import UserProfile from "../types/user";
+import { useCookies } from "react-cookie";
+import responseData from "../types/response";
+import { post } from "../services/api";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -18,7 +23,10 @@ const Navbar: React.FC = () => {
   const location = useLocation();
   const [cookies, _] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  console.log(userProfile?.personalID);
+  const [isLogin, setIsLogin] = useState(false);
+  const { logout } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // console.log(userProfile?.personalID);
   useEffect(() => {
     const fetchUserProfile = async () => {
       // Log the token being sent
@@ -45,6 +53,7 @@ const Navbar: React.FC = () => {
             name_EN: basicInfo.cmuitaccount_name,
           });
           console.log("Updated userProfile:", response.data);
+          setIsLogin(true);
         } else if (response.status === 404) {
           // setError(response.message || "No cases found");
           console.log("No user profile found");
@@ -61,9 +70,6 @@ const Navbar: React.FC = () => {
     // Call the fetch function
     fetchUserProfile();
   }, [cookies["auth_token"]]); // Re-run if the cookie changes
-  const { logout } = useUser();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const navItems: NavItem[] = [
     {
       icon: (
@@ -80,7 +86,7 @@ const Navbar: React.FC = () => {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -100,7 +106,7 @@ const Navbar: React.FC = () => {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -114,15 +120,13 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "Home",
-      path: "/",
-      label: "Home",
       path: "/home",
     },
     {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -142,7 +146,7 @@ const Navbar: React.FC = () => {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -162,7 +166,7 @@ const Navbar: React.FC = () => {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -182,7 +186,7 @@ const Navbar: React.FC = () => {
       icon: (
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6"
+          className="w-6 h-6 mx-auto"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -198,7 +202,7 @@ const Navbar: React.FC = () => {
       label: "History",
       path: "/history",
     },
-    ...(userProfile?.personalID === "650610749"
+    ...(userProfile?.personalID === "650610749" && isLogin
       ? [
           {
             icon: (
@@ -222,62 +226,34 @@ const Navbar: React.FC = () => {
           },
         ]
       : []),
-  ];
-
-  return (
-    <nav className="fixed left-0 top-0 h-full w-20 bg-[#943131] flex flex-col">
-      <img
-        src="src\utils\IMG_0363 1.png"
-        alt="Logo"
-        style={{
-          width: "80%",
-          marginLeft: "7px",
-          marginBottom: "7px",
-          marginTop: "7px",
-        }}
-      />
-      {navItems.map((item, index) => (
-        <Link
-          key={index}
-          to={item.path}
-          className={`
-            p-4 flex flex-col items-center justify-center
-            transition-all duration-200
-            ${
-              location.pathname === item.path && item.label !== ""
-                ? "bg-[#FFE3E3] text-black"
-                : "text-white hover:bg-[#B33D3D] hover:text-white"
-            }
-          `}
-        >
-          {item.icon}
-          <span className="text-xs mt-1">{item.label}</span>
-        </Link>
-      ))}
-    </nav>
-    {
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6 mx-auto"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 16l4-4m0 0l-4-4m4 4H3"
-          />
-        </svg>
-      ),
-      label: "Logout",
-      path: "/Logout",
-    },
+    ...(isLogin
+      ? [
+          {
+            icon: (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6 mx-auto"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H3"
+                />
+              </svg>
+            ),
+            label: "Logout",
+            path: "/Logout",
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = () => {
+    setIsLogin(false);
     logout();
   };
 
@@ -319,7 +295,6 @@ const Navbar: React.FC = () => {
 
   const NavLink = ({
     item,
-    index,
     isSideMenu = false,
   }: {
     item: NavItem;

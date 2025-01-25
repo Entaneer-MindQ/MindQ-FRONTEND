@@ -208,7 +208,7 @@ const CaseOpen: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4, ml: "100px" }}>
+    <Container className="w-full mt-5">
       <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
         {/* Header */}
         <Box sx={{ bgcolor: "#943131", color: "white", p: 3 }}>

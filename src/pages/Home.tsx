@@ -10,6 +10,8 @@ import {
   StepLabel,
   Paper,
   Button,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CaseOpenIcon from "@mui/icons-material/AddBox";
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -17,29 +19,25 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { post } from "../services/api";
-import UserProfile from "../types/user";
-import responseData from "../types/response";
-
-interface ApiResponse {
-  status: number;
-  data: {
-    cmuBasicInfo: responseData;
-  };
-}
 
 const Home = () => {
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile, setUserProfile] = useState(null);
   const [cookies, _] = useCookies(["auth_token"]);
+
+  // Add responsive breakpoints
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       console.log("Sending cookies: ", cookies);
 
       try {
-        const response = (await post("/api/user/profile", {
+        const response = await post("/api/user/profile", {
           token: cookies["auth_token"],
-        })) as ApiResponse;
+        });
 
         if (response.status === 200 && response.data?.cmuBasicInfo) {
           const basicInfo = response.data.cmuBasicInfo;
@@ -57,26 +55,11 @@ const Home = () => {
             name: name,
             name_EN: basicInfo.cmuitaccount_name,
           });
-          console.log("Updated userProfile:", basicInfo);
-        } else if (response.status === 404) {
-          console.error("User not found");
-          navigate("/login");
-        } else if (response.status === 401) {
-          console.error("Unauthorized access");
-          navigate("/login");
-        } else if (response.status === 302) {
-          console.error("Redirecting to login");
-          navigate("/login");
         } else {
-          console.error("Unknown error");
           navigate("/login");
         }
       } catch (error) {
-        console.error("Error details:", {
-          message: (error as any).message,
-          response: (error as any).response?.data,
-          status: (error as any).response?.status,
-        });
+        console.error("Error details:", error);
         navigate("/login");
       }
     };
@@ -99,12 +82,12 @@ const Home = () => {
             variant="contained"
             startIcon={<CaseOpenIcon />}
             onClick={handleCaseOpen}
+            fullWidth={isMobile}
             sx={{
               backgroundColor: "#943131",
-              "&:hover": {
-                backgroundColor: "#7a2929",
-              },
+              "&:hover": { backgroundColor: "#7a2929" },
               mb: 2,
+              maxWidth: isMobile ? "100%" : "300px",
             }}
           >
             เริ่มต้นเปิดเคส
@@ -123,21 +106,23 @@ const Home = () => {
             startIcon={<FacebookIcon />}
             href="https://www.facebook.com/EntaneerMindFriendCMU/"
             target="_blank"
+            fullWidth={isMobile}
             sx={{
               backgroundColor: "#4267B2",
-              "&:hover": {
-                backgroundColor: "#365899",
-              },
+              "&:hover": { backgroundColor: "#365899" },
               mb: 2,
+              maxWidth: isMobile ? "100%" : "300px",
             }}
           >
             EntaneerMindFriend CMU
           </Button>
-          <img
-            src="src\utils\facebook_Photo.png"
+          <Box
+            component="img"
+            src="src/utils/facebook_Photo.png"
             alt="Example 1"
-            style={{
+            sx={{
               width: "100%",
+              maxWidth: isMobile ? "100%" : "1000px",
               height: "auto",
               borderRadius: "8px",
               boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -182,58 +167,65 @@ const Home = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4, ml: "100px" }}>
-      {/* Rest of the component remains the same */}
-      {/* Welcome Section */}
+    <Container
+      className="w-full text-center"
+      sx={{
+        mt: { xs: 2, sm: 3, md: 5 },
+        px: { xs: 2, sm: 3, md: 4 },
+      }}
+    >
       <Paper
         elevation={0}
         sx={{
-          p: 4,
-          mb: 4,
+          p: { xs: 2, sm: 3, md: 4 },
+          mb: { xs: 2, sm: 3, md: 4 },
           bgcolor: "#943131",
           color: "white",
           borderRadius: 2,
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
           ยินดีต้อนรับ
         </Typography>
-        <Typography variant="h6">{userProfile.name}</Typography>
+        <Typography variant={isMobile ? "subtitle1" : "h6"}>
+          {userProfile.name}
+        </Typography>
       </Paper>
 
-      {/* Steps Section */}
       <Paper
         elevation={3}
         sx={{
-          p: 4,
-          mb: 4,
+          p: { xs: 2, sm: 3, md: 4 },
+          mb: { xs: 2, sm: 3, md: 4 },
           borderRadius: 2,
           bgcolor: "white",
         }}
       >
         <Typography
-          variant="h5"
+          variant={isMobile ? "h6" : "h5"}
           gutterBottom
           sx={{
             display: "flex",
             alignItems: "center",
+            justifyContent: isMobile ? "center" : "flex-start",
             color: "#943131",
             mb: 3,
+            flexWrap: "wrap",
           }}
         >
           <AccountBoxIcon sx={{ mr: 1 }} />
           ขั้นตอนการใช้งาน
         </Typography>
 
-        {/* ส่วนที่ 1: การขอสิทธิ์ */}
         <Box sx={{ mb: 4 }}>
           <Typography
-            variant="h6"
+            variant={isMobile ? "subtitle1" : "h6"}
             sx={{
               color: "#943131",
               mb: 2,
               borderBottom: "2px solid #943131",
               pb: 1,
+              textAlign: isMobile ? "center" : "left",
             }}
           >
             ส่วนที่ 1: การดำเนินการเพื่อให้ได้รับสิทธิ์
@@ -242,7 +234,10 @@ const Home = () => {
             orientation="vertical"
             sx={{
               "& .MuiStepLabel-root": {
-                py: 2,
+                py: { xs: 1, sm: 1.5, md: 2 },
+              },
+              "& .MuiStepLabel-labelContainer": {
+                mx: { xs: 1, sm: 2 },
               },
             }}
           >
@@ -261,10 +256,16 @@ const Home = () => {
                     </Box>
                   )}
                 >
-                  <Typography variant="h6" color="primary">
+                  <Typography
+                    variant={isMobile ? "subtitle1" : "h6"}
+                    color="primary"
+                  >
                     {step.label}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    variant={isMobile ? "body2" : "body1"}
+                    color="text.secondary"
+                  >
                     {step.description}
                   </Typography>
                   {step.content}
@@ -274,15 +275,15 @@ const Home = () => {
           </Stepper>
         </Box>
 
-        {/* ส่วนที่ 2: การจองคิว */}
         <Box>
           <Typography
-            variant="h6"
+            variant={isMobile ? "subtitle1" : "h6"}
             sx={{
               color: "#943131",
               mb: 2,
               borderBottom: "2px solid #943131",
               pb: 1,
+              textAlign: isMobile ? "center" : "left",
             }}
           >
             ส่วนที่ 2: การจองคิวหลังจากได้รับการอนุมัติสิทธิ์
@@ -291,7 +292,10 @@ const Home = () => {
             orientation="vertical"
             sx={{
               "& .MuiStepLabel-root": {
-                py: 2,
+                py: { xs: 1, sm: 1.5, md: 2 },
+              },
+              "& .MuiStepLabel-labelContainer": {
+                mx: { xs: 1, sm: 2 },
               },
             }}
           >
@@ -310,10 +314,16 @@ const Home = () => {
                     </Box>
                   )}
                 >
-                  <Typography variant="h6" color="primary">
+                  <Typography
+                    variant={isMobile ? "subtitle1" : "h6"}
+                    color="primary"
+                  >
                     {step.label}
                   </Typography>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography
+                    variant={isMobile ? "body2" : "body1"}
+                    color="text.secondary"
+                  >
                     {step.description}
                   </Typography>
                 </StepLabel>

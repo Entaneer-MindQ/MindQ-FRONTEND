@@ -1,10 +1,5 @@
-import React from "react";
-import UserProfile from "../types/user";
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useCookies } from "react-cookie";
-import responseData from "../types/response";
-import { post } from "../services/api";
 
 interface NavItem {
   icon: React.ReactNode;
@@ -66,8 +61,21 @@ const Navbar: React.FC = () => {
     // Call the fetch function
     fetchUserProfile();
   }, [cookies["auth_token"]]); // Re-run if the cookie changes
+  const { logout } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems: NavItem[] = [
+    {
+      icon: (
+        <img
+          src="src/utils/IMG_0363 1.png"
+          alt="Logo"
+          className="w-full h-auto max-w-[40px] sm:max-w-[48px] mx-auto"
+        />
+      ),
+      label: "",
+      path: "/home",
+    },
     {
       icon: (
         <svg
@@ -107,6 +115,8 @@ const Navbar: React.FC = () => {
       ),
       label: "Home",
       path: "/",
+      label: "Home",
+      path: "/home",
     },
     {
       icon: (
@@ -245,6 +255,183 @@ const Navbar: React.FC = () => {
         </Link>
       ))}
     </nav>
+    {
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6 mx-auto"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17 16l4-4m0 0l-4-4m4 4H3"
+          />
+        </svg>
+      ),
+      label: "Logout",
+      path: "/Logout",
+    },
+  ];
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const MenuButton = () => (
+    <button
+      onClick={toggleMobileMenu}
+      className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#943131] text-white hover:bg-[#B33D3D]"
+      aria-label="Toggle menu"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        {isMobileMenuOpen ? (
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        ) : (
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        )}
+      </svg>
+    </button>
+  );
+
+  const NavLink = ({
+    item,
+    index,
+    isSideMenu = false,
+  }: {
+    item: NavItem;
+    index: number;
+    isSideMenu?: boolean;
+  }) => {
+    const commonClasses = `
+      p-4 flex items-center transition-all duration-200
+      ${item.label === "" ? "justify-center" : ""}
+      ${
+        location.pathname === item.path && item.label !== ""
+          ? "bg-[#FFE3E3] text-black"
+          : "text-white hover:bg-[#B33D3D] hover:text-white"
+      }
+    `;
+
+    if (item.label === "Logout") {
+      return (
+        <button
+          onClick={handleLogout}
+          className={`
+            ${commonClasses}
+            w-full bg-[#943131] focus:outline-none
+            ${isSideMenu ? "flex-col" : "justify-center md:justify-start"}
+          `}
+        >
+          <div
+            className={`flex items-center ${
+              isSideMenu ? "flex-col" : "flex-row"
+            }`}
+          >
+            {item.icon}
+            <span
+              className={`
+              text-sm text-center
+              ${isSideMenu ? "mt-1" : "ml-3"}
+            `}
+            >
+              {item.label}
+            </span>
+          </div>
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        to={item.path}
+        className={`
+          ${commonClasses}
+          w-full
+          ${
+            isSideMenu
+              ? "flex-col items-center"
+              : "justify-center md:justify-start"
+          }
+        `}
+        onClick={() => setIsMobileMenuOpen(false)}
+      >
+        {item.icon}
+        {item.label && (
+          <span
+            className={`
+            text-sm text-center
+            ${isSideMenu ? "mt-1" : "ml-3"}
+          `}
+          >
+            {item.label}
+          </span>
+        )}
+      </Link>
+    );
+  };
+
+  return (
+    <>
+      <MenuButton />
+
+      {/* Mobile/Tablet Slide-out Menu */}
+      <nav
+        className={`
+          lg:hidden fixed top-0 left-0 w-64 h-full bg-[#943131]
+          transform transition-transform duration-300 ease-in-out z-40
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        <div className="flex flex-col h-full pt-16">
+          {navItems.map((item, index) => (
+            <div key={index} className="w-full">
+              <NavLink item={item} index={index} />
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* Desktop Sidebar */}
+      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-20 bg-[#943131] flex-col">
+        {navItems.map((item, index) => (
+          <div key={index} className="w-full">
+            <NavLink item={item} index={index} isSideMenu={true} />
+          </div>
+        ))}
+      </nav>
+
+      {/* Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+    </>
   );
 };
 

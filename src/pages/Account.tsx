@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Button,
-  Link,
   Card,
   CardContent,
   Container,
@@ -16,7 +15,6 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { useCookies } from "react-cookie";
@@ -30,30 +28,55 @@ interface ApiResponse {
     cmuBasicInfo: responseData;
   };
 }
-
-interface Appointment {
-  topic: string;
-  description: string;
-  date: string;
-  time: string;
-  status: string;
+interface ApiResponse2 {
+  status: number;
+  data: Queue;
 }
-
+interface Queue {
+  mind_code: string;
+  date: string;
+  slot: string;
+  qid: string;
+  case_id: string;
+  description: string;
+  topic: string[];
+}
 const Account: React.FC = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [cancellationReason, setCancellationReason] = useState("");
   const [cookies, _] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  console.log(userProfile?.personalID);
+  const [queue, setQueue] = useState<Queue>({
+    mind_code: "",
+    date: "",
+    slot: "",
+    qid: "",
+    case_id: "",
+    description: "",
+    topic: [],
+  });
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Log the token being sent
-      console.log("Sending cookies:", cookies);
-
       try {
+        const queueResponse = (await post("/api/getCurrentQueue", {
+          token: cookies["auth_token"],
+        })) as ApiResponse2;
+        if (queueResponse.status === 200 && queueResponse?.data) {
+          const queueInfo = queueResponse.data;
+          setQueue({
+            mind_code: queueInfo.mind_code,
+            date: queueInfo.date,
+            slot: queueInfo.slot,
+            qid: queueInfo.qid,
+            case_id: queueInfo.case_id,
+            description: queueInfo.description,
+            topic: queueInfo.topic,
+          });
+        }
         const response = (await post("/api/user/profile", {
           token: cookies["auth_token"],
         })) as ApiResponse;
+
         if (response.status === 200 && response.data?.cmuBasicInfo) {
           const basicInfo = response.data.cmuBasicInfo;
           const name = basicInfo.firstname_TH.concat(
@@ -88,15 +111,6 @@ const Account: React.FC = () => {
     fetchUserProfile();
   }, [cookies["auth_token"]]); // Re-run if the cookie changes
 
-  const currentAppointment: Appointment = {
-    topic: "การเงิน",
-    description:
-      "efdsjqfoisjfldsdlifjlsdjfisjdfjisofijilsdfjisdjfoijsiodfijosdf",
-    date: "Friday, 6th December 2024",
-    time: "10.00 - 11.00",
-    status: "จองตัวแล้ว",
-  };
-
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -113,24 +127,7 @@ const Account: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, ml: "100px", mr: 4 }}>
-      {/* Back Button */}
-      <Link
-        href="/"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          mb: 4,
-          textDecoration: "none",
-          color: "inherit",
-          "&:hover": {
-            color: "#943131",
-          },
-        }}
-      >
-        <ArrowBackIcon sx={{ mr: 1 }} />
-        <Typography>ย้อนกลับ</Typography>
-      </Link>
+    <Container className="w-full mt-40">
       <Grid container spacing={4}>
         {/* User Profile Section */}
         <Grid item xs={12} md={4}>
@@ -198,7 +195,10 @@ const Account: React.FC = () => {
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={8}>
                     <Typography variant="subtitle1" gutterBottom>
-                      <strong>หัวข้อ:</strong> {currentAppointment.topic}
+                      <strong>หัวข้อ:</strong>{" "}
+                      {Array.isArray(queue.topic)
+                        ? queue.topic.join(", ")
+                        : queue.topic}
                     </Typography>
                     <Typography
                       variant="body1"
@@ -209,14 +209,13 @@ const Account: React.FC = () => {
                         wordWrap: "break-word",
                       }}
                     >
-                      <strong>รายละเอียด:</strong>{" "}
-                      {currentAppointment.description}
+                      <strong>รายละเอียด:</strong> {queue.description}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>วันที่:</strong> {currentAppointment.date}
+                      <strong>วันที่:</strong> {queue.date}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      <strong>เวลา:</strong> {currentAppointment.time}
+                      <strong>เวลา:</strong> {queue.slot}
                     </Typography>
                     <Typography variant="body1" gutterBottom>
                       <strong>สถานะ:</strong>{" "}
@@ -231,7 +230,7 @@ const Account: React.FC = () => {
                           fontSize: "0.875rem",
                         }}
                       >
-                        {currentAppointment.status}
+                        จองแล้ว
                       </Box>
                     </Typography>
                   </Grid>

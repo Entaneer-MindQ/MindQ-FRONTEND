@@ -8,10 +8,10 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Opencase from "./pages/CaseOpen";
 import CaseView from "./pages/CaseView";
-import BookingPage from "./pages/BookingPage";
-import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import Calendar from "./pages/Calendar";
 import Account from "./pages/Account";
+import PrivateRoute from "./routes/privateRoute";
+import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
 import Admin from "./pages/admin/admin_request/Page";
@@ -25,14 +25,16 @@ root.render(
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<App />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/case-open" element={<Opencase />} />
+        <Route path="/patient-form" element={<PersonalInfo />} />
+        <Route path="/patient-form/2" element={<AddressInfo />} />
         <Route path="/case" element={<CaseView />} />
         <Route path="/booking" element={<BookingPage />} />
         <Route path="/bookingC" element={<ConfirmBookingPage />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/account" element={<Account />} />
         <Route path="/history" element={<History />} />
-        <Route path="/admin-request" element={<Admin />} />
       </Routes>
     </UserProvider>
   </Router>

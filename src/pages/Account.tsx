@@ -7,7 +7,7 @@ import {
   Card,
   CardContent,
   Container,
-  Grid,
+  Grid2,
   Avatar,
   Dialog,
   DialogTitle,
@@ -128,9 +128,9 @@ const Account: React.FC = () => {
 
   return (
     <Container className="w-full mt-40">
-      <Grid container spacing={4}>
+      <Grid2 container spacing={4}>
         {/* User Profile Section */}
-        <Grid item xs={12} md={4}>
+        <Grid2 item xs={12} md={4}>
           <Paper
             elevation={3}
             sx={{
@@ -172,10 +172,10 @@ const Account: React.FC = () => {
               </Typography>
             </Box>
           </Paper>
-        </Grid>
+        </Grid2>
 
         {/* Appointment Section */}
-        <Grid item xs={12} md={8}>
+        <Grid2 item xs={12} md={8}>
           <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
             <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
               <EventNoteIcon sx={{ mr: 1, color: "#943131" }} />
@@ -192,8 +192,8 @@ const Account: React.FC = () => {
               }}
             >
               <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={8}>
+                <Grid2 container spacing={2}>
+                  <Grid2 item xs={12} sm={8}>
                     <Typography variant="subtitle1" gutterBottom>
                       <strong>หัวข้อ:</strong>{" "}
                       {Array.isArray(queue.topic)
@@ -233,8 +233,8 @@ const Account: React.FC = () => {
                         จองแล้ว
                       </Box>
                     </Typography>
-                  </Grid>
-                  <Grid
+                  </Grid2>
+                  <Grid2
                     item
                     xs={12}
                     sm={4}
@@ -259,13 +259,13 @@ const Account: React.FC = () => {
                     >
                       ยกเลิกนัด
                     </Button>
-                  </Grid>
-                </Grid>
+                  </Grid2>
+                </Grid2>
               </CardContent>
             </Card>
           </Paper>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       {/* Cancellation Dialog */}
       <Dialog

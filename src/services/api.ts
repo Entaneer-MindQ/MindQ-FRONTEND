@@ -6,11 +6,17 @@ export async function post<T>(endpoint: string, data: any): Promise<T> {
     method: "POST",
     headers: new Headers({
       "Content-Type": "application/json",
-      "Authorization": document.cookie
-      .split("; ")
-      .find(row => row.startsWith("auth_token="))?.split("=")[1] 
-      ? `${document.cookie.split("; ").find(row => row.startsWith("auth_token="))?.split("=")[1]}` 
-      : "",
+      Authorization: document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("auth_token="))
+        ?.split("=")[1]
+        ? `${
+            document.cookie
+              .split("; ")
+              .find((row) => row.startsWith("auth_token="))
+              ?.split("=")[1]
+          }`
+        : "",
     }),
     body: JSON.stringify(data),
   });

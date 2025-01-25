@@ -4,36 +4,45 @@ import clsx from "clsx";
 import { styled, css } from "@mui/system";
 import { Modal as BaseModal, TextField } from "@mui/material";
 import { Button } from "@mui/material";
+import { useCookies } from "react-cookie";
+import { post } from "../../../../services/api";
 
-export function Approve() {
+interface ApproveProps {
+  cid: number;
+}
+
+export const Approve: React.FC<ApproveProps> = ({ cid }) => {
   const [MindCode, setMindCode] = useState<string | "">("");
   const [MindCodeError, setMindCodeError] = useState(false);
   const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(true);
+  const [cookies] = useCookies(["auth_token"]);
+
+  // Function to fetch cases
+  const handleApprove = async () => {
+    try {
+      const response = await post("/api/caseApprove", {
+        cid,
+        mind_code: MindCode,
+        token: cookies["auth_token"],
+      });
+
+      if (response) {
+        console.log(`Case ${cid} approved successfully`);
+        window.location.reload();
+      } else {
+        console.error("Failed to approve case");
+      }
+    } catch (error) {
+      console.error("Error approving case:", error);
+    }
   };
+
+  const handleOpen = () => setOpen(true);
   const handleCancel = () => {
     setMindCode("");
     setMindCodeError(false);
     setOpen(false);
   };
-  const handleSubmit = () => {
-    if (MindCode !== "") setOpen(false);
-    else setMindCodeError(true);
-    setMindCode(""); // if push mind code to database successfully then reset the mind code dummy
-  };
-  //   const handleSubmit = () => {
-  //     const MindCode = {
-  //         province: !province,
-  //         amphure: !amphure,
-  //         tambon: !tambon,
-  //         zipCode: !zipCode,
-  //       };
-  //       setAddressErrors(newAddressErrors);
-  //       if (!Object.values(newAddressErrors).some((error) => error)) {
-  //         navigate("/patient-form/2");
-  //       }
-  //   };
 
   return (
     <>
@@ -99,7 +108,7 @@ export function Approve() {
                 },
                 marginRight: "10px", // Add spacing between buttons
               }}
-              onClick={handleSubmit}
+              onClick={handleApprove}
             >
               Approve
             </Button>
@@ -130,7 +139,7 @@ export function Approve() {
       </Modal>
     </>
   );
-}
+};
 
 const Backdrop = React.forwardRef<
   HTMLDivElement,

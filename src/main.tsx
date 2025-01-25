@@ -14,7 +14,7 @@ import Calendar from "./pages/Calendar";
 import Account from "./pages/Account";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
-import Admin from "./pages/admin/Admin_Request";
+import Admin from "./pages/admin/admin_request/Page";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(

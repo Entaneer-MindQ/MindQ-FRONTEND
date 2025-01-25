@@ -242,7 +242,7 @@ const Calendar: React.FC = () => {
                       );
                       const dayOfWeek = days[selectedDate.getDay()];
 
-                      navigate("/bookingC", {
+                      navigate("/booking", {
                         state: {
                           date: dayNumber,
                           month: `${
@@ -285,7 +285,7 @@ const Calendar: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 ml-24">
+    <div className="flex justify-center items-center min-h-screen ml-56 container">
       <div className="w-full bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-red-900 text-white p-6">
           <div className="flex items-center gap-2">

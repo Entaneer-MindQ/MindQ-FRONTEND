@@ -164,8 +164,8 @@ const HistoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 ml-24">
+    <div className="flex justify-center min-h-screen bg-gray-50 py-2">
+      <div className="max-w-5xl w-full px-4">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">

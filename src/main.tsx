@@ -14,6 +14,7 @@ import PrivateRoute from "./routes/privateRoute";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
+import Admin from "./pages/admin/admin_request/Page";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -29,10 +30,11 @@ root.render(
           <Route path="/home" element={<Home />} />
           <Route path="/case-open" element={<Opencase />} />
           <Route path="/case" element={<CaseView />} />
-          <Route path="/booking/" element={<ConfirmBookingPage cid = {0}/>} />
+          <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/account" element={<Account />} />
           <Route path="/history" element={<History />} />
+          <Route path="/admin-request" element={<Admin />} />
         </Route>
       </Routes>
     </UserProvider>

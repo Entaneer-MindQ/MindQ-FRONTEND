@@ -267,6 +267,7 @@ const Account: React.FC = () => {
         </Grid2>
       </Grid2>
 
+
       {/* Cancellation Dialog */}
       <Dialog
         open={openDialog}

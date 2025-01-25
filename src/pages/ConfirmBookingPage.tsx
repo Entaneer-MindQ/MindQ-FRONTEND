@@ -8,7 +8,7 @@ interface LocationState {
   date: number;
 }
 
-const ConfirmBookingPage = ({ cid }: { cid: number }) => {
+const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [cookies] = useCookies(["auth_token"]);

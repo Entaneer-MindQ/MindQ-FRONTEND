@@ -295,47 +295,30 @@ const Navbar: React.FC = () => {
 
   const NavLink = ({
     item,
+
     isSideMenu = false,
+
+    isMobile = false,
+
   }: {
     item: NavItem;
-    index: number;
-    isSideMenu?: boolean;
+    isMobile?: boolean;
   }) => {
-    const commonClasses = `
-      p-4 flex items-center transition-all duration-200
-      ${item.label === "" ? "justify-center" : ""}
-      ${
-        location.pathname === item.path && item.label !== ""
-          ? "bg-[#FFE3E3] text-black"
-          : "text-white hover:bg-[#B33D3D] hover:text-white"
-      }
-    `;
-
     if (item.label === "Logout") {
       return (
         <button
           onClick={handleLogout}
           className={`
-            ${commonClasses}
-            w-full bg-[#943131] focus:outline-none
-            ${isSideMenu ? "flex-col" : "justify-center md:justify-start"}
+            p-4 flex items-center justify-center w-full
+            transition-all duration-200 bg-[#943131] text-white
+            hover:bg-[#B33D3D] hover:text-white focus:outline-none
+            ${isMobile ? "flex-row" : "flex-col"}
           `}
         >
-          <div
-            className={`flex items-center ${
-              isSideMenu ? "flex-col" : "flex-row"
-            }`}
-          >
-            {item.icon}
-            <span
-              className={`
-              text-sm text-center
-              ${isSideMenu ? "mt-1" : "ml-3"}
-            `}
-            >
-              {item.label}
-            </span>
-          </div>
+          {item.icon}
+          <span className={`text-sm ${isMobile ? "ml-3" : "mt-1"}`}>
+            {item.label}
+          </span>
         </button>
       );
     }
@@ -344,24 +327,20 @@ const Navbar: React.FC = () => {
       <Link
         to={item.path}
         className={`
-          ${commonClasses}
-          w-full
+          p-4 flex items-center justify-center
+          transition-all duration-200 w-full
           ${
-            isSideMenu
-              ? "flex-col items-center"
-              : "justify-center md:justify-start"
+            location.pathname === item.path && item.label !== ""
+              ? "bg-[#FFE3E3] text-black"
+              : "text-white hover:bg-[#B33D3D] hover:text-white"
           }
+          ${isMobile ? "flex-row" : "flex-col"}
         `}
         onClick={() => setIsMobileMenuOpen(false)}
       >
         {item.icon}
         {item.label && (
-          <span
-            className={`
-            text-sm text-center
-            ${isSideMenu ? "mt-1" : "ml-3"}
-          `}
-          >
+          <span className={`text-sm ${isMobile ? "ml-3" : "mt-1"}`}>
             {item.label}
           </span>
         )}
@@ -384,7 +363,7 @@ const Navbar: React.FC = () => {
         <div className="flex flex-col h-full pt-16">
           {navItems.map((item, index) => (
             <div key={index} className="w-full">
-              <NavLink item={item} index={index} />
+              <NavLink item={item} />
             </div>
           ))}
         </div>
@@ -394,7 +373,7 @@ const Navbar: React.FC = () => {
       <nav className="hidden lg:flex fixed left-0 top-0 h-full w-20 bg-[#943131] flex-col">
         {navItems.map((item, index) => (
           <div key={index} className="w-full">
-            <NavLink item={item} index={index} isSideMenu={true} />
+            <NavLink item={item} />
           </div>
         ))}
       </nav>

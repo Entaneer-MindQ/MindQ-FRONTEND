@@ -296,10 +296,7 @@ const Navbar: React.FC = () => {
   const NavLink = ({
     item,
 
-    isSideMenu = false,
-
     isMobile = false,
-
   }: {
     item: NavItem;
     isMobile?: boolean;
@@ -310,7 +307,7 @@ const Navbar: React.FC = () => {
           onClick={handleLogout}
           className={`
             p-4 flex items-center justify-center w-full
-            transition-all duration-200 bg-[#943131] text-white
+            transition-all duration-200 bg-[#943131] text-white rounded-none border-none
             hover:bg-[#B33D3D] hover:text-white focus:outline-none
             ${isMobile ? "flex-row" : "flex-col"}
           `}

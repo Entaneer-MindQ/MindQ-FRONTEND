@@ -1,0 +1,26 @@
+import { Paper, Typography } from "@mui/material";
+
+interface WelcomeBannerProps {
+  name: string;
+  isMobile: boolean;
+}
+
+const WelcomeBanner: React.FC<WelcomeBannerProps> = ({ name, isMobile }) => (
+  <Paper
+    elevation={0}
+    sx={{
+      p: { xs: 2, sm: 3, md: 4 },
+      mb: { xs: 2, sm: 3, md: 4 },
+      bgcolor: "#943131",
+      color: "white",
+      borderRadius: 2,
+    }}
+  >
+    <Typography variant={isMobile ? "h5" : "h4"} gutterBottom>
+      ยินดีต้อนรับ
+    </Typography>
+    <Typography variant={isMobile ? "subtitle1" : "h6"}>{name}</Typography>
+  </Paper>
+);
+
+export default WelcomeBanner;

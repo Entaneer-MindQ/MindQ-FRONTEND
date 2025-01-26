@@ -1,5 +1,19 @@
-interface CaseData {
-  url: string;
-  categories: string[];
-  details: string;
+export interface CaseData {
+  facebookURL: string;
+  topic: string[];
+  description: string;
+  role: "Student" | "Employee";
+}
+
+export interface StepStatus {
+  facebook: boolean;
+  categories: boolean;
+  details: boolean;
+}
+
+export interface FormErrors {
+  facebookURL: boolean;
+  topic: boolean;
+  description: boolean;
+  role: boolean;
 }

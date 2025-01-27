@@ -1,3 +1,4 @@
+import { ButtonProps } from "@mui/material";
 export interface UserProfile {
   personalID: string;
   email: string;
@@ -26,4 +27,24 @@ export interface CMUBasicInfo {
   firstname_TH: string;
   lastname_TH: string;
   cmuitaccount_name: string;
+}
+
+export interface CustomStepperProps {
+  steps: StepItem[];
+  title: string;
+  isMobile: boolean;
+}
+
+export interface WelcomeBannerProps {
+  name: string;
+  isMobile: boolean;
+}
+
+export interface StepButtonProps extends ButtonProps {
+  icon: React.ReactNode;
+  isMobile: boolean;
+  backgroundColor: string;
+  hoverColor: string;
+  target?: string;
+  href?: string;
 }

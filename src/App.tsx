@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { useAppController } from "./App_controller";
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { handleCMULogin } = useAppController();
 
   useEffect(() => {
@@ -11,10 +13,11 @@ const LoginPage: React.FC = () => {
       .split("; ")
       .find((row) => row.startsWith("auth_token="));
     if (token) {
-      navigate("/home");
+      // Get the intended destination from state, or default to '/home'
+      const from = location.state?.from?.pathname || "/home";
+      navigate(from, { replace: true });
     }
-  }, [navigate]);
-
+  }, [navigate, location]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">

@@ -1,7 +1,7 @@
 import { Container, Paper, Typography, Box } from "@mui/material";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import WelcomeBanner from "../components/HomeCard/WelcomeBanner";
-import CustomStepper from "../components/HomeCard/CustomStepper";
+import { WelcomeBanner } from "../components/HomeCard/WelcomeBanner";
+import { CustomStepper } from "../components/HomeCard/CustomStepper";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { useResponsive } from "../hooks/useResponsive";
 import useSteps from "../hooks/useSteps";

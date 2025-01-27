@@ -9,12 +9,20 @@ import { CalendarHeader } from "../components/Calendar/CalendarHeader";
 import { CalendarGrid } from "../components/Calendar/CalendarGrid";
 import { LoadingState } from "../components/Calendar/LoadingState";
 import { BookingState } from "../types/calendar";
-
+import { useBooking } from "../context/BookingContext";
+import { useEffect } from "react";
 const Calendar: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
+  const { isBookingFlow, selectedCaseId } = useBooking();
+  useEffect(() => {
+    // Double-check that we're in a valid booking flow
+    if (!isBookingFlow || selectedCaseId === null) {
+      navigate("/case");
+    }
+  }, [isBookingFlow, selectedCaseId, navigate]);
 
   const {
     currentDate,

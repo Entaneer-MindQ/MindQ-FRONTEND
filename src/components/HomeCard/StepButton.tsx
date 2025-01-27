@@ -1,5 +1,6 @@
+import React from "react";
 import { Box, Button } from "@mui/material";
-import { StepButtonProps } from "../../types";
+import { StepButtonProps } from "../../types/index";
 
 export const StepButton = ({
   icon,

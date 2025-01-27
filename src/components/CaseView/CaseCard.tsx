@@ -1,10 +1,22 @@
+import React from "react";
 import { Card, CardContent, Box, Typography, Button } from "@mui/material";
 import { Grow } from "@mui/material";
 import SubjectIcon from "@mui/icons-material/Subject";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import { useNavigate } from "react-router-dom";
+import { useBooking } from "../../context/BookingContext";
 import { CaseCardProps } from "../../types/case-view";
 
-export const CaseCard = ({ caseItem, onBooking }: CaseCardProps) => {
+export const CaseCard = ({ caseItem }: CaseCardProps) => {
+  const navigate = useNavigate();
+  const { setIsBookingFlow, setSelectedCaseId } = useBooking();
+
+  const handleBooking = () => {
+    setIsBookingFlow(true);
+    setSelectedCaseId(caseItem.cid);
+    navigate("/calendar");
+  };
+
   return (
     <Grow in timeout={500}>
       <Card
@@ -63,7 +75,7 @@ export const CaseCard = ({ caseItem, onBooking }: CaseCardProps) => {
             {caseItem.mind_code && (
               <Button
                 variant="contained"
-                onClick={onBooking}
+                onClick={handleBooking}
                 startIcon={<EventAvailableIcon />}
                 sx={{
                   backgroundColor: "#943131",

@@ -1,4 +1,14 @@
 import { ButtonProps } from "@mui/material";
+import { ReactNode } from "react";
+
+export interface StepButtonProps extends ButtonProps {
+  icon: ReactNode;
+  isMobile: boolean;
+  backgroundColor: string;
+  hoverColor: string;
+  target?: string;
+  href?: string;
+}
 export interface UserProfile {
   personalID: string;
   email: string;

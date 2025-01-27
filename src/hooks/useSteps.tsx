@@ -6,7 +6,7 @@ import CaseOpenIcon from "@mui/icons-material/AddBox";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import StepButton from "../components/HomeCard/StepButton";
+import { StepButton } from "../components/HomeCard/StepButton";
 
 const useSteps = (isMobile: boolean) => {
   const navigate = useNavigate();

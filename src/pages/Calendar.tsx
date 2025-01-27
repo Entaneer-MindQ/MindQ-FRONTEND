@@ -39,14 +39,6 @@ const Calendar: React.FC = () => {
   ];
 
   const availableMonths = getAvailableMonths();
-  const today = new Date();
-
-  const isCurrentMonth = (date: Date) => {
-    return (
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
 
   const handlePreviousMonth = () => {
     const newDate = new Date(currentDate);

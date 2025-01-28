@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { post } from "../services/api";
 import { UserProfile, CMUBasicInfo } from "../types";
+import { ApiResponse } from "../types/api";
 
 export const useUserProfile = () => {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ export const useUserProfile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const response = await post("/api/user/profile", {
+        const response = (await post("/api/user/profile", {
           token: cookies["auth_token"],
-        });
+        })) as ApiResponse;
 
         if (response.status === 200 && response.data?.cmuBasicInfo) {
           const basicInfo: CMUBasicInfo = response.data.cmuBasicInfo;

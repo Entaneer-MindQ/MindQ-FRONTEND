@@ -170,23 +170,23 @@ const Navbar: React.FC = () => {
         ]
       : []),
   ];
-
   return (
     <>
       <MenuButton
         isOpen={navigation.isMobileMenuOpen}
         onClick={navigation.toggleMobileMenu}
+        className="lg:hidden"
       />
 
-      {/* Mobile Menu */}
+      {/* Mobile and iPad Menu */}
       <nav
         className={`
-          lg:hidden fixed top-0 left-0 w-64 h-full bg-[#943131]
+          lg:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[#943131]
           transform transition-transform duration-300 ease-in-out z-40
           ${navigation.isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="flex flex-col h-full pt-16">
+        <div className="flex flex-col h-full pt-16 md:pt-20">
           {navItems.map((item, index) => (
             <NavLink
               key={index}
@@ -197,13 +197,14 @@ const Navbar: React.FC = () => {
               showLogoutDialog={navigation.showLogoutDialog}
               onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
               onLogoutConfirm={logout}
+              className="md:py-4" // Added padding for iPad
             />
           ))}
         </div>
       </nav>
 
-      {/* Desktop Sidebar */}
-      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-20 bg-[#943131] flex-col">
+      {/* Desktop and iPad Pro Landscape Sidebar */}
+      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[#943131] flex-col">
         {navItems.map((item, index) => (
           <NavLink
             key={index}
@@ -213,6 +214,7 @@ const Navbar: React.FC = () => {
             showLogoutDialog={navigation.showLogoutDialog}
             onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
             onLogoutConfirm={logout}
+            className="md:py-4" // Added padding for iPad Pro
           />
         ))}
       </nav>

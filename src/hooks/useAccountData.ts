@@ -20,14 +20,6 @@ const useAccountData = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const queueResponse = (await post("/api/getCurrentQueue", {
-          token: cookies["auth_token"],
-        })) as ApiResponse2;
-
-        if (queueResponse.status === 200 && queueResponse?.data) {
-          setQueue(queueResponse.data);
-        }
-
         const response = (await post("/api/user/profile", {
           token: cookies["auth_token"],
         })) as ApiResponse;
@@ -44,6 +36,13 @@ const useAccountData = () => {
             name: basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH),
             name_EN: basicInfo.cmuitaccount_name,
           });
+        }
+        const queueResponse = (await post("/api/getCurrentQueue", {
+          token: cookies["auth_token"],
+        })) as ApiResponse2;
+
+        if (queueResponse.status === 200 && queueResponse?.data) {
+          setQueue(queueResponse.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);

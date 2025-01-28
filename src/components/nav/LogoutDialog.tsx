@@ -1,4 +1,5 @@
 import React from "react";
+import { useUser } from "../../context/UserContext";
 
 interface LogoutDialogProps {
   isOpen: boolean;
@@ -12,6 +13,10 @@ export const LogoutDialog: React.FC<LogoutDialogProps> = ({
   onConfirm,
 }) => {
   if (!isOpen) return null;
+  const { logout } = useUser();
+  onConfirm = () => {
+    logout();
+  };
 
   return (
     <div

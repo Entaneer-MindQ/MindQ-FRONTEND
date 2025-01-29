@@ -1,5 +1,6 @@
 import React from "react";
 import { useUser } from "../../context/UserContext";
+import { createPortal } from "react-dom";
 
 interface LogoutDialogProps {
   isOpen: boolean;
@@ -18,13 +19,27 @@ export const LogoutDialog: React.FC<LogoutDialogProps> = ({
     logout();
   };
 
-  return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-40 z-50"
-      onClick={onClose}
-    >
+  // Create a portal to render the dialog at the root level
+  return createPortal(
+    <div className="relative">
+      {/* Backdrop overlay */}
+      <div
+        className="fixed inset-0 bg-black bg-opacity-40"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9998,
+        }}
+        onClick={onClose}
+      />
+
+      {/* Dialog content */}
       <div
         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white rounded-lg shadow-lg p-6"
+        style={{ zIndex: 9999 }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center">
@@ -48,6 +63,7 @@ export const LogoutDialog: React.FC<LogoutDialogProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

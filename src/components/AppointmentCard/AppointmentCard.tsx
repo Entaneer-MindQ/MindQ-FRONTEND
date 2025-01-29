@@ -7,7 +7,6 @@ import {
   Grid,
   Button,
 } from "@mui/material";
-import EventNoteIcon from "@mui/icons-material/EventNote";
 import type { Queue } from "../../types/queue";
 
 interface AppointmentCardProps {

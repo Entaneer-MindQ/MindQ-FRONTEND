@@ -1,35 +1,104 @@
-import React from "react";
-import { Box, Button } from "@mui/material";
-import { StepButtonProps } from "../../types/index";
+//fixing the button overload
 
-export const StepButton = ({
+import React from "react";
+import { Button } from "@mui/material";
+
+interface StepButtonProps {
+  icon: React.ReactNode;
+  onClick?: () => void;
+  href?: string;
+  target?: string;
+  isMobile: boolean;
+  backgroundColor: string;
+  hoverColor: string;
+  children: React.ReactNode;
+}
+
+export const StepButton: React.FC<StepButtonProps> = ({
   icon,
-  children,
+  onClick,
+  href,
+  target,
   isMobile,
   backgroundColor,
   hoverColor,
-  target,
-  href,
-  ...props
-}: StepButtonProps) => {
-  return (
-    <Box sx={{ width: "100%", mt: 2 }}>
-      <Button
-        variant="contained"
-        startIcon={icon}
-        fullWidth={isMobile}
-        href={href}
-        target={target}
-        sx={{
-          backgroundColor,
-          "&:hover": { backgroundColor: hoverColor },
-          mb: 2,
-          maxWidth: isMobile ? "100%" : "300px",
-        }}
-        {...props}
-      >
+  children,
+}) => {
+  // Create a base props object without href and target
+  const buttonProps = {
+    variant: "contained" as const,
+    startIcon: icon,
+    onClick,
+    sx: {
+      position: "relative",
+      zIndex: 1,
+      mt: 2,
+      backgroundColor: backgroundColor,
+      "&:hover": {
+        backgroundColor: hoverColor,
+      },
+      width: isMobile ? "100%" : "auto",
+      textTransform: "none",
+    },
+  };
+
+  // Only add href and target if href is provided
+  if (href) {
+    return (
+      <Button {...buttonProps} href={href} target={target}>
         {children}
       </Button>
-    </Box>
-  );
+    );
+  }
+
+  // Return button without href and target if href is not provided
+  return <Button {...buttonProps}>{children}</Button>;
 };
+
+// import React from "react";
+// import { Button } from "@mui/material";
+
+// interface StepButtonProps {
+//   icon: React.ReactNode;
+//   onClick?: () => void;
+//   href?: string;
+//   target?: string;
+//   isMobile: boolean;
+//   backgroundColor: string;
+//   hoverColor: string;
+//   children: React.ReactNode;
+// }
+
+// export const StepButton: React.FC<StepButtonProps> = ({
+//   icon,
+//   onClick,
+//   href,
+//   target,
+//   isMobile,
+//   backgroundColor,
+//   hoverColor,
+//   children,
+// }) => {
+//   return (
+//     <Button
+//       variant="contained"
+//       startIcon={icon}
+//       onClick={onClick}
+//       href={href}
+//       target={target}
+//       sx={{
+//         position: "relative",
+//         zIndex: 1,
+//         mt: 2,
+//         backgroundColor: backgroundColor,
+//         "&:hover": {
+//           backgroundColor: hoverColor,
+//         },
+//         width: isMobile ? "100%" : "auto",
+//         textTransform: "none",
+//       }}
+//     >
+//       {children}
+//     </Button>
+//   );
+// };

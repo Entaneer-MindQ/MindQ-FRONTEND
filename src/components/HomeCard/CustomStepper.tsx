@@ -1,13 +1,14 @@
+import React from "react";
 import { Box, Typography, Stepper, Step, StepLabel } from "@mui/material";
-import { CustomStepperProps } from "../../types/index";
+import { CustomStepperProps } from "../../types";
 
-export const CustomStepper = ({
+export const CustomStepper: React.FC<CustomStepperProps> = ({
   steps,
   title,
   isMobile,
-}: CustomStepperProps) => {
+}) => {
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box sx={{ mb: 4, position: "relative", zIndex: 1 }}>
       <Typography
         variant={isMobile ? "subtitle1" : "h6"}
         sx={{

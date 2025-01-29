@@ -5,7 +5,7 @@ import { UserProfile, ApiResponse } from "../types/nav";
 import { post } from "../services/api";
 
 export const useAuth = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["auth_token"]);
+  const [cookies, removeCookie] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);

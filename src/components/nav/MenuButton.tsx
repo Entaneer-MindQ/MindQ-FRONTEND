@@ -3,12 +3,17 @@ import React from "react";
 interface MenuButtonProps {
   isOpen: boolean;
   onClick: () => void;
+  className?: string;
 }
 
-export const MenuButton: React.FC<MenuButtonProps> = ({ isOpen, onClick }) => (
+export const MenuButton: React.FC<MenuButtonProps> = ({
+  isOpen,
+  onClick,
+  className = "",
+}) => (
   <button
     onClick={onClick}
-    className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#943131] text-white hover:bg-[#B33D3D]"
+    className={`xl:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#943131] text-white hover:bg-[#B33D3D] ${className}`}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

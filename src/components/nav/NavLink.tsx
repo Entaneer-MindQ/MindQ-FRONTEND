@@ -11,6 +11,7 @@ interface NavLinkProps {
   showLogoutDialog?: boolean;
   onLogoutDialogClose?: () => void;
   onLogoutConfirm?: () => void;
+  onNavClick?: () => void; // เพิ่ม prop ใหม่
 }
 
 export const NavLink: React.FC<NavLinkProps> = ({
@@ -21,23 +22,29 @@ export const NavLink: React.FC<NavLinkProps> = ({
   showLogoutDialog = false,
   onLogoutDialogClose,
   onLogoutConfirm,
+  onNavClick, // รับ prop ใหม่
 }) => {
+  const iconWrapperClasses = `flex items-center justify-center ${
+    isMobile ? "w-6" : "w-6 h-6"
+  }`;
+
   if (item.label === "Logout") {
     return (
       <>
         <button
-          onClick={onLogoutClick}
+          onClick={() => {
+            onLogoutClick?.();
+            onNavClick?.(); // เรียกใช้ onNavClick เมื่อกดปุ่ม logout
+          }}
           className={`
             p-4 flex items-center justify-center w-full
             transition-all duration-200 bg-[#943131] text-white
-            hover:bg-[#B33D3D]
-            ${isMobile ? "flex-row" : "flex-col"}
+            hover:bg-[#B33D3D] focus:outline-none
+            ${isMobile ? "flex-row space-x-3" : "flex-col space-y-1"}
           `}
         >
-          {item.icon}
-          <span className={`text-sm ${isMobile ? "ml-3" : "mt-1"}`}>
-            {item.label}
-          </span>
+          <div className={iconWrapperClasses}>{item.icon}</div>
+          <span className="text-sm">{item.label}</span>
         </button>
 
         {showLogoutDialog && (
@@ -54,6 +61,7 @@ export const NavLink: React.FC<NavLinkProps> = ({
   return (
     <Link
       to={item.path}
+      onClick={onNavClick} // เพิ่ม onClick event
       className={`
         p-4 flex items-center justify-center w-full
         transition-all duration-200
@@ -62,15 +70,11 @@ export const NavLink: React.FC<NavLinkProps> = ({
             ? "bg-[#FFE3E3] text-black"
             : "text-white hover:bg-[#B33D3D]"
         }
-        ${isMobile ? "flex-row" : "flex-col"}
+        ${isMobile ? "flex-row space-x-3" : "flex-col space-y-1"}
       `}
     >
-      {item.icon}
-      {item.label && (
-        <span className={`text-sm ${isMobile ? "ml-3" : "mt-1"}`}>
-          {item.label}
-        </span>
-      )}
+      <div className={iconWrapperClasses}>{item.icon}</div>
+      {item.label && <span className="text-sm">{item.label}</span>}
     </Link>
   );
 };

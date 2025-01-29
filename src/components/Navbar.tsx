@@ -9,6 +9,12 @@ const Navbar: React.FC = () => {
   const { userProfile, isLogin, logout } = useAuth();
   const navigation = useNavigation();
 
+  // สร้างฟังก์ชันสำหรับจัดการการปิด mobile menu
+  const handleNavClick = () => {
+    if (navigation.isMobileMenuOpen) {
+      navigation.setIsMobileMenuOpen(false);
+    }
+  };
   const navItems: NavItem[] = [
     {
       icon: (
@@ -172,16 +178,17 @@ const Navbar: React.FC = () => {
   ];
   return (
     <>
+      {/* Mobile Menu Button */}
       <MenuButton
         isOpen={navigation.isMobileMenuOpen}
         onClick={navigation.toggleMobileMenu}
-        className="lg:hidden"
+        className="xl:hidden"
       />
 
-      {/* Mobile and iPad Menu */}
+      {/* Mobile and Regular iPad Menu */}
       <nav
         className={`
-          lg:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[#943131]
+          xl:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[#943131]
           transform transition-transform duration-300 ease-in-out z-40
           ${navigation.isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
@@ -197,14 +204,14 @@ const Navbar: React.FC = () => {
               showLogoutDialog={navigation.showLogoutDialog}
               onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
               onLogoutConfirm={logout}
-              className="md:py-4" // Added padding for iPad
+              onNavClick={handleNavClick} // เพิ่ม prop ใหม่
             />
           ))}
         </div>
       </nav>
 
-      {/* Desktop and iPad Pro Landscape Sidebar */}
-      <nav className="hidden lg:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[#943131] flex-col">
+      {/* Desktop and iPad Pro Sidebar */}
+      <nav className="hidden xl:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[#943131] flex-col">
         {navItems.map((item, index) => (
           <NavLink
             key={index}
@@ -214,7 +221,7 @@ const Navbar: React.FC = () => {
             showLogoutDialog={navigation.showLogoutDialog}
             onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
             onLogoutConfirm={logout}
-            className="md:py-4" // Added padding for iPad Pro
+            // ไม่จำเป็นต้องส่ง onNavClick ให้กับ desktop version
           />
         ))}
       </nav>
@@ -222,7 +229,7 @@ const Navbar: React.FC = () => {
       {/* Overlay */}
       {navigation.isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="xl:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
           onClick={() => navigation.setIsMobileMenuOpen(false)}
         />
       )}

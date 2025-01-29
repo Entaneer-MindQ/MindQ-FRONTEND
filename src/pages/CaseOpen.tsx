@@ -6,6 +6,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SendIcon from "@mui/icons-material/Send";
 import { post } from "../services/api";
+import { ApiResponse } from "../types/api";
 
 import FacebookField from "../components/CaseForm/FacebookField";
 import CategorySelection from "../components/CaseForm/CategorySelection";
@@ -58,10 +59,10 @@ const CaseOpen: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await post("/api/insertCase", {
+      const response = (await post("/api/insertCase", {
         token: cookies["auth_token"],
         ...formData,
-      });
+      })) as ApiResponse;
 
       if (response.status === 200) {
         alert("เคสถูกสร้างเรียบร้อยแล้ว");

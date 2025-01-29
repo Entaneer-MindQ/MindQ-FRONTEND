@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,27 +7,86 @@ import {
   Button,
   TextField,
   Typography,
+  Alert,
 } from "@mui/material";
+import { post } from "../../services/api";
 
 interface CancellationDialogProps {
   open: boolean;
-  reason: string;
+  qid: string;
   onClose: () => void;
-  onConfirm: () => void;
-  onReasonChange: (reason: string) => void;
+  onSuccess: () => void;
+}
+
+interface ApiResponse {
+  status: number;
+  message: string;
 }
 
 const CancellationDialog: React.FC<CancellationDialogProps> = ({
   open,
-  reason,
+  qid,
   onClose,
-  onConfirm,
-  onReasonChange,
+  onSuccess,
 }) => {
+  const [reason, setReason] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleReasonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReason(e.target.value);
+    if (error) setError(null);
+  };
+
+  const handleClose = () => {
+    setReason("");
+    setError(null);
+    onClose();
+  };
+
+  const handleConfirm = async () => {
+    if (!reason.trim()) {
+      setError("กรุณาระบุสาเหตุการยกเลิกนัด");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const requestBody = {
+        qid: qid,
+        reason: reason.trim(),
+      };
+
+      console.log("Request Body:", requestBody);
+
+      const response = (await post(
+        "/api/cancelQueue",
+        requestBody
+      )) as ApiResponse;
+
+      if (response.status === 200) {
+        handleClose();
+        onSuccess();
+      } else {
+        setError(
+          response.message ||
+            "เกิดข้อผิดพลาดในการยกเลิกนัด กรุณาลองใหม่อีกครั้ง"
+        );
+      }
+    } catch (error) {
+      setError("เกิดข้อผิดพลาดในการเชื่อมต่อ กรุณาลองใหม่อีกครั้ง");
+      console.error("Error cancelling appointment:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -42,6 +101,11 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
         ยกเลิกการนัดหมาย
       </DialogTitle>
       <DialogContent>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
         <Typography variant="body1" sx={{ mb: 2 }}>
           กรุณาระบุสาเหตุการยกเลิกนัด
         </Typography>
@@ -53,12 +117,15 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
           variant="outlined"
           placeholder="ระบุสาเหตุการยกเลิกนัด"
           value={reason}
-          onChange={(e) => onReasonChange(e.target.value)}
+          onChange={handleReasonChange}
+          error={!!error}
+          disabled={isLoading}
         />
       </DialogContent>
       <DialogActions sx={{ p: 3 }}>
         <Button
-          onClick={onClose}
+          onClick={handleClose}
+          disabled={isLoading}
           sx={{
             color: "#943131",
             "&:hover": { backgroundColor: "rgba(148, 49, 49, 0.04)" },
@@ -67,14 +134,15 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
           ยกเลิก
         </Button>
         <Button
-          onClick={onConfirm}
+          onClick={handleConfirm}
           variant="contained"
+          disabled={isLoading}
           sx={{
             backgroundColor: "#943131",
             "&:hover": { backgroundColor: "#B22222" },
           }}
         >
-          ยืนยัน
+          {isLoading ? "กำลังดำเนินการ..." : "ยืนยัน"}
         </Button>
       </DialogActions>
     </Dialog>

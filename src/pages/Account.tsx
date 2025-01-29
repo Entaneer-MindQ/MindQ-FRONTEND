@@ -11,19 +11,10 @@ const Account: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDialog, setOpenDialog] = useState(false);
-  const [cancellationReason, setCancellationReason] = useState("");
-  const { userProfile, queue } = useAccountData();
+  const { userProfile, queue, refreshData } = useAccountData();
 
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setCancellationReason("");
-  };
-
-  const handleCancelAppointment = () => {
-    console.log("Cancellation reason:", cancellationReason);
-    handleCloseDialog();
-  };
+  const handleCloseDialog = () => setOpenDialog(false);
 
   return (
     <Container
@@ -72,10 +63,12 @@ const Account: React.FC = () => {
 
       <CancellationDialog
         open={openDialog}
-        reason={cancellationReason}
+        qid={queue.qid}
         onClose={handleCloseDialog}
-        onConfirm={handleCancelAppointment}
-        onReasonChange={setCancellationReason}
+        onSuccess={() => {
+          handleCloseDialog();
+          refreshData(); // เพิ่มฟังก์ชันนี้ใน useAccountData hook
+        }}
       />
     </Container>
   );

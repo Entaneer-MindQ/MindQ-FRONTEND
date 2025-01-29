@@ -17,42 +17,43 @@ const useAccountData = () => {
     topic: [],
   });
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = (await post("/api/user/profile", {
-          token: cookies["auth_token"],
-        })) as ApiResponse;
+  const fetchData = async () => {
+    try {
+      const response = (await post("/api/user/profile", {
+        token: cookies["auth_token"],
+      })) as ApiResponse;
 
-        if (response.status === 200 && response.data?.cmuBasicInfo) {
-          const basicInfo = response.data.cmuBasicInfo;
-          setUserProfile({
-            personalID: basicInfo.student_id,
-            email: basicInfo.cmuitaccount,
-            faculty: basicInfo.organization_name_TH,
-            major: basicInfo.organization_name_EN,
-            degree: basicInfo.organization_code,
-            role: basicInfo.itaccounttype_TH,
-            name: basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH),
-            name_EN: basicInfo.cmuitaccount_name,
-          });
-        }
-        const queueResponse = (await post("/api/getCurrentQueue", {
-          token: cookies["auth_token"],
-        })) as ApiResponse2;
-
-        if (queueResponse.status === 200 && queueResponse?.data) {
-          setQueue(queueResponse.data);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      if (response.status === 200 && response.data?.cmuBasicInfo) {
+        const basicInfo = response.data.cmuBasicInfo;
+        setUserProfile({
+          personalID: basicInfo.student_id,
+          email: basicInfo.cmuitaccount,
+          faculty: basicInfo.organization_name_TH,
+          major: basicInfo.organization_name_EN,
+          degree: basicInfo.organization_code,
+          role: basicInfo.itaccounttype_TH,
+          name: basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH),
+          name_EN: basicInfo.cmuitaccount_name,
+        });
       }
-    };
 
-    fetchUserProfile();
+      const queueResponse = (await post("/api/getCurrentQueue", {
+        token: cookies["auth_token"],
+      })) as ApiResponse2;
+
+      if (queueResponse.status === 200 && queueResponse?.data) {
+        setQueue(queueResponse.data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [cookies["auth_token"]]);
 
-  return { userProfile, queue };
+  return { userProfile, queue, refreshData: fetchData };
 };
 
 export default useAccountData;

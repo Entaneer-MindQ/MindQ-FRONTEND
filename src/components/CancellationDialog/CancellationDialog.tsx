@@ -10,6 +10,7 @@ import {
   Alert,
 } from "@mui/material";
 import { post } from "../../services/api";
+import { useCookies } from "react-cookie";
 
 interface CancellationDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cookies] = useCookies(["auth_token"]);
 
   const handleReasonChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReason(e.target.value);
@@ -55,6 +57,7 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
 
     try {
       const requestBody = {
+        token: cookies["auth_token"],
         qid: qid,
         reason: reason.trim(),
       };

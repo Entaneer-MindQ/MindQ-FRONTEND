@@ -7,11 +7,12 @@ import AppointmentCard from "../components/AppointmentCard/AppointmentCard";
 import CancellationDialog from "../components/CancellationDialog/CancellationDialog";
 import useAccountData from "../hooks/useAccountData";
 
+// Account.tsx
 const Account: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDialog, setOpenDialog] = useState(false);
-  const { userProfile, queue, refreshData } = useAccountData();
+  const { userProfile, queue, refreshData, isLoading } = useAccountData();
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
@@ -26,12 +27,10 @@ const Account: React.FC = () => {
       }}
     >
       <Grid container spacing={3}>
-        {/* Profile Section */}
         <Grid item xs={12} md={4}>
           <ProfileCard userProfile={userProfile} isMobile={isMobile} />
         </Grid>
 
-        {/* Appointment Section */}
         <Grid item xs={12} md={8}>
           <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 }, borderRadius: 2 }}>
             <Box
@@ -56,6 +55,7 @@ const Account: React.FC = () => {
               queue={queue}
               isMobile={isMobile}
               onCancelClick={handleOpenDialog}
+              isLoading={isLoading}
             />
           </Paper>
         </Grid>
@@ -66,8 +66,8 @@ const Account: React.FC = () => {
         qid={queue.qid}
         onClose={handleCloseDialog}
         onSuccess={() => {
+          refreshData();
           handleCloseDialog();
-          refreshData(); // เพิ่มฟังก์ชันนี้ใน useAccountData hook
         }}
       />
     </Container>

@@ -1,5 +1,6 @@
 // src/services/api.ts
 export const BASE_URL = import.meta.env.VITE_MINDQ_SITE_BE;
+
 export async function post<T>(endpoint: string, data: any): Promise<T> {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: "POST",

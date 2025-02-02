@@ -14,12 +14,17 @@ interface responseData {
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [token, setToken] = useState<string | null>(null);
 
   // Check for existing token on component mount
   useEffect(() => {
-    const existingToken = document.cookie.split("; ").find(row => row.startsWith("auth_token="))?.split("=")[1];
+    const existingToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("auth_token="))
+      ?.split("=")[1];
 
     if (existingToken) {
       setToken(existingToken);
@@ -33,13 +38,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      const response = await post("/api/logout", {
-                token: token,
-              }) as responseData;
-      if(response.status === 200){
+      const response = (await post("/api/logout", {
+        token: token,
+      })) as responseData;
+      if (response.status === 200) {
         setToken(null);
         localStorage.removeItem("token");
-        document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        document.cookie =
+          "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       }
     } catch (error) {
       console.error("Error during logout", error);

@@ -13,6 +13,8 @@ import PrivateRoute from "./routes/privateRoute";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
+import PatientHistory from "./pages/admin/PatientHistory";
+import HistoryDetails from "./pages/HistoryDetails";
 import Admin from "./pages/admin/admin_request/Page";
 import { ProtectedCalendarRoute } from "../src/routes/ProtectedCalendarRoute";
 import { BookingProvider } from "./context/BookingContext";
@@ -37,6 +39,8 @@ root.render(
             <Route path="/account" element={<Account />} />
             <Route path="/history" element={<History />} />
             <Route path="/admin-request" element={<Admin />} />
+            <Route path="/patientHistory" element={<PatientHistory />} />
+            <Route path="/historyDetails" element={<HistoryDetails />} />
           </Route>
         </Routes>
       </BookingProvider>

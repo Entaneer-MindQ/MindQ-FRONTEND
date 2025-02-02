@@ -62,16 +62,15 @@ const CancellationDialog: React.FC<CancellationDialogProps> = ({
         reason: reason.trim(),
       };
 
-      console.log("Request Body:", requestBody);
-
       const response = (await post(
         "/api/cancelQueue",
         requestBody
       )) as ApiResponse;
 
       if (response.status === 200) {
-        handleClose();
+        // Call onSuccess before closing the dialog
         onSuccess();
+        handleClose();
       } else {
         setError(
           response.message ||

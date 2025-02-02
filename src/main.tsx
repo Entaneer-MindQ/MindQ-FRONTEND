@@ -17,6 +17,8 @@ import Calendar from "./pages/Calendar";
 import Account from "./pages/Account";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
+import PatientHistory from "./pages/admin/PatientHistory";
+import HistoryDetails from "./pages/HistoryDetails";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -36,6 +38,8 @@ root.render(
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/account" element={<Account />} />
         <Route path="/history" element={<History />} />
+        <Route path="/patientHistory" element={<PatientHistory />} />
+        <Route path="/historyDetails" element={<HistoryDetails />} />
       </Routes>
     </UserProvider>
   </Router>

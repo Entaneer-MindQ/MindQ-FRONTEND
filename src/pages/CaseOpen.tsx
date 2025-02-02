@@ -1,439 +1,180 @@
-import React, { useState, useEffect } from "react";
-import { post } from "../services/api";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  TextField,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Button,
-  Box,
-  Typography,
-  Paper,
-  Container,
-  Stepper,
-  Step,
-  StepLabel,
-  IconButton,
-  InputAdornment,
-  StepIcon,
-} from "@mui/material";
-import FacebookIcon from "@mui/icons-material/Facebook";
+import { useCookies } from "react-cookie";
+import { Container, Paper, Box, Typography, Button } from "@mui/material";
+import { useTheme, useMediaQuery } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import SendIcon from "@mui/icons-material/Send";
-import InfoIcon from "@mui/icons-material/Info";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { post } from "../services/api";
+import { ApiResponse } from "../types/api";
 
-interface CaseData {
-  personalID: string;
-  facebookURL: string;
-  topic: string[];
-  description: string;
-  role: "Student" | "Employee";
-  approve: boolean;
-}
+import FacebookField from "../components/CaseForm/FacebookField";
+import CategorySelection from "../components/CaseForm/CategorySelection";
+import DescriptionField from "../components/CaseForm/DescriptionField";
+import RoleSelection from "../components/CaseForm/RoleSelection";
+import StepProgress from "../components/CaseForm/StepProgress";
+import ProgressIndicator from "../components/CaseForm/ProgressIndicator";
+import { useCaseForm } from "../hooks/useCaseForm";
 
-interface FormErrors {
-  facebookURL: boolean;
-  topic: boolean;
-  description: boolean;
-  role: boolean;
-}
+const categories = [
+  "ความสัมพันธ์",
+  "ความเครียด",
+  "การงาน",
+  "โรคทางจิตวิทยา",
+  "การเงิน",
+  "อื่น ๆ",
+];
 
-interface StepStatus {
-  facebook: boolean;
-  categories: boolean;
-  details: boolean;
-}
+const steps = [
+  {
+    label: "กรอกข้อมูล Facebook",
+    completed: false,
+  },
+  {
+    label: "เลือกหมวดหมู่",
+    completed: false,
+  },
+  {
+    label: "ระบุรายละเอียด",
+    completed: false,
+  },
+];
 
 const CaseOpen: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<CaseData>({
-    personalID: "650610804",
-    facebookURL: "",
-    topic: [],
-    description: "",
-    role: "Student",
-    approve: false,
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({
-    facebookURL: false,
-    topic: false,
-    description: false,
-    role: false,
-  });
-
-  const [stepStatus, setStepStatus] = useState<StepStatus>({
-    facebook: false,
-    categories: false,
-    details: false,
-  });
-
-  const [activeStep, setActiveStep] = useState(0);
-
-  const categories = [
-    "ความสัมพันธ์",
-    "ความเครียด",
-    "การงาน",
-    "โรคทางจิตวิทยา",
-    "การเงิน",
-    "อื่น ๆ",
-  ];
-
-  // ตรวจสอบความถูกต้องของ Facebook URL
-  const isValidFacebookURL = (url: string): boolean => {
-    return url.includes("facebook.com/") && url.length > 13;
-  };
-
-  // อัปเดตสถานะของขั้นตอนต่างๆ
-  useEffect(() => {
-    setStepStatus({
-      facebook: isValidFacebookURL(formData.facebookURL),
-      categories: formData.topic.length > 0,
-      details: formData.description.trim().length > 0,
-    });
-  }, [formData]);
-
-  // อัปเดต activeStep ตามสถานะการกรอกข้อมูล
-  useEffect(() => {
-    if (stepStatus.facebook && stepStatus.categories && stepStatus.details) {
-      setActiveStep(3);
-    } else if (stepStatus.facebook && stepStatus.categories) {
-      setActiveStep(2);
-    } else if (stepStatus.facebook) {
-      setActiveStep(1);
-    } else {
-      setActiveStep(0);
-    }
-  }, [stepStatus]);
-
-  const handleCategoryChange = (category: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      topic: prev.topic.includes(category)
-        ? prev.topic.filter((c) => c !== category)
-        : [...prev.topic, category],
-    }));
-    setErrors((prev) => ({ ...prev, topic: false }));
-  };
-
-  const validateForm = (): boolean => {
-    const newErrors = {
-      facebookURL: !isValidFacebookURL(formData.facebookURL),
-      topic: formData.topic.length === 0,
-      description: formData.description.trim() === "",
-      role: false,
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some((error) => error);
-  };
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [cookies] = useCookies(["auth_token"]);
+  const {
+    formData,
+    setFormData,
+    errors,
+    setErrors,
+    stepStatus,
+    activeStep,
+    validateForm,
+  } = useCaseForm();
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
-      const response = await post<{ message: string }>(
-        "/api/createCase",
-        formData
-      );
-      localStorage.setItem("facebookURL", formData.facebookURL);
-      localStorage.setItem("personalID", "650610804");
-      alert("เคสถูกสร้างเรียบร้อยแล้ว");
-      navigate("/case");
+      const response = (await post("/api/insertCase", {
+        token: cookies["auth_token"],
+        ...formData,
+      })) as ApiResponse;
+
+      if (response.status === 200) {
+        alert("เคสถูกสร้างเรียบร้อยแล้ว");
+        navigate("/case");
+      }
     } catch (error) {
       console.error("Error submitting case:", error);
       alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง");
     }
   };
 
-  const steps = [
-    {
-      label: "กรอกข้อมูล Facebook",
-      completed: stepStatus.facebook,
-    },
-    {
-      label: "เลือกหมวดหมู่",
-      completed: stepStatus.categories,
-    },
-    {
-      label: "ระบุรายละเอียด",
-      completed: stepStatus.details,
-    },
-  ];
-
-  // Custom StepIcon component
-  const CustomStepIcon = (props: any) => {
-    const { completed } = props;
-    return completed ? (
-      <CheckCircleIcon sx={{ color: "#4CAF50" }} />
-    ) : (
-      <StepIcon {...props} />
-    );
-  };
-
   return (
-    <Container maxWidth="md" sx={{ py: 4, ml: "100px" }}>
-      <Paper elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+    <Container
+      maxWidth="lg"
+      sx={{
+        py: { xs: 2, sm: 3, md: 4 },
+        px: { xs: 2, sm: 3 },
+        mt: { xs: "56px", sm: "64px", md: "80px" },
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          borderRadius: 2,
+          overflow: "hidden",
+          mx: "auto",
+          maxWidth: theme.breakpoints.values.lg,
+        }}
+      >
         {/* Header */}
-        <Box sx={{ bgcolor: "#943131", color: "white", p: 3 }}>
+        <Box
+          sx={{
+            bgcolor: "#943131",
+            color: "white",
+            p: { xs: 2, sm: 3 },
+          }}
+        >
           <Typography
-            variant="h5"
+            variant={isMobile ? "h6" : "h5"}
             gutterBottom
-            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexWrap: "wrap",
+            }}
           >
             <HelpOutlineIcon />
             สร้างเคสใหม่
           </Typography>
-          <Stepper activeStep={activeStep} alternativeLabel sx={{ mt: 2 }}>
-            {steps.map((step, index) => (
-              <Step key={index} completed={step.completed}>
-                <StepLabel
-                  StepIconComponent={CustomStepIcon}
-                  sx={{
-                    "& .MuiStepLabel-label": {
-                      color: step.completed ? "#4CAF50" : "white",
-                      marginTop: 1,
-                    },
-                  }}
-                >
-                  {step.label}
-                </StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+
+          <StepProgress
+            activeStep={activeStep}
+            steps={steps.map((step, index) => ({
+              ...step,
+              completed: Object.values(stepStatus)[index],
+            }))}
+          />
         </Box>
 
-        <Box sx={{ p: 4 }}>
-          {/* Facebook URL Field */}
-          <Box sx={{ mb: 4 }}>
-            <TextField
-              fullWidth
-              label="Facebook URL"
-              value={formData.facebookURL}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  facebookURL: e.target.value,
-                }));
-                setErrors((prev) => ({ ...prev, facebookURL: false }));
-              }}
-              error={errors.facebookURL}
-              helperText={
-                errors.facebookURL ? "กรุณากรอก URL Facebook ที่ถูกต้อง" : ""
-              }
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FacebookIcon
-                      color={stepStatus.facebook ? "success" : "primary"}
-                    />
-                  </InputAdornment>
-                ),
-                endAdornment: stepStatus.facebook && (
-                  <InputAdornment position="end">
-                    <CheckCircleIcon color="success" />
-                  </InputAdornment>
-                ),
-              }}
-              placeholder="https://facebook.com/your.profile"
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: stepStatus.facebook ? "#4CAF50" : "#943131",
-                  },
-                },
-              }}
-            />
-          </Box>
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+          <FacebookField
+            value={formData.facebookURL}
+            onChange={(value) => {
+              setFormData((prev) => ({ ...prev, facebookURL: value }));
+              setErrors((prev) => ({ ...prev, facebookURL: false }));
+            }}
+            error={errors.facebookURL}
+            isValid={stepStatus.facebook}
+          />
 
-          {/* Categories */}
-          <FormControl
-            component="fieldset"
+          <CategorySelection
+            categories={categories}
+            selectedCategories={formData.topic}
+            onChange={(category) => {
+              setFormData((prev) => ({
+                ...prev,
+                topic: prev.topic.includes(category)
+                  ? prev.topic.filter((c) => c !== category)
+                  : [...prev.topic, category],
+              }));
+              setErrors((prev) => ({ ...prev, topic: false }));
+            }}
             error={errors.topic}
-            sx={{ mb: 4, width: "100%" }}
-          >
-            <FormLabel
-              component="legend"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                mb: 2,
-                color: stepStatus.categories ? "#4CAF50" : "rgba(0, 0, 0, 0.6)",
-              }}
-            >
-              <InfoIcon color={stepStatus.categories ? "success" : "primary"} />
-              หมวดหมู่ของคำปรึกษา (เลือกได้หลายหมวดหมู่)*
-            </FormLabel>
-            <FormGroup>
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "1fr",
-                    sm: "repeat(2, 1fr)",
-                    md: "repeat(3, 1fr)",
-                  },
-                  gap: 2,
-                }}
-              >
-                {categories.map((category) => (
-                  <Paper
-                    key={category}
-                    sx={{
-                      p: 2,
-                      cursor: "pointer",
-                      bgcolor: formData.topic.includes(category)
-                        ? "#f5e6e6"
-                        : "white",
-                      border: 1,
-                      borderColor: formData.topic.includes(category)
-                        ? stepStatus.categories
-                          ? "#4CAF50"
-                          : "#943131"
-                        : "grey.300",
-                      "&:hover": {
-                        bgcolor: "#f5e6e6",
-                        borderColor: stepStatus.categories
-                          ? "#4CAF50"
-                          : "#943131",
-                      },
-                    }}
-                    onClick={() => handleCategoryChange(category)}
-                  >
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={formData.topic.includes(category)}
-                          sx={{
-                            color: stepStatus.categories
-                              ? "#4CAF50"
-                              : "#943131",
-                            "&.Mui-checked": {
-                              color: stepStatus.categories
-                                ? "#4CAF50"
-                                : "#943131",
-                            },
-                          }}
-                        />
-                      }
-                      label={category}
-                      sx={{ width: "100%", m: 0 }}
-                    />
-                  </Paper>
-                ))}
-              </Box>
-            </FormGroup>
-            {errors.topic && (
-              <Typography color="error" variant="caption" sx={{ mt: 1 }}>
-                กรุณาเลือกอย่างน้อย 1 หมวดหมู่
-              </Typography>
-            )}
-          </FormControl>
+            isValid={stepStatus.categories}
+          />
 
-          {/* Description */}
-          <Box sx={{ mb: 4 }}>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="รายละเอียด"
-              value={formData.description}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }));
-                setErrors((prev) => ({ ...prev, description: false }));
-              }}
-              error={errors.description}
-              helperText={errors.description ? "กรุณากรอกรายละเอียด" : ""}
-              InputProps={{
-                endAdornment: stepStatus.details && (
-                  <InputAdornment position="end">
-                    <CheckCircleIcon color="success" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  "&.Mui-focused fieldset": {
-                    borderColor: stepStatus.details ? "#4CAF50" : "#943131",
-                  },
-                },
-              }}
-            />
-          </Box>
+          <DescriptionField
+            value={formData.description}
+            onChange={(value) => {
+              setFormData((prev) => ({ ...prev, description: value }));
+              setErrors((prev) => ({ ...prev, description: false }));
+            }}
+            error={errors.description}
+            isValid={stepStatus.details}
+          />
 
-          {/* Role Selection */}
-          <FormControl component="fieldset" sx={{ mb: 4, width: "100%" }}>
-            <FormLabel component="legend" sx={{ mb: 2 }}>
-              สถานะ
-            </FormLabel>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Paper
-                elevation={formData.role === "Student" ? 3 : 1}
-                sx={{
-                  flex: 1,
-                  p: 2,
-                  cursor: "pointer",
-                  bgcolor: formData.role === "Student" ? "#f5e6e6" : "white",
-                  "&:hover": { bgcolor: "#f5e6e6" },
-                }}
-                onClick={() =>
-                  setFormData((prev) => ({ ...prev, role: "Student" }))
-                }
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formData.role === "Student"}
-                      sx={{
-                        color: "#943131",
-                        "&.Mui-checked": { color: "#943131" },
-                      }}
-                    />
-                  }
-                  label="นักศึกษา"
-                  sx={{ width: "100%", m: 0 }}
-                />
-              </Paper>
-
-              <Paper
-                elevation={formData.role === "Employee" ? 3 : 1}
-                sx={{
-                  flex: 1,
-                  p: 2,
-                  cursor: "pointer",
-                  bgcolor: formData.role === "Employee" ? "#f5e6e6" : "white",
-                  "&:hover": { bgcolor: "#f5e6e6" },
-                }}
-                onClick={() =>
-                  setFormData((prev) => ({ ...prev, role: "Employee" }))
-                }
-              >
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={formData.role === "Employee"}
-                      sx={{
-                        color: "#943131",
-                        "&.Mui-checked": { color: "#943131" },
-                      }}
-                    />
-                  }
-                  label="บุคลากร"
-                  sx={{ width: "100%", m: 0 }}
-                />
-              </Paper>
-            </Box>
-          </FormControl>
+          <RoleSelection
+            value={formData.role}
+            onChange={(value) => {
+              setFormData((prev) => ({ ...prev, role: value }));
+            }}
+          />
 
           {/* Submit Button */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              flexDirection: { xs: "column", sm: "row" },
+            }}
+          >
             <Button
               variant="contained"
               onClick={handleSubmit}
@@ -443,6 +184,7 @@ const CaseOpen: React.FC = () => {
                 !stepStatus.categories ||
                 !stepStatus.details
               }
+              fullWidth={isMobile}
               sx={{
                 backgroundColor:
                   stepStatus.facebook &&
@@ -478,32 +220,7 @@ const CaseOpen: React.FC = () => {
         </Box>
       </Paper>
 
-      {/* Progress Indicator */}
-      <Box
-        sx={{
-          mt: 3,
-          p: 2,
-          borderRadius: 2,
-          bgcolor: "rgba(255, 255, 255, 0.9)",
-          boxShadow: 1,
-        }}
-      >
-        <Typography variant="body2" sx={{ textAlign: "center", color: "#666" }}>
-          ความคืบหน้าการกรอกข้อมูล:{" "}
-          {(
-            (Object.values(stepStatus).filter(Boolean).length / 3) *
-            100
-          ).toFixed(0)}
-          %
-          {stepStatus.facebook &&
-            stepStatus.categories &&
-            stepStatus.details && (
-              <CheckCircleIcon
-                sx={{ ml: 1, color: "#4CAF50", verticalAlign: "middle" }}
-              />
-            )}
-        </Typography>
-      </Box>
+      <ProgressIndicator stepStatus={stepStatus} />
     </Container>
   );
 };

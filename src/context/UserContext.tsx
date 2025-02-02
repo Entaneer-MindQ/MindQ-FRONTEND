@@ -1,38 +1,68 @@
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { post } from "../services/api";
 
-interface UserContextProps {
-  C_id: number | null;
-  setC_id: (C_id: number | null) => void;
+interface UserContextType {
+  token: string | null;
+  login: (userData: string, token: string) => void;
+  logout: () => void;
 }
 
-const UserContext = createContext<UserContextProps>({
-  C_id: null,
-  setC_id: () => {},
-});
-
-interface UserProviderProps {
-  children: ReactNode;
+interface responseData {
+  status: number;
+  message: string;
 }
 
-export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  // Initialize state with the value from sessionStorage
-  const [C_id, setC_id] = useState<number | null>(() => {
-    const storedC_id = sessionStorage.getItem("C_id");
-    return storedC_id ? Number(storedC_id) : null;
-  });
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
-  // Save the C_id to sessionStorage whenever it changes
-  const handleSetC_id = (C_id: number | null) => {
-    setC_id(C_id);
-    if (C_id == null) sessionStorage.setItem("C_id", "");
-    else sessionStorage.setItem("C_id", C_id.toString()); // Store it as a string in sessionStorage
+export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [token, setToken] = useState<string | null>(null);
+
+  // Check for existing token on component mount
+  useEffect(() => {
+    const existingToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("auth_token="))
+      ?.split("=")[1];
+
+    if (existingToken) {
+      setToken(existingToken);
+    }
+  }, []);
+
+  const login = (token: string) => {
+    setToken(token);
+    localStorage.setItem("token", token);
+  };
+
+  const logout = async () => {
+    try {
+      const response = (await post("/api/logout", {
+        token: token,
+      })) as responseData;
+      if (response.status === 200) {
+        setToken(null);
+        localStorage.removeItem("token");
+        document.cookie =
+          "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+    } catch (error) {
+      console.error("Error during logout", error);
+    }
   };
 
   return (
-    <UserContext.Provider value={{ C_id, setC_id: handleSetC_id }}>
+    <UserContext.Provider value={{ token, login, logout }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-export default UserContext;
+export const useUser = (): UserContextType => {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+};

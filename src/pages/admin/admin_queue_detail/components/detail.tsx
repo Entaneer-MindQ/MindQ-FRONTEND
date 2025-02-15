@@ -36,27 +36,32 @@ const Admin_QueueDetails: React.FC = () => {
   const [cookies] = useCookies(["auth_token"]);
   const { refreshData } = useAccountData();
   const [openDialog, setOpenDialog] = useState(false);
+
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
-  useEffect(() => {
-    const fetchQueueDetails = async () => {
-      try {
-        const response = (await post("/api/getQueueDetails", {
-          token: cookies["auth_token"],
-          qid: queueId,
-        })) as ApiResponse;
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    fetchQueueDetails(); // Re-fetch queue details after closing the dialog
+  };
 
-        if (response.status === 200) {
-          setQueueDetails(response.queue_data);
-          setUserProfile(response.user_data);
-          setMindData(response.mind_data);
-        }
-      } catch (error) {
-        console.error("Error fetching queue details:", error);
-        navigate("/admin-queue");
+  const fetchQueueDetails = async () => {
+    try {
+      const response = (await post("/api/getQueueDetails", {
+        token: cookies["auth_token"],
+        qid: queueId,
+      })) as ApiResponse;
+
+      if (response.status === 200) {
+        setQueueDetails(response.queue_data);
+        setUserProfile(response.user_data);
+        setMindData(response.mind_data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching queue details:", error);
+      navigate("/admin-queue");
+    }
+  };
 
+  useEffect(() => {
     if (queueId) {
       fetchQueueDetails();
     } else {

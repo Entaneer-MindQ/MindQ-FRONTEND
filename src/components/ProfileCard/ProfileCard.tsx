@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Paper, Avatar } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import UserProfile from "../../types/user";
+import { UserProfile } from "../../types/user";
 
 interface ProfileCardProps {
   userProfile: UserProfile | null;

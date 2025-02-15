@@ -1,6 +1,6 @@
 import CaseBox from "./components/RequestBoxes";
 
-const Admin = () => {
+const Admin_Request = () => {
   return (
     <div
       style={{
@@ -16,4 +16,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Admin_Request;

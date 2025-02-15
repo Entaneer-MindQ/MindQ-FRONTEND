@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { post } from "../services/api";
-import type UserProfile from "../types/user";
+import type { UserProfile } from "../types/user";
 import type { Queue, ApiResponse, ApiResponse2 } from "../types/queue";
 
 const useAccountData = () => {

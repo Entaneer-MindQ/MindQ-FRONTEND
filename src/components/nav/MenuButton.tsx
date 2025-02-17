@@ -1,4 +1,5 @@
 import React from "react";
+import "../../styles/global.css";
 
 interface MenuButtonProps {
   isOpen: boolean;
@@ -13,7 +14,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className={`xl:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[#943131] text-white hover:bg-[#B33D3D] ${className}`}
+    className={`xl:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-[var(--primary-color)] text-white hover:bg-[var(--hover-color)] ${className}`}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"

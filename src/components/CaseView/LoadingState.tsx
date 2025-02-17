@@ -1,4 +1,5 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
+import "../../styles/global.css";
 
 export const LoadingState = () => {
   return (
@@ -12,7 +13,11 @@ export const LoadingState = () => {
         gap: 2,
       }}
     >
-      <CircularProgress size={60} thickness={4} sx={{ color: "#943131" }} />
+      <CircularProgress
+        size={60}
+        thickness={4}
+        sx={{ color: "var(--primary-color)" }}
+      />
       <Typography variant="h6" color="textSecondary">
         กำลังโหลดข้อมูล...
       </Typography>

@@ -1,6 +1,7 @@
 import React from "react";
 import { useUser } from "../../context/UserContext";
 import { createPortal } from "react-dom";
+import "../../styles/global.css";
 
 interface LogoutDialogProps {
   isOpen: boolean;
@@ -57,7 +58,7 @@ export const LogoutDialog: React.FC<LogoutDialogProps> = ({
           </button>
           <button
             onClick={onConfirm}
-            className="px-8 py-2 text-sm font-medium text-white bg-[#943131] rounded-md hover:bg-[#B33D3D]"
+            className="px-8 py-2 text-sm font-medium text-white bg-[var(--primary-color)] rounded-md hover:bg-[var(--hover-color)]"
           >
             ยืนยัน
           </button>

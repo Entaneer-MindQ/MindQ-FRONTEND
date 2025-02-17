@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, CardContent, Box, Typography, Button } from "@mui/material";
 import { Grow } from "@mui/material";
 import SubjectIcon from "@mui/icons-material/Subject";
@@ -6,6 +5,7 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { useNavigate } from "react-router-dom";
 import { useBooking } from "../../context/BookingContext";
 import { CaseCardProps } from "../../types/case-view";
+import "../../styles/global.css";
 
 export const CaseCard = ({ caseItem }: CaseCardProps) => {
   const navigate = useNavigate();
@@ -78,9 +78,9 @@ export const CaseCard = ({ caseItem }: CaseCardProps) => {
                 onClick={handleBooking}
                 startIcon={<EventAvailableIcon />}
                 sx={{
-                  backgroundColor: "#943131",
+                  backgroundColor: "var(--primary-color)",
                   "&:hover": {
-                    backgroundColor: "#7a2828",
+                    backgroundColor: "var(--primary-color-dark)",
                     transform: "translateY(-2px)",
                     boxShadow: 4,
                   },

@@ -6,13 +6,14 @@ import ProfileCard from "../components/ProfileCard/ProfileCard";
 import AppointmentCard from "../components/AppointmentCard/AppointmentCard";
 import CancellationDialog from "../components/CancellationDialog/CancellationDialog";
 import useAccountData from "../hooks/useAccountData";
+import "../styles/global.css";
 
 // Account.tsx
 const Account: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDialog, setOpenDialog] = useState(false);
-  const { userProfile, queue, refreshData, isLoading } = useAccountData();
+  const { userProfile, queue, refreshData } = useAccountData();
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
@@ -41,11 +42,11 @@ const Account: React.FC = () => {
                 flexWrap: "wrap",
               }}
             >
-              <EventNoteIcon sx={{ mr: 1, color: "#943131" }} />
+              <EventNoteIcon sx={{ mr: 1, color: "var(--primary-color)" }} />
               <Typography
                 variant={isMobile ? "h6" : "h5"}
                 component="h2"
-                color="#943131"
+                color="var(--primary-color)"
               >
                 นัดหมายปัจจุบัน
               </Typography>
@@ -55,7 +56,6 @@ const Account: React.FC = () => {
               queue={queue}
               isMobile={isMobile}
               onCancelClick={handleOpenDialog}
-              isLoading={isLoading}
             />
           </Paper>
         </Grid>

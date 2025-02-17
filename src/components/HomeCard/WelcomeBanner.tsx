@@ -1,5 +1,6 @@
 import { Paper, Typography } from "@mui/material";
 import { WelcomeBannerProps } from "../../types";
+import "../../styles/global.css";
 
 export const WelcomeBanner = ({ name, isMobile }: WelcomeBannerProps) => {
   return (
@@ -8,7 +9,7 @@ export const WelcomeBanner = ({ name, isMobile }: WelcomeBannerProps) => {
       sx={{
         p: { xs: 2, sm: 3, md: 4 },
         mb: { xs: 2, sm: 3, md: 4 },
-        bgcolor: "#943131",
+        bgcolor: "var(--primary-color)",
         color: "white",
         borderRadius: 2,
       }}

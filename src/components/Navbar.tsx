@@ -4,6 +4,7 @@ import { useNavigation } from "../hooks/useNavigation";
 import { NavLink } from "../components/nav/NavLink";
 import { MenuButton } from "../components/nav/MenuButton";
 import { NavItem } from "../types/nav";
+import "../styles/global.css";
 
 const Navbar: React.FC = () => {
   const { userProfile, isLogin, logout } = useAuth();
@@ -188,7 +189,7 @@ const Navbar: React.FC = () => {
       {/* Mobile and Regular iPad Menu */}
       <nav
         className={`
-          xl:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[#943131]
+          xl:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[var(--primary-color)]
           transform transition-transform duration-300 ease-in-out z-40
           ${navigation.isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
@@ -211,7 +212,7 @@ const Navbar: React.FC = () => {
       </nav>
 
       {/* Desktop and iPad Pro Sidebar */}
-      <nav className="hidden xl:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[#943131] flex-col">
+      <nav className="hidden xl:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[var(--primary-color)] flex-col">
         {navItems.map((item, index) => (
           <NavLink
             key={index}

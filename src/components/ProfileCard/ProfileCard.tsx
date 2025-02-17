@@ -14,7 +14,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userProfile, isMobile }) => {
       elevation={3}
       sx={{
         p: { xs: 2, sm: 3, md: 4 },
-        background: "linear-gradient(135deg, #943131 0%, #B22222 100%)",
+        background:
+          "linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)",
         color: "white",
         borderRadius: 2,
         height: "100%",

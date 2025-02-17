@@ -18,6 +18,7 @@ import Admin_AllQueue from "./pages/admin/admin_queue/page";
 import Admin_QueueDetails from "./pages/admin/admin_queue_detail/page"
 import { ProtectedCalendarRoute } from "../src/routes/ProtectedCalendarRoute";
 import { BookingProvider } from "./context/BookingContext";
+import AdminNotAvailablePage  from "./pages/admin/admin_notavailable/page";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -39,6 +40,7 @@ root.render(
             <Route path="/account" element={<Account />} />
             <Route path="/history" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />
+            <Route path="/admin-notavailable" element={<AdminNotAvailablePage />} />
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />

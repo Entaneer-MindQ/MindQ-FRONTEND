@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { useCookies } from "react-cookie";
-import axios from "axios";
 import { useState } from "react";
 import "./style.css";
 import { post } from "../../../../services/api";
@@ -96,8 +95,13 @@ const NotAvailableTimeForm: React.FC = () => {
         alert("Failed to save Non Available Time." + (response as any).message);
       }
     } catch (error) {
-      alert("Failed to save Non Available Time. T_T");
-      console.error("Error saving Non Available Time:", error);
+      if (error instanceof Error) {
+        alert("Failed to save Non Available Time. T_T" + error.message);
+        console.error("Error saving Non Available Time:", error.message);
+      } else {
+        alert("Failed to save Non Available Time. T_T");
+        console.error("Error saving Non Available Time:", error);
+      }
     }
      };
 

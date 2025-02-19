@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface Appointment {
   topic: string;
@@ -16,51 +16,48 @@ interface UserInfo {
   position: string;
 }
 
-// Mock data
-const sampleAppointments: Appointment[] = [
-  {
-    topic: "การเงิน",
-    description:
-      "efdsdjfoisjfldsdlifjlsdjfisjdfisoifjllsdfjlsjdfojjsiodfjisodf",
-    date: "16th January 2024",
-    time: "10.00 - 11.00",
-    status: "จองคิวแล้ว",
-  },
-  {
-    topic: "การเงิน",
-    description: "qlwjfldfmgjpowjdsdkgowiherowsjgowtjoewrtjowejroiwj",
-    date: "16th January 2024",
-    time: "13.00 - 14.00",
-    status: "ยกเลิกคิว",
-    reason: "ติดเรียน",
-  },
-];
-
-const sampleUserInfo: UserInfo = {
-  patientId: "2024/001",
-  email: "theeraphan_p@cmu.ac.th",
-  position: "นักศึกษา",
-};
-
 // API service
 const api = {
-  getUserInfo: async (): Promise<UserInfo> => {
-    // TODO: Replace with actual API call
+  getUserInfo: async (mindCode: string): Promise<UserInfo> => {
+    // TODO: Replace with actual API call using mindCode
     return new Promise((resolve) => {
-      setTimeout(() => resolve(sampleUserInfo), 500);
+      setTimeout(() => resolve({
+        patientId: mindCode,
+        email: "theeraphan_p@cmu.ac.th",
+        position: "นักศึกษา",
+      }), 500);
     });
   },
 
   getAppointments: async (
+    mindCode: string,
     page: number,
     limit: number
   ): Promise<{
     appointments: Appointment[];
     total: number;
   }> => {
-    // TODO: Replace with actual API call
+    // TODO: Replace with actual API call using mindCode
     return new Promise((resolve) => {
       setTimeout(() => {
+        const sampleAppointments = [
+          {
+            topic: "การเงิน",
+            description: "efdsdjfoisjfldsdlifjlsdjfisjdfisoifjllsdfjlsjdfojjsiodfjisodf",
+            date: "16th January 2024",
+            time: "10.00 - 11.00",
+            status: "จองคิวแล้ว",
+          },
+          {
+            topic: "การเงิน",
+            description: "qlwjfldfmgjpowjdsdkgowiherowsjgowtjoewrtjowejroiwj",
+            date: "16th January 2024",
+            time: "13.00 - 14.00",
+            status: "ยกเลิกคิว",
+            reason: "ติดเรียน",
+          },
+        ];
+        
         const start = (page - 1) * limit;
         const end = start + limit;
         const appointments = sampleAppointments.slice(start, end);
@@ -75,6 +72,7 @@ const api = {
 
 const HistoryPage = () => {
   const navigate = useNavigate();
+  const { mindCode } = useParams<{ mindCode: string }>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
@@ -82,12 +80,23 @@ const HistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalAppointments, setTotalAppointments] = useState(0);
   const appointmentsPerPage = 5;
+  
+
+  // Validate mindCode
+  useEffect(() => {
+    if (!mindCode) {
+      setError("ไม่พบรหัสผู้ใช้");
+      return;
+    }
+  }, [mindCode]);
 
   // Fetch user info
   useEffect(() => {
     const fetchUserInfo = async () => {
+      if (!mindCode) return;
+      
       try {
-        const data = await api.getUserInfo();
+        const data = await api.getUserInfo(mindCode);
         setUserInfo(data);
       } catch (err) {
         setError("ไม่สามารถโหลดข้อมูลผู้ใช้ได้");
@@ -95,14 +104,17 @@ const HistoryPage = () => {
       }
     };
     fetchUserInfo();
-  }, []);
+  }, [mindCode]);
 
   // Fetch appointments
   useEffect(() => {
     const fetchAppointments = async () => {
+      if (!mindCode) return;
+
       setLoading(true);
       try {
         const data = await api.getAppointments(
+          mindCode,
           currentPage,
           appointmentsPerPage
         );
@@ -117,12 +129,11 @@ const HistoryPage = () => {
       }
     };
     fetchAppointments();
-  }, [currentPage]);
+  }, [mindCode, currentPage]);
 
-  // Calculate total pages
+  // Rest of your component remains the same...
   const totalPages = Math.ceil(totalAppointments / appointmentsPerPage);
 
-  // Get status style
   const getStatusStyle = (status: string) => {
     switch (status) {
       case "จองคิวแล้ว":
@@ -134,7 +145,6 @@ const HistoryPage = () => {
     }
   };
 
-  // Loading state
   if (loading && !appointments.length) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -146,7 +156,6 @@ const HistoryPage = () => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -165,6 +174,7 @@ const HistoryPage = () => {
 
   return (
     <div className="flex justify-center min-h-screen bg-gray-50 py-2">
+      {/* Rest of your JSX remains the same... */}
       <div className="max-w-5xl w-full px-4">
         <div className="max-w-5xl mx-auto">
           {/* Header */}

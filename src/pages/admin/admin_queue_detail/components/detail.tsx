@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 import { post } from "../../../../services/api";
 import { useCookies } from "react-cookie";
 import UserInfoCard from "../../../../components/UserCard/UserCard";
@@ -36,7 +36,6 @@ const Admin_QueueDetails: React.FC = () => {
   const [cookies] = useCookies(["auth_token"]);
   const { refreshData } = useAccountData();
   const [openDialog, setOpenDialog] = useState(false);
-
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -75,10 +74,10 @@ const Admin_QueueDetails: React.FC = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-4">
+      <div className="mb-4 max-w-28">
         <button
           onClick={() => navigate("/admin-queue")}
-          className="text-white flex items-center gap-2"
+          className="text-white flex items-center gap-2 bg-black"
         >
           ← ย้อนกลับ
         </button>
@@ -115,7 +114,7 @@ const Admin_QueueDetails: React.FC = () => {
           {/* Cancel button */}
           <div className="flex justify-end mt-4">
             <button
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded max-w-36"
               onClick={handleOpenDialog}
             >
               ยกเลิกคิว

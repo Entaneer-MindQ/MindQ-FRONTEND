@@ -77,7 +77,7 @@ const Admin_QueueDetails: React.FC = () => {
       <div className="mb-4 max-w-28">
         <button
           onClick={() => navigate("/admin-queue")}
-          className="text-white flex items-center gap-2 bg-black"
+          className="text-black flex items-center gap-2 bg-white hover:bg-blue-300"
         >
           ← ย้อนกลับ
         </button>

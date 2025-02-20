@@ -38,6 +38,7 @@ const useAccountData = () => {
           faculty: basicInfo.organization_name_TH,
           major: basicInfo.organization_name_EN,
           degree: basicInfo.organization_code,
+          mind_code: "", // Add appropriate value for mind_code
           role: basicInfo.itaccounttype_TH,
           name: basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH),
           name_EN: basicInfo.cmuitaccount_name,

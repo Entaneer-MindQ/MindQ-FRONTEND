@@ -6,6 +6,7 @@ import ProfileCard from "../components/ProfileCard/ProfileCard";
 import AppointmentCard from "../components/AppointmentCard/AppointmentCard";
 import CancellationDialog from "../components/CancellationDialog/CancellationDialog";
 import useAccountData from "../hooks/useAccountData";
+import "../styles/global.css";
 
 // Account.tsx
 const Account: React.FC = () => {
@@ -41,11 +42,11 @@ const Account: React.FC = () => {
                 flexWrap: "wrap",
               }}
             >
-              <EventNoteIcon sx={{ mr: 1, color: "#943131" }} />
+              <EventNoteIcon sx={{ mr: 1, color: "var(--primary-color)" }} />
               <Typography
                 variant={isMobile ? "h6" : "h5"}
                 component="h2"
-                color="#943131"
+                color="var(--primary-color)"
               >
                 นัดหมายปัจจุบัน
               </Typography>

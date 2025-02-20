@@ -1,5 +1,6 @@
 import React from "react";
 import { TextField, Box } from "@mui/material";
+import "../../styles/global.css";
 
 interface DescriptionFieldProps {
   value: string;
@@ -27,7 +28,7 @@ const DescriptionField: React.FC<DescriptionFieldProps> = ({
       sx={{
         "& .MuiOutlinedInput-root": {
           "&.Mui-focused fieldset": {
-            borderColor: isValid ? "#4CAF50" : "#943131",
+            borderColor: isValid ? "#4CAF50" : "var(--primary-color)",
           },
         },
       }}

@@ -12,9 +12,9 @@ export const CustomStepper: React.FC<CustomStepperProps> = ({
       <Typography
         variant={isMobile ? "subtitle1" : "h6"}
         sx={{
-          color: "#943131",
+          color: "var(--primary-color)",
           mb: 2,
-          borderBottom: "2px solid #943131",
+          borderBottom: "2px solid var(--primary-color)",
           pb: 1,
           textAlign: isMobile ? "center" : "left",
         }}
@@ -38,7 +38,7 @@ export const CustomStepper: React.FC<CustomStepperProps> = ({
               StepIconComponent={() => (
                 <Box
                   sx={{
-                    color: "#943131",
+                    color: "var(--primary-color)",
                     display: "flex",
                     alignItems: "center",
                   }}

@@ -6,6 +6,7 @@ import { CaseCard } from "../components/CaseView/CaseCard";
 import { CaseStats } from "../components/CaseView/CaseStats";
 import { LoadingState } from "../components/CaseView/LoadingState";
 import { ErrorState } from "../components/CaseView/ErrorState";
+import "../styles/global.css";
 
 const CaseView = () => {
   const { cases, loading, error } = useCases();
@@ -35,7 +36,7 @@ const CaseView = () => {
         >
           <Box
             sx={{
-              bgcolor: "#943131",
+              bgcolor: "var(--primary-color)",
               color: "white",
               p: 3,
               display: "flex",

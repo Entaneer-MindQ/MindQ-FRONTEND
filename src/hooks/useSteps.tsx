@@ -6,6 +6,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { StepButton } from "../components/HomeCard/StepButton";
+import "../styles/global.css";
 
 const useSteps = (isMobile: boolean) => {
   const navigate = useNavigate();
@@ -24,8 +25,8 @@ const useSteps = (isMobile: boolean) => {
           icon={<CaseOpenIcon />}
           onClick={handleCaseOpen}
           isMobile={isMobile}
-          backgroundColor="#943131"
-          hoverColor="#7a2929"
+          backgroundColor="var(--primary-color)"
+          hoverColor="var(--hover-color)"
         >
           เริ่มต้นเปิดเคส
         </StepButton>

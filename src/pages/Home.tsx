@@ -5,6 +5,7 @@ import { CustomStepper } from "../components/HomeCard/CustomStepper";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { useResponsive } from "../hooks/useResponsive";
 import useSteps from "../hooks/useSteps";
+import "../styles/global.css";
 
 const Home: React.FC = () => {
   const { userProfile, loading } = useUserProfile();
@@ -49,7 +50,7 @@ const Home: React.FC = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: isMobile ? "center" : "flex-start",
-            color: "#943131",
+            color: "var(--primary-color)",
             mb: 3,
             flexWrap: "wrap",
           }}

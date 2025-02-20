@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
+import { Typography } from "@mui/material";
 import { post } from "../../../../services/api";
 import { useCookies } from "react-cookie";
 import UserInfoCard from "../../../../components/UserCard/UserCard";
@@ -37,26 +37,30 @@ const Admin_QueueDetails: React.FC = () => {
   const { refreshData } = useAccountData();
   const [openDialog, setOpenDialog] = useState(false);
   const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => setOpenDialog(false);
-  useEffect(() => {
-    const fetchQueueDetails = async () => {
-      try {
-        const response = (await post("/api/getQueueDetails", {
-          token: cookies["auth_token"],
-          qid: queueId,
-        })) as ApiResponse;
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    fetchQueueDetails(); // Re-fetch queue details after closing the dialog
+  };
 
-        if (response.status === 200) {
-          setQueueDetails(response.queue_data);
-          setUserProfile(response.user_data);
-          setMindData(response.mind_data);
-        }
-      } catch (error) {
-        console.error("Error fetching queue details:", error);
-        navigate("/admin-queue");
+  const fetchQueueDetails = async () => {
+    try {
+      const response = (await post("/api/getQueueDetails", {
+        token: cookies["auth_token"],
+        qid: queueId,
+      })) as ApiResponse;
+
+      if (response.status === 200) {
+        setQueueDetails(response.queue_data);
+        setUserProfile(response.user_data);
+        setMindData(response.mind_data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching queue details:", error);
+      navigate("/admin-queue");
+    }
+  };
 
+  useEffect(() => {
     if (queueId) {
       fetchQueueDetails();
     } else {
@@ -70,10 +74,10 @@ const Admin_QueueDetails: React.FC = () => {
 
   return (
     <div className="p-4">
-      <div className="mb-4">
+      <div className="mb-4 max-w-28">
         <button
           onClick={() => navigate("/admin-queue")}
-          className="text-white flex items-center gap-2"
+          className="text-black flex items-center gap-2 bg-white hover:bg-blue-300"
         >
           ← ย้อนกลับ
         </button>
@@ -110,7 +114,7 @@ const Admin_QueueDetails: React.FC = () => {
           {/* Cancel button */}
           <div className="flex justify-end mt-4">
             <button
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded max-w-36"
               onClick={handleOpenDialog}
             >
               ยกเลิกคิว

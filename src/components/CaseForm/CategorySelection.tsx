@@ -10,6 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import "../../styles/global.css";
 
 interface CategorySelectionProps {
   categories: string[];
@@ -65,11 +66,11 @@ const CategorySelection: React.FC<CategorySelectionProps> = ({
               borderColor: selectedCategories.includes(category)
                 ? isValid
                   ? "#4CAF50"
-                  : "#943131"
+                  : "var(--primary-color)"
                 : "grey.300",
               "&:hover": {
                 bgcolor: "#f5e6e6",
-                borderColor: isValid ? "#4CAF50" : "#943131",
+                borderColor: isValid ? "#4CAF50" : "var(--primary-color)",
               },
               transition: "all 0.2s ease-in-out",
             }}
@@ -80,9 +81,9 @@ const CategorySelection: React.FC<CategorySelectionProps> = ({
                 <Checkbox
                   checked={selectedCategories.includes(category)}
                   sx={{
-                    color: isValid ? "#4CAF50" : "#943131",
+                    color: isValid ? "#4CAF50" : "var(--primary-color)",
                     "&.Mui-checked": {
-                      color: isValid ? "#4CAF50" : "#943131",
+                      color: isValid ? "#4CAF50" : "var(--primary-color)",
                     },
                   }}
                 />

@@ -15,6 +15,8 @@ import RoleSelection from "../components/CaseForm/RoleSelection";
 import StepProgress from "../components/CaseForm/StepProgress";
 import ProgressIndicator from "../components/CaseForm/ProgressIndicator";
 import { useCaseForm } from "../hooks/useCaseForm";
+import ContactInfoField from "../components/CaseForm/ContactInfoField";
+import "../styles/global.css";
 
 const categories = [
   "ความสัมพันธ์",
@@ -95,7 +97,7 @@ const CaseOpen: React.FC = () => {
         {/* Header */}
         <Box
           sx={{
-            bgcolor: "#943131",
+            bgcolor: "var(--primary-color)",
             color: "white",
             p: { xs: 2, sm: 3 },
           }}
@@ -124,6 +126,21 @@ const CaseOpen: React.FC = () => {
         </Box>
 
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+          {/* เพิ่มคอมโพเนนต์สำหรับรับชื่อเล่นและเบอร์โทรศัพท์ */}
+          <ContactInfoField
+            nickname={formData.nickname}
+            phone={formData.phone}
+            onChange={(field, value) => {
+              setFormData((prev) => ({ ...prev, [field]: value }));
+              setErrors((prev) => ({ ...prev, [field]: false }));
+            }}
+            error={{
+              nickname: errors.nickname,
+              phone: errors.phone,
+            }}
+            isValid={stepStatus.contact}
+          />
+
           <FacebookField
             value={formData.facebookURL}
             onChange={(value) => {
@@ -182,7 +199,8 @@ const CaseOpen: React.FC = () => {
               disabled={
                 !stepStatus.facebook ||
                 !stepStatus.categories ||
-                !stepStatus.details
+                !stepStatus.details ||
+                !stepStatus.contact
               }
               fullWidth={isMobile}
               sx={{

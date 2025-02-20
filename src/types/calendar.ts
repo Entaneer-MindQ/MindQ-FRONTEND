@@ -52,6 +52,7 @@ export interface CalendarDayProps {
   day: CalendarDay;
   isDateAvailable: boolean;
   onDateSelect: (dayNumber: number) => void;
+  isPastDate: boolean; // เพิ่ม prop นี้
 }
 
 export interface CalendarGridProps {
@@ -59,6 +60,7 @@ export interface CalendarGridProps {
   isDateAvailable: (day: number) => boolean;
   isHoliday: (day: number) => Holiday | undefined;
   onDateSelect: (dayNumber: number) => void;
+  isPastDate: (day: number) => boolean; // เพิ่ม prop นี้
 }
 
 export interface BookingState {

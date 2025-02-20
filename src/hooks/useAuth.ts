@@ -7,6 +7,7 @@ import { post } from "../services/api";
 export const useAuth = () => {
   const [cookies, removeCookie] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [mind_code, setMind_code] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,11 +19,16 @@ export const useAuth = () => {
       const response = (await post("/api/user/profile", {
         token: cookies["auth_token"],
       })) as ApiResponse;
-
-      if (response.status === 200 && response.data?.cmuBasicInfo) {
-        const basicInfo = response.data.cmuBasicInfo;
+      if (
+        response.status === 200 &&
+        response.data?.userData.cmuBasicInfo &&
+        response.data?.mind_code
+      ) {
+        const basicInfo = response.data.userData.cmuBasicInfo;
+        const mind_code = response.data.mind_code;
+        console.log(mind_code);
         const name = basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH);
-
+        setMind_code(mind_code);
         setUserProfile({
           personalID: basicInfo.student_id,
           email: basicInfo.cmuitaccount,
@@ -73,6 +79,7 @@ export const useAuth = () => {
     userProfile,
     isLogin,
     error,
+    mind_code,
     logout,
     fetchUserProfile,
   };

@@ -19,8 +19,8 @@ export const useUserProfile = () => {
           token: cookies["auth_token"],
         })) as ApiResponse;
 
-        if (response.status === 200 && response.data?.cmuBasicInfo) {
-          const basicInfo: CMUBasicInfo = response.data.cmuBasicInfo;
+        if (response.status === 200 && response.data?.userData.cmuBasicInfo) {
+          const basicInfo: CMUBasicInfo = response.data.userData.cmuBasicInfo;
           setUserProfile({
             personalID: basicInfo.student_id,
             email: basicInfo.cmuitaccount,

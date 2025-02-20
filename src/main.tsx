@@ -20,6 +20,7 @@ import { ProtectedCalendarRoute } from "../src/routes/ProtectedCalendarRoute";
 import { BookingProvider } from "./context/BookingContext";
 import AdminNotAvailablePage from "./pages/admin/admin_notavailable/page";
 import Admin_History_page from "./pages/admin/admin_history/page";
+import Admin_appointment from "./pages/admin/admin_apppointment/page";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -48,7 +49,9 @@ root.render(
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />
+              {/* <Route path="/appointment" element={<Admin_appointment />} /> */}
             </Route>
+            <Route path="/appointment" element={<Admin_appointment />} /> {/* wait for delete */}
             <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>
         </Routes>

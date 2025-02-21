@@ -4,24 +4,17 @@ import { useNavigation } from "../hooks/useNavigation";
 import { NavLink } from "../components/nav/NavLink";
 import { MenuButton } from "../components/nav/MenuButton";
 import { NavItem } from "../types/nav";
-import { useNavigate } from "react-router-dom";
-import "../styles/global.css";
 
 const Navbar: React.FC = () => {
-  const { userProfile, isLogin, logout, mind_code} = useAuth();
+  const { userProfile, isLogin, logout } = useAuth();
   const navigation = useNavigation();
-  const navigate = useNavigate();
 
+  // สร้างฟังก์ชันสำหรับจัดการการปิด mobile menu
   const handleNavClick = () => {
     if (navigation.isMobileMenuOpen) {
       navigation.setIsMobileMenuOpen(false);
     }
   };
-
-  const handleHistoryClick = (path: string) => {
-      navigate(path);
-  };
-
   const navItems: NavItem[] = [
     {
       icon: (
@@ -132,9 +125,9 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "History",
-      path: `/history/${mind_code}`,
+      path: "/history",
     },
-    ...(userProfile?.personalID === "650610796" && isLogin
+    ...(userProfile?.personalID === "650610749" && isLogin
       ? [
           {
             icon: (
@@ -183,15 +176,16 @@ const Navbar: React.FC = () => {
         ]
       : []),
   ];
-
   return (
     <>
+      {/* Mobile Menu Button */}
       <MenuButton
         isOpen={navigation.isMobileMenuOpen}
         onClick={navigation.toggleMobileMenu}
         className="xl:hidden"
       />
 
+      {/* Mobile and Regular iPad Menu */}
       <nav
         className={`
           xl:hidden fixed top-0 left-0 w-64 md:w-72 h-full bg-[var(--primary-color)]
@@ -210,15 +204,13 @@ const Navbar: React.FC = () => {
               showLogoutDialog={navigation.showLogoutDialog}
               onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
               onLogoutConfirm={logout}
-              onNavClick={() => {
-                handleNavClick();
-                handleHistoryClick(item.path);
-              }}
+              onNavClick={handleNavClick} // เพิ่ม prop ใหม่
             />
           ))}
         </div>
       </nav>
 
+      {/* Desktop and iPad Pro Sidebar */}
       <nav className="hidden xl:flex fixed left-0 top-0 h-full w-20 md:w-24 bg-[var(--primary-color)] flex-col">
         {navItems.map((item, index) => (
           <NavLink
@@ -229,11 +221,12 @@ const Navbar: React.FC = () => {
             showLogoutDialog={navigation.showLogoutDialog}
             onLogoutDialogClose={() => navigation.setShowLogoutDialog(false)}
             onLogoutConfirm={logout}
-            onNavClick={() => handleHistoryClick(item.path)}
+            // ไม่จำเป็นต้องส่ง onNavClick ให้กับ desktop version
           />
         ))}
       </nav>
 
+      {/* Overlay */}
       {navigation.isMobileMenuOpen && (
         <div
           className="xl:hidden fixed inset-0 bg-black bg-opacity-50 z-30"

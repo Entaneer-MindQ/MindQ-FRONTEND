@@ -36,6 +36,7 @@ const Admin_QueueDetails: React.FC = () => {
   const [cookies] = useCookies(["auth_token"]);
   const { refreshData } = useAccountData();
   const [openDialog, setOpenDialog] = useState(false);
+
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => {
     setOpenDialog(false);

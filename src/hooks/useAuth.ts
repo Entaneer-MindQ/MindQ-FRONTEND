@@ -20,11 +20,9 @@ export const useAuth = () => {
         token: cookies["auth_token"],
       })) as ApiResponse;
 
-      if (response.status === 200 && response.data?.userData.cmuBasicInfo && response.data?.mind_code) {
+      if (response.status === 200 && response.data?.userData.cmuBasicInfo) {
         const basicInfo = response.data.userData.cmuBasicInfo;
-        const mind_code = response.data.mind_code;
         const name = basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH);
-        setMind_code(mind_code);
         setUserProfile({
           personalID: basicInfo.student_id,
           email: basicInfo.cmuitaccount,
@@ -35,8 +33,10 @@ export const useAuth = () => {
           name: name,
           name_EN: basicInfo.cmuitaccount_name,
         });
-
-        console.log("Updated userProfile:", response.data);
+        if (response.data?.mind_code) {
+          const mind_code = response.data.mind_code;
+          setMind_code(mind_code);
+        }
         setIsLogin(true);
       } else if (response.status === 404) {
         console.log("No user profile found");

@@ -73,7 +73,7 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
     }
   }, [location.state, navigate]);
 
-  const fetchAvailableSlots = async (date: number, month: string) => {
+  const fetchAvailableSlots = async (date: number, Month: string) => {
     try {
       const token = cookies["auth_token"];
       const response = (await post("/api/getNotAvailableTimesbyPhyId", {
@@ -81,26 +81,45 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
       })) as ApiResponse;
 
       if (response.data) {
+        console.log("API Response:", response.data);
+
+        // แยก Month string (เช่น "เมษายน 2025")
+        const [selectedMonth, selectedYear] = Month.split(" ");
+        // แปลงปี ค.ศ. เป็น พ.ศ.
+        const thaiYear = parseInt(selectedYear) + 543;
+
+        console.log("Selected Month:", selectedMonth);
+        console.log("Thai Year:", thaiYear);
+
         // หา unavailable slots สำหรับวันที่เลือก
         const matchingDate = response.data.find((item) => {
           // แยกวันที่ออกเป็นส่วนๆ
           const [day, month, year] = item.start_date.split(" ");
+          console.log("Comparing:");
+          console.log("Day:", day, "vs", date);
+          console.log("Month:", month, "vs", selectedMonth);
+          console.log("Year:", year, "vs", thaiYear);
+
           // แปลงวันที่เป็นตัวเลข
           const itemDate = parseInt(day);
-          // เปรียบเทียบวันที่และเดือน
-          return itemDate === date && month === month;
+          // เปรียบเทียบวันที่, เดือน และปี
+          return (
+            itemDate === date &&
+            month === selectedMonth &&
+            parseInt(year) === thaiYear
+          );
         });
-
-        const allSlotIds = slotOptions.map((slot) => slot.id);
 
         if (!matchingDate) {
           // ถ้าไม่พบข้อมูลของวันที่เลือก แสดงว่าทุก slot ว่าง
-          setAvailableSlots(allSlotIds);
+          setAvailableSlots([1, 2, 3, 4, 5, 6]);
         } else {
+          console.log("Matching Date:", matchingDate);
           // ถ้าพบข้อมูล ให้แสดงเฉพาะ slot ที่ไม่อยู่ใน Slot array
-          const availableSlotIds = allSlotIds.filter(
+          const availableSlotIds = [1, 2, 3, 4, 5, 6].filter(
             (id) => !matchingDate.Slot.includes(id)
           );
+          console.log("Available Slots:", availableSlotIds);
           setAvailableSlots(availableSlotIds);
         }
       }

@@ -30,8 +30,8 @@ const useAccountData = () => {
         token: cookies["auth_token"],
       })) as ApiResponse;
 
-      if (response.status === 200 && response.data?.cmuBasicInfo) {
-        const basicInfo = response.data.cmuBasicInfo;
+      if (response.status === 200 && response.data?.userData.cmuBasicInfo) {
+        const basicInfo = response.data.userData.cmuBasicInfo;
         setUserProfile({
           personalID: basicInfo.student_id,
           email: basicInfo.cmuitaccount,

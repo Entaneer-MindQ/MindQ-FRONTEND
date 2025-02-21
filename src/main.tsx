@@ -13,12 +13,14 @@ import PrivateRoute from "./routes/privateRoute";
 import ConfirmBookingPage from "./pages/ConfirmBookingPage";
 import { UserProvider } from "./context/UserContext";
 import History from "./pages/HistoryPage";
-import Admin_Request  from "./pages/admin/admin_request/Page";
+import Admin_Request from "./pages/admin/admin_request/Page";
 import Admin_AllQueue from "./pages/admin/admin_queue/page";
-import Admin_QueueDetails from "./pages/admin/admin_queue_detail/page"
+import Admin_QueueDetails from "./pages/admin/admin_queue_detail/page";
 import { ProtectedCalendarRoute } from "../src/routes/ProtectedCalendarRoute";
 import { BookingProvider } from "./context/BookingContext";
-import AdminNotAvailablePage  from "./pages/admin/admin_notavailable/page";
+import AdminNotAvailablePage from "./pages/admin/admin_notavailable/page";
+import HomePage from "./pages/admin/HomePage";
+import PatientHistory from "./pages/admin/PatientHistory";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -33,14 +35,19 @@ root.render(
 
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
+            <Route path="/home-page" element={<HomePage />} />
             <Route path="/case-open" element={<Opencase />} />
             <Route path="/case" element={<CaseView />} />
             <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
+            <Route path="/patient-history" element={<PatientHistory />} />
             <Route path="/account" element={<Account />} />
             <Route path="/history" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />
-            <Route path="/admin-notavailable" element={<AdminNotAvailablePage />} />
+            <Route
+              path="/admin-notavailable"
+              element={<AdminNotAvailablePage />}
+            />
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />

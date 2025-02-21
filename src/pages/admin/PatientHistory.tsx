@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Box, Tab, NativeSelect } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import {
-  Link,
+  Box,
+  TextField,
+  FormControl,
+  NativeSelect,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
   Paper,
+  Button,
+  Pagination,
 } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { post } from "../../services/api";
@@ -17,35 +19,54 @@ import { post } from "../../services/api";
 interface ApiResponse {
   status: number;
   data: Array<{
-    cid: number;
-    personalID: string;
-    name: string;
-    topic: string[];
-    description: string;
-    role: string;
-    facebook: string;
-    email: string;
-    created_at: string;
-    updated_at: string;
+    mind_code: string;
+    nickname: string;
+    phone: string;
   }>;
 }
 
+const ITEMS_PER_PAGE = 15; // จำนวนข้อมูลต่อหน้า
+
 const PatientHistory: React.FC = () => {
+  const [year, setYear] = useState<string>("2024");
+  const [search, setSearch] = useState<string>("");
   const [data, setData] = useState<ApiResponse["data"] | null>(null);
+  const [page, setPage] = useState<number>(1); // หน้าปัจจุบัน
   const [cookies] = useCookies(["auth_token"]);
-  console.log(cookies);
+
+  // เปลี่ยนปี
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setYear(event.target.value);
+  };
+
+  // ค้นหาคนไข้
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+    setPage(1); // รีเซ็ตไปหน้าแรกเมื่อค้นหาใหม่
+  };
+
+  // เปลี่ยนหน้า
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
+  // ดึงข้อมูลจาก API
   const fetchData = async () => {
     try {
-      const response = (await post("/api/viewAllOpeningCase", {
-        token: cookies["auth_token"],
-      })) as ApiResponse;
+      const requestBody = { token: cookies["auth_token"] };
+      const response = (await post(
+        "/api/viewAllOpenigzipperOpeningCaseAndMindData",
+        requestBody
+      )) as ApiResponse;
 
-      if (!response || response.status !== 200) {
+      if (response?.status === 200) {
+        setData(response.data);
+      } else {
         throw new Error("Failed to fetch data");
       }
-
-      setData(response.data);
-      console.log(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -55,188 +76,95 @@ const PatientHistory: React.FC = () => {
     fetchData();
   }, [cookies]);
 
-  const [year, setYear] = useState<string>();
-  const [tab, setTab] = useState<string>("1");
+  // กรองข้อมูลตาม search
+  const filteredPatients = data
+    ? data.filter(
+        (patient) =>
+          patient.nickname.includes(search) ||
+          patient.mind_code.includes(search)
+      )
+    : [];
 
-  const handleYearChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ): void => {
-    setYear(event.target.value as string);
-  };
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
-    setTab(newValue);
-  };
-
-  const registeredPatients = [
-    { id: "2025/001", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/002", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/003", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/004", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/005", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/006", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/007", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/008", detail: "กดเพื่อดูรายละเอียด" },
-    { id: "2025/009", detail: "กดเพื่อดูรายละเอียด" },
-  ];
-
-  const newPatients = [
-    { id: "N2025/001", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/002", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/003", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/004", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/005", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/006", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/007", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/008", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-    { id: "N2025/009", detail: "ผู้ป่วยใหม่ รายละเอียดที่นี่" },
-  ];
+  // คำนวณหน้าที่ต้องแสดง
+  const totalPages = Math.ceil(filteredPatients.length / ITEMS_PER_PAGE);
+  const displayedPatients = filteredPatients.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
 
   return (
-    <div>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          p: 2,
-        }}
+    <Box sx={{ maxWidth: 600, margin: "auto", textAlign: "center", p: 2 }}>
+      {/* Header */}
+      <Box sx={{ fontSize: "20px", fontWeight: "bold", mb: 2 }}>
+        กรุณาเลือกคนไข้เพื่อนัดเคสต่อ
+      </Box>
+
+      {/* Year & Search */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <FormControl>
+          <NativeSelect value={year} onChange={handleYearChange}>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+          </NativeSelect>
+        </FormControl>
+
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="ค้นหาชื่อ หรือรหัสคนไข้"
+          value={search}
+          onChange={handleSearchChange}
+        />
+      </Box>
+
+      {/* Table */}
+      <TableContainer
+        component={Paper}
+        sx={{ maxHeight: 400, overflowY: "auto" }}
       >
-        <Box
-          component="section"
-          sx={{
-            p: 2,
-            fontSize: "40px",
-            fontWeight: "bold",
-            alignItems: "flex-start",
-          }}
-        >
-          Patients History
-        </Box>
-        <Box
-          sx={{
-            p: 2,
-            fontSize: "25px",
-            alignItems: "flex-start",
-          }}
-        >
-          <Box>
-            <label htmlFor="year-select" style={{ marginRight: "10px" }}>
-              Years
-            </label>
+        <Table>
+          <TableBody>
+            {displayedPatients.length > 0 ? (
+              displayedPatients.map((patient, index) => (
+                <TableRow
+                  key={index}
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? "#f5f5f5" : "#ffffff",
+                  }}
+                >
+                  <TableCell>
+                    {patient.mind_code} - {patient.nickname}
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button variant="contained" color="primary" size="small">
+                      จองคิว
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={2} align="center">
+                  ไม่พบข้อมูล
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-            <FormControl>
-              <NativeSelect defaultValue={year}>
-                <option value={2025}>2025</option>
-              </NativeSelect>
-            </FormControl>
-          </Box>
-        </Box>
+      {/* Pagination */}
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        {totalPages > 1 && (
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+          />
+        )}
       </Box>
-
-      <Box sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={tab}>
-          <Box sx={{ borderColor: "divider" }}>
-            <TabList
-              sx={{
-                display: "flex", // ใช้ Flexbox
-                justifyContent: "center", // จัดกึ่งกลาง
-                width: "100%", // ให้ TabList ขยายเต็มความกว้าง
-              }}
-              onChange={handleTabChange}
-              centered
-              textColor="primary"
-              indicatorColor="primary"
-            >
-              <Tab
-                label="ผู้ป่วยลงทะเบียนแล้ว"
-                value="1"
-                sx={{
-                  flexGrow: 1, // ให้ Tab ขยายตัวตามพื้นที่ว่าง
-                  maxWidth: "none", // ปิดการจำกัดความกว้าง
-                }}
-              />
-              <Tab
-                label="ผู้ป่วยใหม่"
-                value="2"
-                sx={{
-                  flexGrow: 1, // ให้ Tab ขยายตัวตามพื้นที่ว่าง
-                  maxWidth: "none", // ปิดการจำกัดความกว้าง
-                }}
-              />
-            </TabList>
-          </Box>
-
-          {/* TabPanel for Registered Patients */}
-          <TabPanel value="1">
-            <TableContainer
-              component={Paper}
-              sx={{
-                maxHeight: 400,
-                overflow: "auto", // เพิ่ม Scroll ได้
-              }}
-            >
-              <Table stickyHeader>
-                <TableBody>
-                  {registeredPatients.map((patient, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        backgroundColor:
-                          index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-                      }}
-                    >
-                      <TableCell sx={{ color: "black" }}>
-                        {patient.id}
-                      </TableCell>
-                      <TableCell>
-                        <Link href="#" underline="hover" color="primary">
-                          {patient.detail}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-
-          {/* TabPanel for New Patients */}
-          <TabPanel value="2">
-            <TableContainer
-              component={Paper}
-              sx={{
-                maxHeight: 400,
-                overflow: "auto", // เพิ่ม Scroll ได้
-              }}
-            >
-              <Table stickyHeader>
-                <TableBody>
-                  {newPatients.map((patient, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        backgroundColor:
-                          index % 2 === 0 ? "#f5f5f5" : "#ffffff",
-                      }}
-                    >
-                      <TableCell sx={{ color: "black" }}>
-                        {patient.id}
-                      </TableCell>
-                      <TableCell>
-                        <Link href="#" underline="hover" color="primary">
-                          {patient.detail}
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        </TabContext>
-      </Box>
-    </div>
+    </Box>
   );
 };
 

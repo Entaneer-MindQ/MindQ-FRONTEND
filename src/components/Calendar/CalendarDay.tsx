@@ -1,10 +1,12 @@
 import React from "react";
 import { CalendarDayProps } from "../../types/calendar";
+import "../../styles/global.css";
 
 export const CalendarDay: React.FC<CalendarDayProps> = ({
   day,
   isDateAvailable,
   onDateSelect,
+  isPastDate, // รับ prop
 }) => {
   const { dayNumber, isCurrentMonth, isToday, holiday } = day;
 
@@ -18,8 +20,12 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
     <div
       className={`
         h-full p-1.5 relative border rounded-lg transition-all duration-200
-        bg-white hover:shadow-md
-        ${isToday ? "border-red-900 border-2" : "border-gray-200"}
+        ${
+          (!isDateAvailable && !holiday) || isPastDate
+            ? "bg-gray-100"
+            : "bg-white hover:shadow-md"
+        }
+        ${isToday ? "border-[var(--error-color)] border-2" : "border-gray-200"}
       `}
     >
       <div className="h-full relative flex flex-col">
@@ -31,10 +37,18 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
               w-6 h-6 sm:w-7 sm:h-7
               text-xs sm:text-sm
               rounded-full
-              ${holiday ? "bg-red-100 text-red-900" : "text-gray-900"}
+              ${
+                isPastDate
+                  ? "text-gray-400"
+                  : holiday
+                  ? "bg-[var(--accent-color)] text-[var(--text-color)]"
+                  : isDateAvailable
+                  ? "text-gray-900"
+                  : "text-gray-400"
+              }
               ${
                 isToday
-                  ? "font-bold bg-white text-red-900 border-2 border-red-900"
+                  ? "font-bold bg-white text-[var(--error-color)] border-2 border-[var(--error-color)]"
                   : ""
               }
             `}
@@ -44,10 +58,10 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
         </div>
 
         {/* Holiday info */}
-        {holiday && (
+        {holiday && !isPastDate && (
           <div className="flex-1 relative group mt-1 min-h-[20px]">
-            <div className="p-1 bg-red-50 rounded-md">
-              <p className="text-[10px] sm:text-xs text-red-900 line-clamp-2 break-words">
+            <div className="p-1 bg-[var(--accent-color)] bg-opacity-20 rounded-md">
+              <p className="text-[10px] sm:text-xs text-[var(--text-color)] line-clamp-2 break-words">
                 {holiday.description}
               </p>
             </div>
@@ -57,7 +71,7 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
                           w-48 p-2 bg-white border rounded-lg shadow-lg"
             >
               <div className="space-y-1">
-                <p className="text-xs sm:text-sm font-medium text-red-900">
+                <p className="text-xs sm:text-sm font-medium text-[var(--text-color)]">
                   {holiday.description}
                 </p>
                 {holiday.lunardate && (
@@ -70,12 +84,21 @@ export const CalendarDay: React.FC<CalendarDayProps> = ({
           </div>
         )}
 
+        {/* Not available indicator */}
+        {!isDateAvailable && !holiday && !isPastDate && (
+          <div className="flex-1 relative mt-1 min-h-[20px]">
+            <div className="p-1 bg-gray-100 rounded-md">
+              <p className="text-[10px] sm:text-xs text-gray-500 text-center"></p>
+            </div>
+          </div>
+        )}
+
         {/* Available button */}
-        {isDateAvailable && (
+        {isDateAvailable && !isPastDate && (
           <div className="absolute bottom-1 left-1 right-1">
             <button
               className="w-full py-1 rounded-md text-[10px] sm:text-xs font-medium 
-                bg-red-900 hover:bg-red-800 text-white shadow-sm hover:shadow
+                bg-[var(--primary-color)] hover:bg-[var(--hover-color)] text-white shadow-sm hover:shadow
                 transition-colors duration-200"
               onClick={() => onDateSelect(dayNumber)}
             >

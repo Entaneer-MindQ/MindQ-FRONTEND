@@ -7,6 +7,7 @@ import { post } from "../services/api";
 export const useAuth = () => {
   const [cookies, removeCookie] = useCookies(["auth_token"]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [mind_code, setMind_code] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,10 +20,9 @@ export const useAuth = () => {
         token: cookies["auth_token"],
       })) as ApiResponse;
 
-      if (response.status === 200 && response.data?.cmuBasicInfo) {
-        const basicInfo = response.data.cmuBasicInfo;
+      if (response.status === 200 && response.data?.userData.cmuBasicInfo) {
+        const basicInfo = response.data.userData.cmuBasicInfo;
         const name = basicInfo.firstname_TH.concat(" ", basicInfo.lastname_TH);
-
         setUserProfile({
           personalID: basicInfo.student_id,
           email: basicInfo.cmuitaccount,
@@ -33,8 +33,10 @@ export const useAuth = () => {
           name: name,
           name_EN: basicInfo.cmuitaccount_name,
         });
-
-        console.log("Updated userProfile:", response.data);
+        if(response.data?.mind_code) {
+          const mind_code = response.data.mind_code;
+          setMind_code(mind_code);
+        }
         setIsLogin(true);
       } else if (response.status === 404) {
         console.log("No user profile found");
@@ -73,6 +75,7 @@ export const useAuth = () => {
     userProfile,
     isLogin,
     error,
+    mind_code,
     logout,
     fetchUserProfile,
   };

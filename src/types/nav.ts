@@ -35,7 +35,10 @@ export interface ApiResponse {
   status: number;
   message?: string;
   data?: {
-    cmuBasicInfo: ResponseData;
+    userData : {
+      cmuBasicInfo : ResponseData,
+    }
+    mind_code : string
   };
 }
 

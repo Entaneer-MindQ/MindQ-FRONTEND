@@ -41,6 +41,7 @@ root.render(
             <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
             <Route path="/admin-jong" element={<AdminJong />} />
+            {/*adminJong is new admin_appointment*/}
             <Route path="/account" element={<Account />} />
             <Route path="/history" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />

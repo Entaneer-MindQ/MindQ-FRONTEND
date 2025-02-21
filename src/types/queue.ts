@@ -11,7 +11,9 @@ export interface Queue {
 export interface ApiResponse {
   status: number;
   data: {
-    cmuBasicInfo: responseData;
+    userData:{
+      cmuBasicInfo: responseData;
+    }
   };
 }
 

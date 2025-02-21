@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCookies } from "react-cookie";
 import { post } from "../../../../services/api";
+import "./style.css";
 
 
 interface SlotOption {

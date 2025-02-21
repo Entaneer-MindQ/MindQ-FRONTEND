@@ -20,7 +20,7 @@ import { ProtectedCalendarRoute } from "../src/routes/ProtectedCalendarRoute";
 import { BookingProvider } from "./context/BookingContext";
 import AdminNotAvailablePage from "./pages/admin/admin_notavailable/page";
 import HomePage from "./pages/admin/HomePage";
-import PatientHistory from "./pages/admin/PatientHistory";
+import AdminJong from "./pages/admin/adminJong";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -40,7 +40,7 @@ root.render(
             <Route path="/case" element={<CaseView />} />
             <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
-            <Route path="/patient-history" element={<PatientHistory />} />
+            <Route path="/admin-jong" element={<AdminJong />} />
             <Route path="/account" element={<Account />} />
             <Route path="/history" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />

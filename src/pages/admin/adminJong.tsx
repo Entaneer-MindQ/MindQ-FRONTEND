@@ -27,7 +27,7 @@ interface ApiResponse {
 
 const ITEMS_PER_PAGE = 15; // จำนวนข้อมูลต่อหน้า
 
-const PatientHistory: React.FC = () => {
+const adminJong: React.FC = () => {
   const [year, setYear] = useState<string>("2024");
   const [search, setSearch] = useState<string>("");
   const [data, setData] = useState<ApiResponse["data"] | null>(null);
@@ -168,4 +168,4 @@ const PatientHistory: React.FC = () => {
   );
 };
 
-export default PatientHistory;
+export default adminJong;

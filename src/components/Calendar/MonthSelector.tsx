@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MonthSelectorProps } from "../../types/calendar";
-
+import "../../styles/global.css";
 export const MonthSelector: React.FC<MonthSelectorProps> = ({
   currentDate,
   availableMonths,
@@ -43,8 +43,8 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
         onClick={() => setShowSelect(!showSelect)}
         className="w-full h-10 px-4 
           text-left text-sm sm:text-base
-          bg-white border-2 border-red-900 text-red-900 rounded-lg 
-          hover:bg-red-50 focus:outline-none
+          bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] rounded-lg 
+          hover:bg-[var(--hover-color)] focus:outline-none
           transition-colors duration-200
           flex items-center justify-between"
       >
@@ -55,15 +55,15 @@ export const MonthSelector: React.FC<MonthSelectorProps> = ({
       {showSelect && (
         <div
           className="absolute z-50 w-full mt-1 
-          bg-white border-2 border-red-900 rounded-lg shadow-lg 
+          bg-white border-2 border-[var(--primary-color)] rounded-lg shadow-lg 
           max-h-60 overflow-y-auto"
         >
           {availableMonths.map((month, index) => (
             <button
               key={index}
               className="w-full h-10 px-4
-                text-left text-sm sm:text-base text-red-900 
-                bg-white hover:bg-red-50 first:rounded-t-md last:rounded-b-md
+                text-left text-sm sm:text-base text-[var(--primary-color)]
+                bg-white hover:bg-[var(--hover-color)] first:rounded-t-md last:rounded-b-md
                 transition-colors duration-200
                 flex items-center"
               onClick={() => handleMonthSelect(month.label)}

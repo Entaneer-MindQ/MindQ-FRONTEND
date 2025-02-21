@@ -7,6 +7,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   isDateAvailable,
   isHoliday,
   onDateSelect,
+  isPastDate,
 }) => {
   const generateCalendarDays = () => {
     const calendarDays = [];
@@ -43,6 +44,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           }}
           isDateAvailable={isCurrentMonth && isDateAvailable(dayNumber)}
           onDateSelect={onDateSelect}
+          isPastDate={isCurrentMonth && isPastDate(dayNumber)} // แก้ไขตรงนี้
         />
       );
     }

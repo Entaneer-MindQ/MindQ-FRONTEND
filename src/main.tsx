@@ -21,6 +21,8 @@ import { BookingProvider } from "./context/BookingContext";
 import AdminNotAvailablePage from "./pages/admin/admin_notavailable/page";
 import HomePage from "./pages/admin/HomePage";
 import AdminJong from "./pages/admin/adminJong";
+import Admin_History_page from "./pages/admin/admin_history/page";
+
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -43,7 +45,7 @@ root.render(
             <Route path="/admin-jong" element={<AdminJong />} />
             {/*adminJong is new admin_appointment*/}
             <Route path="/account" element={<Account />} />
-            <Route path="/history" element={<History />} />
+            <Route path="/history/:mindCode" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />
             <Route
               path="/admin-notavailable"
@@ -52,7 +54,10 @@ root.render(
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />
+              
             </Route>
+           
+            <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>
         </Routes>
       </BookingProvider>

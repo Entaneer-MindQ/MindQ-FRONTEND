@@ -1,5 +1,6 @@
 import React from "react";
 import { CalendarHeaderProps } from "../../types/calendar";
+import "../../styles/global.css";
 
 export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   days,
@@ -11,7 +12,7 @@ export const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         <div
           key={day}
           className="h-8 sm:h-10 flex items-center justify-center 
-            bg-red-900 text-white rounded-md"
+            bg-[var(--primary-color)] text-white rounded-md"
         >
           <span className="text-[11px] sm:text-sm font-medium">
             {/* แสดงตัวอักษรแรก 2 ตัวบน mobile แทนการแสดงตัวเดียว */}

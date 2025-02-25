@@ -19,6 +19,9 @@ interface UserData {
 }
 
 interface MindData {
+  mind_code: string;
+  personalID : string;
+  facebook: string;
   nickname : string;
   email : string;
   phone: string;

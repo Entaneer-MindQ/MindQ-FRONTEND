@@ -1,4 +1,4 @@
-import ProfileBox from "./components/RequestBoxes";
+import ProfileBox from "./components/ProfileBox";
 
 const Admin_Profile = () => {
   return (
@@ -6,12 +6,10 @@ const Admin_Profile = () => {
       style={{
         display: "flex",
         justifyContent: "center",
+        padding: "30px",
       }}
     >
-      <div>
-        <div style={{ padding: "30px", fontSize: "30px" }}>Request Form</div>
-        <ProfileBox></ProfileBox>
-      </div>
+      <ProfileBox></ProfileBox>
     </div>
   );
 };

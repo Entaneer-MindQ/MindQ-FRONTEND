@@ -13,7 +13,7 @@ const Account: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [openDialog, setOpenDialog] = useState(false);
-  const { userProfile, queue, refreshData } = useAccountData();
+  const { userProfile, queue, refreshData, isLoading } = useAccountData();
 
   const handleOpenDialog = () => setOpenDialog(true);
   const handleCloseDialog = () => setOpenDialog(false);
@@ -56,6 +56,7 @@ const Account: React.FC = () => {
               queue={queue}
               isMobile={isMobile}
               onCancelClick={handleOpenDialog}
+              isLoading={isLoading}
             />
           </Paper>
         </Grid>

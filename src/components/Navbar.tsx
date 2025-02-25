@@ -7,7 +7,7 @@ import { NavItem } from "../types/nav";
 import "../styles/global.css";
 
 const Navbar: React.FC = () => {
-  const { userProfile, isLogin, logout } = useAuth();
+  const { userProfile, isLogin, logout, mind_code } = useAuth();
   const navigation = useNavigation();
 
   // สร้างฟังก์ชันสำหรับจัดการการปิด mobile menu
@@ -126,9 +126,9 @@ const Navbar: React.FC = () => {
         </svg>
       ),
       label: "History",
-      path: "/history",
+      path: `/history/${mind_code}`,
     },
-    ...(userProfile?.personalID === "650610749" && isLogin
+    ...(userProfile?.personalID === "650610804" && isLogin
       ? [
           {
             icon: (

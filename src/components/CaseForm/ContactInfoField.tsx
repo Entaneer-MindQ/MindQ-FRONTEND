@@ -20,11 +20,6 @@ const ContactInfoField: React.FC<ContactInfoFieldProps> = ({
   error,
   isValid,
 }) => {
-  const isValidPhoneNumber = (phone: string): boolean => {
-    const phoneRegex = /^(0[689]{1})\d{8}$/;
-    return phoneRegex.test(phone);
-  };
-
   return (
     <Box sx={{ mb: 4 }}>
       <Typography

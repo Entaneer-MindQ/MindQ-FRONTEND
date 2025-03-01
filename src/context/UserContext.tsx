@@ -70,9 +70,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.status === 200) {
         setToken(null);
         localStorage.removeItem("token");
+        // setIsAdmin(false);
+        
         document.cookie =
           "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        setIsAdmin(false);
+        localStorage.removeItem("isAdmin");
       }
     } catch (error) {
       console.error("Error during logout", error);

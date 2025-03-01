@@ -1,10 +1,10 @@
-import React from "react";
-import CalendarDay from "./CalendarDay";
-import { CalendarGridProps } from "../../../types/calendar";
+import React, { useState, useEffect } from "react";
+import CalendarDayComp from "./CalendarDay";
+import { Holiday } from "../../../types/calendar";
 // import { useCookies } from "react-cookie";
 // import { post } from "../../../services/api";
 
-//ของไลก้า
+// ของไลก้า
 // interface Queued_user {
 //   status: number;
 //   data: Array<{
@@ -36,7 +36,56 @@ import { CalendarGridProps } from "../../../types/calendar";
 //   const year = date.getFullYear() + 543;
 //   return `${month} ${year}`;
 // };
+
+// const [cookies] = useCookies(["auth_token"]);
+// const [queuedUsers, setQueuedUsers] = useState<Queued_user["data"] | null>(
+//     null
+//   );
+
+// const fetchData = async () => {
+//       try {
+//         const currentDate = new Date();
+//         const formattedMonth = formatThaiMonth(currentDate);
+//         const requestBody = {
+//           token: cookies["auth_token"],
+//           month: formattedMonth,
+//         };
+
+//         const response = (await post(
+//           "/api/viewAllQueueInMonth",
+//           requestBody
+//         )) as Queued_user;
+//         console.log(response.data);
+//         console.log(response.status);
+
+//         if (response && response.status === 200) {
+//           setQueuedUsers(response.data);
+//         } else {
+//           throw new Error("Failed to fetch data");
+//         }
+//       } catch (error) {
+//         console.error("Error fetching data:", error);
+//       };
+// }
 //ของไลก้าเว้ย
+
+interface Data {
+  qid: number;
+  mind_code: string;
+  // name: string;
+  // tel_num: number;
+  date: string;
+  slot: string;
+}
+
+interface CalendarGridProps {
+  currentDate: Date;
+  isDateAvailable: (day: number) => boolean;
+  isHoliday: (day: number) => Holiday | undefined;
+  onDateSelect: (dayNumber: number) => void;
+  isPastDate: (day: number) => boolean; // เพิ่ม prop นี้
+  respond: Data[] | null;
+}
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({
   currentDate,
@@ -44,6 +93,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   isHoliday,
   onDateSelect,
   isPastDate,
+  respond,
 }) => {
   const generateCalendarDays = () => {
     const calendarDays = [];
@@ -59,8 +109,20 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     ).getDay();
     const totalDays = Math.ceil((daysInMonth + firstDayOfMonth) / 7) * 7;
 
+    const formatThaiDate = (date: Date): string => {
+      return date.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    };
+    // Example Usage
+    console.log("Araikordai");
+    console.log(respond);
     for (let i = 0; i < totalDays; i++) {
       const dayNumber = i - firstDayOfMonth + 1;
+      // const MindCode = respond.filter((DateData) => Datedata.date == i - firstDayOfMonth + 1);
+      
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
       const holiday = isCurrentMonth ? isHoliday(dayNumber) : undefined;
       const isToday =
@@ -70,7 +132,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         new Date().getFullYear() === currentDate.getFullYear();
 
       calendarDays.push(
-        <CalendarDay
+        <CalendarDayComp
           key={i}
           day={{
             dayNumber,
@@ -81,6 +143,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           isDateAvailable={isCurrentMonth && isDateAvailable(dayNumber)}
           onDateSelect={onDateSelect}
           isPastDate={isCurrentMonth && isPastDate(dayNumber)} // แก้ไขตรงนี้
+          // MindCode={}
         />
       );
     }

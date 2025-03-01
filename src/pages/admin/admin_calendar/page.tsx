@@ -10,77 +10,93 @@ import { CalendarGrid } from "./CalendarGrid";
 import { LoadingState } from "../../../components/Calendar/LoadingState";
 import { BookingState } from "../../../types/calendar";
 import { useBooking } from "../../../context/BookingContext";
-// import { useCookies } from "react-cookie";
-// import { post } from "../../../services/api";
+import { useCookies } from "react-cookie";
+import { post } from "../../../services/api";
 
-// interface Queued_user {
-//   NVTID: string;
-//   server_status: number;
-//   data: Array<{
-//     mind_code: string;
-//     name: string;
-//     tel_num: number;
-//     date: string;
-//     time_slot: string;
-//   }>;
-// }
+interface Queued_user {
+  status: number;
+  data: Array<{
+    qid: number;
+    mind_code: string;
+    // name: string;
+    // tel_num: number;
+    date: string;
+    slot: string;
+  }>;
+}
 
-// const formatThaiMonth = (date: Date): string => {
-//   const thaiMonths = [
-//     "มกราคม",
-//     "กุมภาพันธ์",
-//     "มีนาคม",
-//     "เมษายน",
-//     "พฤษภาคม",
-//     "มิถุนายน",
-//     "กรกฎาคม",
-//     "สิงหาคม",
-//     "กันยายน",
-//     "ตุลาคม",
-//     "พฤศจิกายน",
-//     "ธันวาคม",
-//   ];
-//   const month = thaiMonths[date.getMonth()];
-//   const year = date.getFullYear() + 543;
-//   return `${month} ${year}`;
-// };
+// const QueuedUser: React.FC = () => {
 
-// const Queued_user: React.FC = () => {
-//   const [cookies] = useCookies(["auth_token"]);
-//   const currentDate = new Date();
-//   const formattedMonth = formatThaiMonth(currentDate);
-
-//   const [data, setData] = useState<Queued_user["data"] | null>(null);
-//   const fetchData = async () => {
-//     try {
-//       const requestBody = {
-//         token: cookies["auth_token"],
-//         MonthRequest: formattedMonth,
-//       };
-
-//       const response = (await post(
-//         "/api/viewAllQueueInMonth",
-//         requestBody
-//       )) as Queued_user;
-//       console.log("Test : " + response);
-//       if (!response || response.server_status !== 200) {
-//         throw new Error("Failed to fetch data");
-//       }
-
-//       // Save fetched data
-//       setData(response.data);
-//     } catch (error) {
-//       console.error("Error fetching data:", error);
-//       return [];
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchData();
-//   }, [cookies]);
-// };
+const formatThaiMonth = (date: Date): string => {
+  const thaiMonths = [
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
+  const month = thaiMonths[date.getMonth()];
+  const year = date.getFullYear() + 543;
+  return `${month} ${year}`;
+};
 
 const AdminCalendar: React.FC = () => {
+  // Nica zone
+  const [data, setData] = useState<Queued_user["data"] | null>(null);
+  const [cookies] = useCookies(["auth_token"]);
+  const [queuedUsers, setQueuedUsers] = useState<Queued_user["data"] | null>(
+    null
+  );
+  let response = null;
+
+  const fetchData = async () => {
+    try {
+      const currentDate = new Date();
+      const formattedMonth = formatThaiMonth(currentDate);
+      const requestBody = {
+        token: cookies["auth_token"],
+        month: formattedMonth,
+      };
+
+      response = (await post(
+        "/api/viewAllQueueInMonth",
+        requestBody
+      )) as Queued_user;
+      setData(response.data);
+      console.log("HEE");
+      console.log(response.status);
+      console.log(response.data);
+
+      if (response && response.status === 200) {
+        setQueuedUsers(response.data);
+      } else {
+        throw new Error("Failed to fetch data");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const fetchData2 = async () => {
+    try {
+      const requestBody = { token: cookies["auth_token"] };
+      const response = (await post("/api/", requestBody)) as Queued_user;
+      if (!response || response.status !== 200) {
+        throw new Error("Failed to fetch data");
+      }
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -95,6 +111,7 @@ const AdminCalendar: React.FC = () => {
     // Double-check that we're in a valid booking flow
     console.log("isBookingFlow:", isBookingFlow);
     console.log("selectedCaseId:", selectedCaseId);
+    fetchData();
     // if (!isBookingFlow || selectedCaseId === null) {
     //   navigate("/case");
     // }
@@ -274,6 +291,7 @@ const AdminCalendar: React.FC = () => {
                 isHoliday={isHoliday}
                 onDateSelect={handleDateSelect}
                 isPastDate={isPastDate}
+                respond={data ?? []}
               />
             </div>
           </div>

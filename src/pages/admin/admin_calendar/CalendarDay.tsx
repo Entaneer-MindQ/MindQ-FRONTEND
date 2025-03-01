@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { CalendarDayProps } from "../../../types/calendar";
-import { useCookies } from "react-cookie";
-import { post } from "../../../services/api";
+// import { CalendarDayProps } from "../../../types/calendar";
+// import { useCookies } from "react-cookie";
+// import { post } from "../../../services/api";
+import { CalendarDay } from "../../../types/calendar";
 
 interface Queued_user {
   status: number;
@@ -14,6 +15,14 @@ interface Queued_user {
     date: string;
     slot: string;
   }>;
+}
+
+interface CalendarDayProps {
+  day: CalendarDay;
+  isDateAvailable: boolean;
+  onDateSelect: (dayNumber: number) => void;
+  isPastDate: boolean; // เพิ่ม prop นี้
+  MindCode: string;
 }
 
 const formatThaiMonth = (date: Date): string => {
@@ -64,47 +73,19 @@ const InfoPopup: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     );
 };
 
-const CalendarDay: React.FC<CalendarDayProps> = ({
+const CalendarDayComp: React.FC<CalendarDayProps> = ({
   day,
   onDateSelect,
   isDateAvailable,
   isPastDate,
+  MindCode,
 }) => {
-  const [cookies] = useCookies(["auth_token"]);
+  // const [cookies] = useCookies(["auth_token"]);
   const [queuedUsers, setQueuedUsers] = useState<Queued_user["data"] | null>(
     null
   );
   const { dayNumber, isCurrentMonth, isToday, holiday } = day;
   const [isPopupOpen, setPopupOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const currentDate = new Date();
-        const formattedMonth = formatThaiMonth(currentDate);
-        const requestBody = {
-          token: cookies["auth_token"],
-          month: formattedMonth,
-        };
-
-        const response = (await post(
-          "/api/viewAllQueueInMonth",
-          requestBody
-        )) as Queued_user;
-        console.log(response.data);
-        console.log(response.status);
-
-        if (response && response.status === 200) {
-          setQueuedUsers(response.data);
-        } else {
-          throw new Error("Failed to fetch data");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [cookies]);
 
   const hasCasesOnDate = (): boolean => {
     return (
@@ -171,12 +152,13 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
           </div>
         )}
 
-        {hasCasesOnDate() && !isPastDate && (
+        {/* {hasCasesOnDate() && !isPastDate && ( */}
+        {(
           <p
             className="text-[#4d83a9] underline cursor-pointer mt-1 text-xs"
             onClick={() => setPopupOpen(true)}
           >
-            Case 2024/xxx
+            {MindCode}
           </p>
         )}
 
@@ -358,4 +340,4 @@ const CalendarDay: React.FC<CalendarDayProps> = ({
 
 //ตอนนี้หาวิธีที่จะทำให้ Check เงื่อนไขในการโผล่เคสโดยพื้นฐาน 1)วันหยุดไม่โชว์เคส(เสาร์-อาทิตย์, วันสำคัญต่างๆ) 2)เช็คว่ามีผู้ใช้บริการลงทะเบียนไว้หรือไม่
 
-export default CalendarDay;
+export default CalendarDayComp;

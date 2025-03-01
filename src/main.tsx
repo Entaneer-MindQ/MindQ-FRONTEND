@@ -25,6 +25,8 @@ import AdminJong from "./pages/admin/adminJong";
 import Admin_History_page from "./pages/admin/admin_history/page";
 import Admin_Profile from "./pages/admin/admin_profile/page";
 
+import AdminExport from "./pages/admin/admin_export/page";
+
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 root.render(
@@ -43,8 +45,7 @@ root.render(
             <Route path="/case" element={<CaseView />} />
             <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
-            <Route path="/admin-jong" element={<AdminJong />} />
-            {/*adminJong is new admin_appointment*/}
+            <Route path="/admin-jong" element={<AdminJong />} /> {/*adminJong is new admin_appointment*/}
             <Route path="/account" element={<Account />} />
             <Route path="/history/:mindCode" element={<History />} />
             <Route path="/admin-request" element={<Admin_Request />} />
@@ -61,6 +62,8 @@ root.render(
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />
             </Route>
+
+            <Route path="/admin-export-test" element={<AdminExport />} />
 
             <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>

@@ -49,17 +49,6 @@ root.render(
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
             <Route path="/account" element={<Account />} />
             <Route path="/history/:mindCode" element={<History />} />
-            <Route path="/admin-request" element={<Admin_Request />} />
-            <Route path="/admin-profile" element={<Admin_Profile />} />
-            <Route
-              path="/admin-notavailable"
-              element={<AdminNotAvailablePage />}
-            />
-            <Route path="/admin-calendar" element={<AdminCalendar />} />
-            <Route path="/admin-queue">
-              <Route index element={<Admin_AllQueue />} />
-              <Route path="details" element={<Admin_QueueDetails />} />
-            </Route>
 
             <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>
@@ -80,6 +69,17 @@ root.render(
                   <Route index element={<Admin_AllQueue />} />
                   <Route path="details" element={<Admin_QueueDetails />} />
                 </Route>
+                <Route path="/admin-request" element={<Admin_Request />} />
+            <Route path="/admin-profile" element={<Admin_Profile />} />
+            <Route
+              path="/admin-notavailable"
+              element={<AdminNotAvailablePage />}
+            />
+            <Route path="/admin-calendar" element={<AdminCalendar />} />
+            <Route path="/admin-queue">
+              <Route index element={<Admin_AllQueue />} />
+              <Route path="details" element={<Admin_QueueDetails />} />
+            </Route>
 
                 <Route path="/admin-history" element={<Admin_History_page />} />
               </Route>

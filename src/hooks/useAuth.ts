@@ -1,7 +1,7 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect } from "react";
 import { useCookies } from "react-cookie";
-import { UserProfile, ApiResponse } from "../types/nav";
+import { UserProfile, ApiResponse, adminData } from "../types/nav";
 import { post } from "../services/api";
 
 export const useAuth = () => {
@@ -10,6 +10,9 @@ export const useAuth = () => {
   const [mind_code, setMind_code] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(
+    localStorage.getItem("isAdmin") === "true"
+  );
 
   const fetchUserProfile = async () => {
     console.log("Sending cookies:", cookies);
@@ -38,6 +41,7 @@ export const useAuth = () => {
           setMind_code(mind_code);
         }
         setIsLogin(true);
+        fetchIsAdmin();
       } else if (response.status === 404) {
         console.log("No user profile found");
         setIsLogin(false);
@@ -53,6 +57,19 @@ export const useAuth = () => {
       setIsLogin(false);
       setUserProfile(null);
     }
+  };
+
+  const fetchIsAdmin = async () => {
+    console.log("Sending cookies for checking admin:", cookies);
+    setError(null);
+    const response = (await post("/api/adminProfile", {
+      token: cookies["auth_token"],
+    })) as adminData;
+    if (response.status === 200 || response.data) {
+      setIsAdmin(true);
+      localStorage.setItem("isAdmin", JSON.stringify(true));
+    }
+    console.log(isAdmin);
   };
 
   useEffect(() => {

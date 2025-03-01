@@ -33,7 +33,7 @@ export const useAuth = () => {
           name: name,
           name_EN: basicInfo.cmuitaccount_name,
         });
-        if(response.data?.mind_code) {
+        if (response.data?.mind_code) {
           const mind_code = response.data.mind_code;
           setMind_code(mind_code);
         }

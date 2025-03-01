@@ -10,10 +10,12 @@ import "../../styles/global.css";
 export const CaseCard = ({ caseItem }: CaseCardProps) => {
   const navigate = useNavigate();
   const { setIsBookingFlow, setSelectedCaseId } = useBooking();
+  const {setMindCode} = useBooking();
 
   const handleBooking = () => {
     setIsBookingFlow(true);
     setSelectedCaseId(caseItem.cid);
+    setMindCode(caseItem.mind_code? caseItem.mind_code: "");
     navigate("/calendar");
   };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigation } from "../hooks/useNavigation";
 import { NavLink } from "../components/nav/NavLink";
@@ -9,6 +9,9 @@ import "../styles/global.css";
 const Navbar: React.FC = () => {
   const { userProfile, isLogin, logout, mind_code } = useAuth();
   const navigation = useNavigation();
+
+  const temp = localStorage.getItem("isAdmin");
+  console.log("from temp", temp);
 
   // สร้างฟังก์ชันสำหรับจัดการการปิด mobile menu
   const handleNavClick = () => {
@@ -128,7 +131,7 @@ const Navbar: React.FC = () => {
       label: "History",
       path: `/history/${mind_code}`,
     },
-    ...(userProfile?.role === "บุคลากร" && isLogin
+    ...(temp && isLogin
       ? [
           {
             icon: (

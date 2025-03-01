@@ -18,7 +18,11 @@ const Calendar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const { isBookingFlow, selectedCaseId } = useBooking();
+
+  const { mindCode } = useBooking();
   const [selectedPsychologist, setSelectedPsychologist] = useState<number>(1);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const initialLoadRef = useRef<boolean>(false);
   const psychologistChangeRef = useRef<boolean>(false);
 
@@ -126,7 +130,9 @@ const Calendar: React.FC = () => {
       categories: ["การเรียน", "ความเครียด", "ความสัมพันธ์"],
       timeSlot: "13.00",
       details: "",
+      mind_code: mindCode || "",
     };
+    
     navigate("/booking", { state: bookingState });
   };
 

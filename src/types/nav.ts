@@ -35,10 +35,10 @@ export interface ApiResponse {
   status: number;
   message?: string;
   data?: {
-    userData : {
-      cmuBasicInfo : ResponseData,
-    }
-    mind_code : string
+    userData: {
+      cmuBasicInfo: ResponseData;
+    };
+    mind_code: string;
   };
 }
 
@@ -48,5 +48,14 @@ export interface ApiError {
   response?: {
     data: any;
     status: number;
+  };
+}
+
+export interface adminData {
+  status: number;
+  data: {
+    name_EN: string;
+    name_TH: string;
+    email: string;
   };
 }

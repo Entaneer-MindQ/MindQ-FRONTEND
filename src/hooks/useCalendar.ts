@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useCookies } from "react-cookie";
 import { Holiday, CalendarResponse, AvailableMonth } from "../types/calendar";
 import { post } from "../services/api";
@@ -30,6 +30,12 @@ export const useCalendar = (selectedPsychologist: number) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [dayAvailability, setDayAvailability] = useState<DayAvailability[]>([]);
   const [cookies] = useCookies(["auth_token"]);
+  const authToken = cookies["auth_token"];
+
+  // Add refs to track initial loads and prevent unnecessary API calls
+  const holidaysLoadedRef = useRef<boolean>(false);
+  const prevMonthRef = useRef<number>(currentDate.getMonth());
+  const prevPsychologistRef = useRef<number>(selectedPsychologist);
 
   const months = [
     "มกราคม",
@@ -48,16 +54,18 @@ export const useCalendar = (selectedPsychologist: number) => {
 
   const totalSlots = 6; // Total number of available slots per day
 
-  const parseDateString = (dateStr: string): number => {
+  const parseDateString = useCallback((dateStr: string): number => {
     const parts = dateStr.split(" ");
     return parseInt(parts[0], 10);
-  };
+  }, []);
 
+  // ใช้ useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ทุกครั้งที่ component render
   const fetchNotAvailableTimesByPhyId = useCallback(async () => {
-    if (!selectedPsychologist) return;
+    if (!selectedPsychologist || !authToken) return;
     try {
-      const token = cookies["auth_token"];
+      setLoading(true);
       const response = (await post("/api/getNotAvailableTimesbyPhyId", {
+        token: authToken,
         phyId: selectedPsychologist,
       })) as NotAvailableTimeResponse;
 
@@ -104,10 +112,18 @@ export const useCalendar = (selectedPsychologist: number) => {
       }
     } catch (error) {
       console.error("Failed to fetch not available times:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [currentDate.getMonth(), months, cookies, selectedPsychologist]);
+  }, [
+    authToken,
+    currentDate.getMonth(),
+    months,
+    parseDateString,
+    selectedPsychologist,
+  ]);
 
-  const getAvailableMonths = (): AvailableMonth[] => {
+  const getAvailableMonths = useCallback((): AvailableMonth[] => {
     const currentMonth = new Date();
     return Array.from({ length: 5 }, (_, i) => {
       const date = new Date(currentMonth);
@@ -117,9 +133,14 @@ export const useCalendar = (selectedPsychologist: number) => {
         label: `${months[date.getMonth()]} ${date.getFullYear()}`,
       };
     });
-  };
+  }, [months]);
 
-  const fetchHolidays = async () => {
+  const fetchHolidays = useCallback(async () => {
+    // ป้องกันการโหลดซ้ำโดยไม่จำเป็น
+    if (holidaysLoadedRef.current) {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(
@@ -137,47 +158,77 @@ export const useCalendar = (selectedPsychologist: number) => {
         lunardate: event.DESCRIPTION,
       }));
       setHolidays(formattedHolidays);
-
-      await fetchNotAvailableTimesByPhyId();
+      holidaysLoadedRef.current = true;
     } catch (error) {
       console.error("Error fetching holidays:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
+
     const fetchData = async () => {
-      if (isMounted) {
+      if (!isMounted) return;
+
+      // เช็คว่าเดือนหรือนักจิตวิทยาเปลี่ยนหรือไม่
+      const monthChanged = prevMonthRef.current !== currentDate.getMonth();
+      const psychologistChanged =
+        prevPsychologistRef.current !== selectedPsychologist;
+
+      // ถ้ายังไม่เคยโหลดข้อมูลวันหยุด หรือเดือนเปลี่ยน ให้โหลดข้อมูลวันหยุดใหม่
+      if (!holidaysLoadedRef.current || monthChanged) {
         await fetchHolidays();
       }
+
+      // ถ้าเดือนหรือนักจิตวิทยาเปลี่ยน ให้โหลดข้อมูลการจองใหม่
+      if (monthChanged || psychologistChanged) {
+        await fetchNotAvailableTimesByPhyId();
+
+        // อัพเดทค่าอ้างอิง
+        prevMonthRef.current = currentDate.getMonth();
+        prevPsychologistRef.current = selectedPsychologist;
+      }
     };
+
     fetchData();
+
     return () => {
       isMounted = false;
     };
-  }, [currentDate.getMonth(), selectedPsychologist]);
+  }, [
+    currentDate.getMonth(),
+    selectedPsychologist,
+    fetchHolidays,
+    fetchNotAvailableTimesByPhyId,
+  ]);
 
-  const isPastDate = (day: number): boolean => {
-    const checkDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      day
-    );
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return checkDate < today;
-  };
+  const isPastDate = useCallback(
+    (day: number): boolean => {
+      const checkDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        day
+      );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return checkDate < today;
+    },
+    [currentDate]
+  );
 
-  const isHoliday = (day: number): Holiday | undefined => {
-    const dateStr = `${currentDate.getFullYear()}${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, "0")}${String(day).padStart(2, "0")}`;
-    // console.log(holidays.find((holiday) => holiday.date === dateStr));
-    return holidays.find((holiday) => holiday.date === dateStr);
-  };
-  const getAvailableDates = (): number[] => {
+  const isHoliday = useCallback(
+    (day: number): Holiday | undefined => {
+      const dateStr = `${currentDate.getFullYear()}${String(
+        currentDate.getMonth() + 1
+      ).padStart(2, "0")}${String(day).padStart(2, "0")}`;
+      return holidays.find((holiday) => holiday.date === dateStr);
+    },
+    [currentDate, holidays]
+  );
+
+  const getAvailableDates = useCallback((): number[] => {
     const daysInMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + 1,
@@ -214,17 +265,20 @@ export const useCalendar = (selectedPsychologist: number) => {
       // เช็คว่ามี Slot ว่างเหลืออยู่หรือไม่
       return dayInfo.unavailableSlots.length < totalSlots;
     });
-  };
+  }, [currentDate, dayAvailability, isPastDate, isHoliday]);
 
-  const getAvailableSlotsForDay = (day: number): number[] => {
-    const dayInfo = dayAvailability.find((d) => d.day === day);
-    if (!dayInfo) {
-      return Array.from({ length: totalSlots }, (_, i) => i + 1); // All slots available
-    }
-    return Array.from({ length: totalSlots }, (_, i) => i + 1).filter(
-      (slot) => !dayInfo.unavailableSlots.includes(slot)
-    );
-  };
+  const getAvailableSlotsForDay = useCallback(
+    (day: number): number[] => {
+      const dayInfo = dayAvailability.find((d) => d.day === day);
+      if (!dayInfo) {
+        return Array.from({ length: totalSlots }, (_, i) => i + 1); // All slots available
+      }
+      return Array.from({ length: totalSlots }, (_, i) => i + 1).filter(
+        (slot) => !dayInfo.unavailableSlots.includes(slot)
+      );
+    },
+    [dayAvailability]
+  );
 
   return {
     currentDate,

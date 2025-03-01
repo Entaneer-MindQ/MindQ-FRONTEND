@@ -1,7 +1,10 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useCookies } from "react-cookie";
 import { post } from "../../../../services/api";
+import "./style.css";
+
 
 interface SlotOption {
   id: number;
@@ -30,6 +33,7 @@ const thaiMonths = [
   "ตุลาคม",
   "พฤศจิกายน",
   "ธันวาคม",
+
 ];
 
 const formatThaiDate = (dateString: string): string => {
@@ -49,7 +53,6 @@ const NotAvailableTimeForm = () => {
   const endDate: string = watch("end_date");
 
   const isSameDay = startDate && endDate && startDate === endDate;
-
   const handleSlotSelect = (slotId: number) => {
     if (!isSameDay) return;
     setSelectedSlots((prev) =>

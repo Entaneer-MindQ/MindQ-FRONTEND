@@ -4,6 +4,7 @@ import { useNavigation } from "../hooks/useNavigation";
 import { NavLink } from "../components/nav/NavLink";
 import { MenuButton } from "../components/nav/MenuButton";
 import { NavItem } from "../types/nav";
+import "../styles/global.css";
 
 const Navbar: React.FC = () => {
   const { userProfile, isLogin, logout, mind_code } = useAuth();
@@ -127,7 +128,7 @@ const Navbar: React.FC = () => {
       label: "History",
       path: `/history/${mind_code}`,
     },
-    ...(userProfile?.personalID === "650610804" && isLogin
+    ...(userProfile?.role === "บุคลากร" && isLogin
       ? [
           {
             icon: (

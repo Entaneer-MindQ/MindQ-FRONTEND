@@ -10,6 +10,7 @@ import { CalendarGrid } from "../components/Calendar/CalendarGrid";
 import { LoadingState } from "../components/Calendar/LoadingState";
 import { BookingState } from "../types/calendar";
 import { useBooking } from "../context/BookingContext";
+import PsychologistSelector from "../components/Calendar/PsychologistSelector";
 
 const Calendar: React.FC = () => {
   const navigate = useNavigate();
@@ -17,30 +18,15 @@ const Calendar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const { isBookingFlow, selectedCaseId } = useBooking();
-  const [selectedPsychologist, setSelectedPsychologist] = useState<number | 1>(
-    1
-  );
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedPsychologist, setSelectedPsychologist] = useState<number>(1);
+  const initialLoadRef = useRef<boolean>(false);
+  const psychologistChangeRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!isBookingFlow || selectedCaseId === null) {
       navigate("/case");
     }
   }, [isBookingFlow, selectedCaseId, navigate]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const {
     currentDate,
@@ -55,11 +41,18 @@ const Calendar: React.FC = () => {
     isPastDate,
   } = useCalendar(selectedPsychologist);
 
+  // ทำการเรียก API เฉพาะเมื่อ:
+  // 1. โหลดครั้งแรก (initialLoadRef.current === false)
+  // 2. มีการเปลี่ยนนักจิตวิทยา (psychologistChangeRef.current === true)
   useEffect(() => {
-    if (selectedPsychologist !== null) {
-      fetchNotAvailableTimesByPhyId();
+    if (!initialLoadRef.current || psychologistChangeRef.current) {
+      if (selectedPsychologist !== null) {
+        fetchNotAvailableTimesByPhyId();
+        initialLoadRef.current = true;
+        psychologistChangeRef.current = false;
+      }
     }
-  }, [selectedPsychologist]);
+  }, [selectedPsychologist, fetchNotAvailableTimesByPhyId]);
 
   const days = [
     "อาทิตย์",
@@ -94,7 +87,6 @@ const Calendar: React.FC = () => {
   const handleNextMonth = () => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + 1);
-    console.log(availableMonths[availableMonths.length - 1]);
     if (newDate <= availableMonths[availableMonths.length - 1].date) {
       setCurrentDate(newDate);
     }
@@ -106,6 +98,13 @@ const Calendar: React.FC = () => {
     );
     if (selectedMonth) {
       setCurrentDate(selectedMonth.date);
+    }
+  };
+
+  const handlePsychologistChange = (psychologistId: number) => {
+    if (psychologistId !== selectedPsychologist) {
+      psychologistChangeRef.current = true;
+      setSelectedPsychologist(psychologistId);
     }
   };
 
@@ -131,7 +130,7 @@ const Calendar: React.FC = () => {
     navigate("/booking", { state: bookingState });
   };
 
-  if (loading) {
+  if (loading && (!initialLoadRef.current || psychologistChangeRef.current)) {
     return <LoadingState />;
   }
 
@@ -154,38 +153,10 @@ const Calendar: React.FC = () => {
                 availableMonths={availableMonths}
                 onMonthChange={handleMonthChange}
               />
-              <div
-                className="relative w-full sm:w-auto min-w-[200px]"
-                ref={dropdownRef}
-              >
-                <button
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="w-full h-10 px-4 text-left text-sm sm:text-base bg-white border-2 border-[var(--primary-color)] text-[var(--primary-color)] rounded-lg hover:bg-[var(--hover-color)] focus:outline-none transition-colors duration-200 flex items-center justify-between"
-                >
-                  <span>
-                    {selectedPsychologist
-                      ? `นักจิตวิทยา ${selectedPsychologist}`
-                      : "เลือกนักจิตวิทยา"}
-                  </span>
-                  <span className="text-lg">▾</span>
-                </button>
-                {showDropdown && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border-2 border-[var(--primary-color)] rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {[1, 2, 3, 4].map((id) => (
-                      <button
-                        key={id}
-                        className="w-full h-10 px-4 text-left text-sm sm:text-base text-[var(--primary-color)] bg-white hover:bg-[var(--hover-color)] first:rounded-t-md last:rounded-b-md transition-colors duration-200 flex items-center"
-                        onClick={() => {
-                          setSelectedPsychologist(id);
-                          setShowDropdown(false);
-                        }}
-                      >
-                        นักจิตวิทยา {id}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <PsychologistSelector
+                selectedPsychologist={selectedPsychologist}
+                onPsychologistChange={handlePsychologistChange}
+              />
               <CalendarNavigation
                 currentDate={currentDate}
                 availableMonths={availableMonths}

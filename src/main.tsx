@@ -24,6 +24,8 @@ import AdminshowNotAvai from "./pages/admin/admin_shownonavailable/page";
 import HomePage from "./pages/admin/HomePage";
 import AdminJong from "./pages/admin/adminJong";
 import Admin_History_page from "./pages/admin/admin_history/page";
+import Admin_appointment from "./pages/admin/admin_apppointment/page";
+import AdminCalendar from "./pages/admin/admin_calendar/page";
 import Admin_Profile from "./pages/admin/admin_profile/page";
 import NotFound from "./routes/Notfound404";
 
@@ -47,6 +49,19 @@ root.render(
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
             <Route path="/account" element={<Account />} />
             <Route path="/history/:mindCode" element={<History />} />
+            <Route path="/admin-request" element={<Admin_Request />} />
+            <Route path="/admin-profile" element={<Admin_Profile />} />
+            <Route
+              path="/admin-notavailable"
+              element={<AdminNotAvailablePage />}
+            />
+            <Route path="/admin-calendar" element={<AdminCalendar />} />
+            <Route path="/admin-queue">
+              <Route index element={<Admin_AllQueue />} />
+              <Route path="details" element={<Admin_QueueDetails />} />
+            </Route>
+
+            <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>
           <Route element = {<AdminCheck />}>
               <Route path="/admin-jong" element={<AdminJong />} />

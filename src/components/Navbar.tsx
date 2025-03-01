@@ -131,7 +131,6 @@ const Navbar: React.FC = () => {
       label: "History",
       path: `/history/${mind_code}`,
     },
-    // ...(userProfile?.personalID === "650610804" && isLogin
     ...(temp && isLogin
       ? [
           {

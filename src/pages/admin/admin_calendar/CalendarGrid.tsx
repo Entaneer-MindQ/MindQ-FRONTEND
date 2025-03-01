@@ -1,79 +1,10 @@
 import React, { useState, useEffect } from "react";
-import CalendarDayComp from "./CalendarDay";
+import CalendarDayComp from "./CalendarDayComp";
 import { Holiday } from "../../../types/calendar";
-// import { useCookies } from "react-cookie";
-// import { post } from "../../../services/api";
-
-// ของไลก้า
-// interface Queued_user {
-//   status: number;
-//   data: Array<{
-//     qid: number;
-//     mind_code: string;
-//     // name: string;
-//     // tel_num: number;
-//     date: string;
-//     slot: string;
-//   }>;
-// }
-
-// const formatThaiMonth = (date: Date): string => {
-//   const thaiMonths = [
-//     "มกราคม",
-//     "กุมภาพันธ์",
-//     "มีนาคม",
-//     "เมษายน",
-//     "พฤษภาคม",
-//     "มิถุนายน",
-//     "กรกฎาคม",
-//     "สิงหาคม",
-//     "กันยายน",
-//     "ตุลาคม",
-//     "พฤศจิกายน",
-//     "ธันวาคม",
-//   ];
-//   const month = thaiMonths[date.getMonth()];
-//   const year = date.getFullYear() + 543;
-//   return `${month} ${year}`;
-// };
-
-// const [cookies] = useCookies(["auth_token"]);
-// const [queuedUsers, setQueuedUsers] = useState<Queued_user["data"] | null>(
-//     null
-//   );
-
-// const fetchData = async () => {
-//       try {
-//         const currentDate = new Date();
-//         const formattedMonth = formatThaiMonth(currentDate);
-//         const requestBody = {
-//           token: cookies["auth_token"],
-//           month: formattedMonth,
-//         };
-
-//         const response = (await post(
-//           "/api/viewAllQueueInMonth",
-//           requestBody
-//         )) as Queued_user;
-//         console.log(response.data);
-//         console.log(response.status);
-
-//         if (response && response.status === 200) {
-//           setQueuedUsers(response.data);
-//         } else {
-//           throw new Error("Failed to fetch data");
-//         }
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//       };
-// }
-//ของไลก้าเว้ย
 
 interface Data {
   qid: number;
   mind_code: string;
-  // name: string;
-  // tel_num: number;
   date: string;
   slot: string;
 }
@@ -84,7 +15,7 @@ interface CalendarGridProps {
   isHoliday: (day: number) => Holiday | undefined;
   onDateSelect: (dayNumber: number) => void;
   isPastDate: (day: number) => boolean; // เพิ่ม prop นี้
-  respond: Data[] | null;
+  respond: Data[];
 }
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({
@@ -116,20 +47,26 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
         year: "numeric",
       });
     };
-    // Example Usage
-    console.log("Araikordai");
     console.log(respond);
+    const today = new Date().getDate();
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    const genObj = (mind_code: string, slot: string) => {
+      return {mind_code, slot};
+    }
+
     for (let i = 0; i < totalDays; i++) {
       const dayNumber = i - firstDayOfMonth + 1;
-      // const MindCode = respond.filter((DateData) => Datedata.date == i - firstDayOfMonth + 1);
+      const mindCodes = respond?.filter((item) => item.date === formatThaiDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber))).map((item) => genObj(item.mind_code, item.slot));
       
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
       const holiday = isCurrentMonth ? isHoliday(dayNumber) : undefined;
       const isToday =
         isCurrentMonth &&
-        new Date().getDate() === dayNumber &&
-        new Date().getMonth() === currentDate.getMonth() &&
-        new Date().getFullYear() === currentDate.getFullYear();
+        today === dayNumber &&
+        currentMonth === currentDate.getMonth() &&
+        currentYear === currentDate.getFullYear();
 
       calendarDays.push(
         <CalendarDayComp
@@ -143,7 +80,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
           isDateAvailable={isCurrentMonth && isDateAvailable(dayNumber)}
           onDateSelect={onDateSelect}
           isPastDate={isCurrentMonth && isPastDate(dayNumber)} // แก้ไขตรงนี้
-          // MindCode={}
+          mindData={mindCodes}
         />
       );
     }

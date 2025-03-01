@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useCalendar } from "../../../hooks/useCalendar";
-import { CalendarNavigation } from "../../../components/Calendar/CalendarNavigation";
-import { MonthSelector } from "../../../components/Calendar/MonthSelector";
+import { CalendarNavigation } from "../../../components/Calendar/CalendarNavigation"; // left right arrow
+import { MonthSelector } from "../../../components/Calendar/MonthSelector"; 
 import { CalendarHeader } from "../../../components/Calendar/CalendarHeader";
 import { CalendarGrid } from "./CalendarGrid";
 import { LoadingState } from "../../../components/Calendar/LoadingState";
@@ -112,9 +112,6 @@ const AdminCalendar: React.FC = () => {
     console.log("isBookingFlow:", isBookingFlow);
     console.log("selectedCaseId:", selectedCaseId);
     fetchData();
-    // if (!isBookingFlow || selectedCaseId === null) {
-    //   navigate("/case");
-    // }
   }, [isBookingFlow, selectedCaseId, navigate]);
 
   useEffect(() => {

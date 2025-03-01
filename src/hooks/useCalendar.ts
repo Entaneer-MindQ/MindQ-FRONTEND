@@ -174,7 +174,7 @@ export const useCalendar = (selectedPsychologist: number) => {
     const dateStr = `${currentDate.getFullYear()}${String(
       currentDate.getMonth() + 1
     ).padStart(2, "0")}${String(day).padStart(2, "0")}`;
-    console.log(holidays.find((holiday) => holiday.date === dateStr));
+    // console.log(holidays.find((holiday) => holiday.date === dateStr));
     return holidays.find((holiday) => holiday.date === dateStr);
   };
   const getAvailableDates = (): number[] => {

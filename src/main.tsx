@@ -23,6 +23,8 @@ import AdminshowNotAvai from "./pages/admin/admin_shownonavailable/page";
 import HomePage from "./pages/admin/HomePage";
 import AdminJong from "./pages/admin/adminJong";
 import Admin_History_page from "./pages/admin/admin_history/page";
+import Admin_appointment from "./pages/admin/admin_apppointment/page";
+import AdminCalendar from "./pages/admin/admin_calendar/page";
 import Admin_Profile from "./pages/admin/admin_profile/page";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
@@ -53,10 +55,7 @@ root.render(
               path="/admin-notavailable"
               element={<AdminNotAvailablePage />}
             />
-            <Route
-              path="/admin-shownonavailable"
-              element={<AdminshowNotAvai />}
-            />
+            <Route path="/admin-calendar" element={<AdminCalendar />} />
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />

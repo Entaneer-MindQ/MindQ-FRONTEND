@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { CalendarDay } from "../../../types/calendar";
+import { useNavigate } from "react-router-dom";
 
 interface CalendarDayProps {
   day: CalendarDay;
@@ -31,6 +32,8 @@ const slotColors: Record<string, string> = {
 const BookingPopup: React.FC<{ isOpen: boolean; onClose: () => void; mindData: { mind_code: string; slot: string }[] }> = ({ isOpen, onClose, mindData }) => {
   if (!isOpen) return null;
 
+  const navigate = useNavigate();
+
   return ReactDOM.createPortal(
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4 animate-fadeIn">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md relative animate-scaleUp">
@@ -48,7 +51,7 @@ const BookingPopup: React.FC<{ isOpen: boolean; onClose: () => void; mindData: {
             <button
               key={index}
               className= {`flex-1 min-h-[40px] p-2 rounded-lg cursor-pointer text-sm font-medium ${slotColors[item.slot]} text-center flex items-center justify-center hover:shadow-lg transition duration-200`}
-              onClick={() => alert(`รายละเอียดของ ${item.mind_code}`)}
+              onClick={() => navigate( `/history/${item.mind_code}`)} //alert(`รายละเอียดของ ${item.mind_code}`)}
             >
               {item.mind_code} ({slotTimes[item.slot]})
             </button>

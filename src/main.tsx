@@ -42,17 +42,16 @@ root.render(
 
           <Route element={<PrivateRoute />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/home-page" element={<HomePage />} />
             <Route path="/case-open" element={<Opencase />} />
             <Route path="/case" element={<CaseView />} />
             <Route path="/booking/" element={<ConfirmBookingPage cid={0} />} />
             <Route path="/calendar" element={<ProtectedCalendarRoute />} />
             <Route path="/account" element={<Account />} />
             <Route path="/history/:mindCode" element={<History />} />
-
-            <Route path="/admin-history" element={<Admin_History_page />} />
           </Route>
           <Route element = {<AdminCheck />}>
+          <Route path="/admin-history" element={<Admin_History_page />} />
+              <Route path="/home-page" element={<HomePage />} />
               <Route path="/admin-jong" element={<AdminJong />} />
                 {/*adminJong is new admin_appointment*/}
                 <Route path="/admin-request" element={<Admin_Request />} />

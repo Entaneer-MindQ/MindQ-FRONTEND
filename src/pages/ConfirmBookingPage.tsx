@@ -8,6 +8,7 @@ interface LocationState {
   month: string;
   date: number;
   availableSlots?: number[];
+  mind_code?: string;
 }
 
 interface SlotOption {
@@ -40,6 +41,7 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
     timeSlot: "",
     date: "",
     details: "",
+    mind_code: "",
   });
   const [availableSlots, setAvailableSlots] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,12 +58,14 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
 
   useEffect(() => {
     const state = location.state as LocationState;
-    if (!state?.month || !state?.date) {
+    if (!state?.month || !state?.date || !state?.mind_code) {
       navigate("/case");
     } else {
+      console.log("Location State:", state);
       setFormData((prev) => ({
         ...prev,
         date: `${state.date} ${state.month}`,
+        mind_code: `${state.mind_code}`,
       }));
 
       if (state.availableSlots) {

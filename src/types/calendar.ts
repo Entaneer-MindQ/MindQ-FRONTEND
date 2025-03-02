@@ -70,4 +70,5 @@ export interface BookingState {
   categories: string[];
   timeSlot: string;
   details: string;
+  mind_code: string;
 }

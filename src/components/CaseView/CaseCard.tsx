@@ -13,8 +13,11 @@ export const CaseCard = ({ caseItem }: CaseCardProps) => {
   // ตัวแปรพื้นฐาน
   const navigate = useNavigate();
   const { setIsBookingFlow, setSelectedCaseId } = useBooking();
+
   const [expanded, setExpanded] = useState(false);
   const [isLongText, setIsLongText] = useState(false);
+  const {setMindCode} = useBooking();
+
 
   // ตรวจสอบความยาวข้อความเมื่อข้อมูลเปลี่ยนแปลง
   useEffect(() => {
@@ -35,6 +38,7 @@ export const CaseCard = ({ caseItem }: CaseCardProps) => {
   const handleBooking = () => {
     setIsBookingFlow(true);
     setSelectedCaseId(caseItem.cid);
+    setMindCode(caseItem.mind_code? caseItem.mind_code: "");
     navigate("/calendar");
   };
 

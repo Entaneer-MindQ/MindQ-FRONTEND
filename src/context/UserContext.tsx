@@ -3,13 +3,24 @@ import { post } from "../services/api";
 
 interface UserContextType {
   token: string | null;
+  isAdmin: boolean;
   login: (userData: string, token: string) => void;
   logout: () => void;
+  checkAdmin: () => void;
 }
 
 interface responseData {
   status: number;
   message: string;
+}
+
+interface adminData {
+  status: number;
+  data: {
+    name_EN: string;
+    name_TH: string;
+    email: string;
+  };
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -18,6 +29,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
   // Check for existing token on component mount
   useEffect(() => {
@@ -30,6 +42,20 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       setToken(existingToken);
     }
   }, []);
+
+  const checkAdmin = async () => {
+    try {
+      const response = (await post("/api/adminProfile", {
+        token: token,
+      })) as adminData;
+      if (response.status === 200 && response.data) {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      setIsAdmin(false);
+      console.error("Error during admin check", error);
+    }
+  };
 
   const login = (token: string) => {
     setToken(token);
@@ -44,8 +70,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       if (response.status === 200) {
         setToken(null);
         localStorage.removeItem("token");
+        // setIsAdmin(false);
+        
         document.cookie =
           "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        localStorage.removeItem("isAdmin");
       }
     } catch (error) {
       console.error("Error during logout", error);
@@ -53,7 +82,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <UserContext.Provider value={{ token, login, logout }}>
+    <UserContext.Provider value={{ token, login, logout, checkAdmin, isAdmin }}>
       {children}
     </UserContext.Provider>
   );

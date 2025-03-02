@@ -14,6 +14,7 @@ interface AppointmentQueue {
   cancelled: QueueItem[];
   completed: QueueItem[];
 }
+
 const Pagination = ({ currentPage, totalPages, onPageChange }: {
   currentPage: number;
   totalPages: number;
@@ -60,14 +61,19 @@ const HistoryPage = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [mind_data, setMindData] = useState<MindData | null>(null);
   const [case_data, setCaseData] = useState<CaseData| null> (null);
-  const [appointmentQueue, setAppointmentQueue] = useState<AppointmentQueue | null>(null);
+  const [appointmentQueue, setAppointmentQueue] = useState<AppointmentQueue>(  
+    {current: [],
+    cancelled: [],
+    completed: []}); //<AppointmentQueue | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   useEffect(() => {
-    if (!mindCode) {
-      setError("ไม่พบรหัสผู้ใช้งาน");
-      return;
+    if (!mindCode || mindCode === "null") {
+      console.log("No mind code provided");
+      // setError("ไม่พบรหัสผู้ใช้งาน");
+      alert("ไม่พบรหัสผู้ใช้งาน");
+      return ;
     }
   }, [mindCode]);
 
@@ -128,59 +134,80 @@ const HistoryPage = () => {
     <div className="flex justify-center min-h-screen bg-gray-50 py-2">
       <div className="max-w-5xl w-full px-4">
         <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-          <button
-                    onClick={() => navigate(-1)}
-                    className="w-32 text-left text-black bg-white hover:hover:bg-blue-300 transition-colors"
-                  >
-                    ← ย้อนกลับ
-                  </button>
-            {userData && (
-              <UserInfoCard userProfile = {userData} mind_data={mind_data}/>
-          )
-          }
+          {error ? (
+            <div className="flex justify-center items-center min-h-screen">
+                <button
+                  onClick={() => navigate("/home")}
+                  className="w-32 text-left text-black bg-white hover:bg-blue-300 transition-colors"
+                >
+                  ← Home
+                </button>
 
-            {/* Queue Statistics */}
-            {appointmentQueue && (
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">การนัดหมายทั้งหมด</p>
-                    <p className="text-2xl font-bold text-blue-600">{total}</p>
-                  </div>
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">นัดหมายปัจจุบัน</p>
-                    <p className="text-2xl font-bold text-yellow-600">
-                      {appointmentQueue.current.length}
-                    </p>
-                  </div>
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">ยกเลิกนัดหมาย</p>
-                    <p className="text-2xl font-bold text-red-600">
-                      {appointmentQueue.cancelled.length}
-                    </p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">นัดหมายเสร็จสิ้น</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {appointmentQueue.completed.length}
-                    </p>
-                  </div>
-                </div>
+              <div style={{ color: "red", fontSize: "18px", fontWeight: "bold" }}>
+                {error}
               </div>
-            )}
-          </div>
-          {appointmentQueue && (
-            <div className="mt-6">
-              {paginatedAppointments().map((appointment, index) => (
-                <AppointmentHistoryCard key={index} appointment={appointment} caseData={case_data}/>
-              ))}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
+            </div>
+          ) : (
+            <div>
+              {/* Header */}
+              <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="w-32 text-left text-black bg-white hover:bg-blue-300 transition-colors"
+                >
+                  ← ย้อนกลับ
+                </button>
+  
+                {userData && (
+                  <UserInfoCard userProfile={userData} mind_data={mind_data} />
+                )}
+  
+                {/* Queue Statistics */}
+                {appointmentQueue && (
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="bg-blue-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-600">การนัดหมายทั้งหมด</p>
+                        <p className="text-2xl font-bold text-blue-600">{total}</p>
+                      </div>
+                      <div className="bg-yellow-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-600">นัดหมายปัจจุบัน</p>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {appointmentQueue.current.length}
+                        </p>
+                      </div>
+                      <div className="bg-red-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-600">ยกเลิกนัดหมาย</p>
+                        <p className="text-2xl font-bold text-red-600">
+                          {appointmentQueue.cancelled.length}
+                        </p>
+                      </div>
+                      <div className="bg-green-50 p-4 rounded-lg">
+                        <p className="text-sm text-gray-600">นัดหมายเสร็จสิ้น</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {appointmentQueue.completed.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {appointmentQueue && (
+                <div className="mt-6">
+                  {paginatedAppointments().map((appointment, index) => (
+                    <AppointmentHistoryCard
+                      key={index}
+                      appointment={appointment}
+                      caseData={case_data}
+                    />
+                  ))}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

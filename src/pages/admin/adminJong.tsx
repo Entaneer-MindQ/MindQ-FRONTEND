@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   TextField,
@@ -92,6 +93,18 @@ const adminJong: React.FC = () => {
     page * ITEMS_PER_PAGE
   );
 
+  // enqueue
+  const navigate = useNavigate();
+  // const { setIsBookingFlow, setSelectedCaseId } = useBooking();
+  // const {setMindCode} = useBooking();
+  // const handleBooking = () => {
+  //   setIsBookingFlow(true);
+  //   setSelectedCaseId(1
+  //   )
+  //   setMindCode( (mind_data)? mind_data.mind_code: "")//mind_data?.mind_code)
+  //   navigate("/calendar");
+  // };
+
   return (
     <Box sx={{ maxWidth: 600, margin: "auto", textAlign: "center", p: 2 }}>
       {/* Header */}
@@ -136,7 +149,10 @@ const adminJong: React.FC = () => {
                     {patient.mind_code} - {patient.nickname}
                   </TableCell>
                   <TableCell align="right">
-                    <Button variant="contained" color="primary" size="small">
+                    <Button 
+                      variant="contained" color="primary" size="small"
+                      onClick={ () => navigate(`/history/${patient.mind_code}`) }
+                      >
                       จองคิว
                     </Button>
                   </TableCell>

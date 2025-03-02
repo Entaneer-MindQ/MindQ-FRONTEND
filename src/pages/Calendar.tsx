@@ -21,8 +21,6 @@ const Calendar: React.FC = () => {
 
   const { mindCode } = useBooking();
   const [selectedPsychologist, setSelectedPsychologist] = useState<number>(1);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const initialLoadRef = useRef<boolean>(false);
   const psychologistChangeRef = useRef<boolean>(false);
 
@@ -43,6 +41,7 @@ const Calendar: React.FC = () => {
     getAvailableDates,
     fetchNotAvailableTimesByPhyId,
     isPastDate,
+    getAvailableSlotsForDay,
   } = useCalendar(selectedPsychologist);
 
   // ทำการเรียก API เฉพาะเมื่อ:
@@ -118,21 +117,18 @@ const Calendar: React.FC = () => {
   };
 
   const handleDateSelect = (dayNumber: number) => {
-    const selectedDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      dayNumber
-    );
+    // Get available slots for the selected day
+    const availableSlots = getAvailableSlotsForDay(dayNumber);
+
     const bookingState: BookingState = {
       date: dayNumber,
       month: `${months[currentDate.getMonth()]} ${currentDate.getFullYear()}`,
-      dayOfWeek: days[selectedDate.getDay()],
-      categories: ["การเรียน", "ความเครียด", "ความสัมพันธ์"],
-      timeSlot: "13.00",
       details: "",
       mind_code: mindCode || "",
+      selectedPsychologist: selectedPsychologist, // Add the selectedPsychologist to the state
+      availableSlots: availableSlots, // Add available slots to the state
     };
-    
+
     navigate("/booking", { state: bookingState });
   };
 

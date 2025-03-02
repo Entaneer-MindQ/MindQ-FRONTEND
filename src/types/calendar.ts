@@ -66,9 +66,8 @@ export interface CalendarGridProps {
 export interface BookingState {
   date: number;
   month: string;
-  dayOfWeek: string;
-  categories: string[];
-  timeSlot: string;
   details: string;
   mind_code: string;
+  selectedPsychologist?: number; // Add this line
+  availableSlots?: number[]; // Add this line
 }

@@ -12,7 +12,6 @@ import FacebookField from "../components/CaseForm/FacebookField";
 import CategorySelection from "../components/CaseForm/CategorySelection";
 import DescriptionField from "../components/CaseForm/DescriptionField";
 import RoleSelection from "../components/CaseForm/RoleSelection";
-import StepProgress from "../components/CaseForm/StepProgress";
 import ProgressIndicator from "../components/CaseForm/ProgressIndicator";
 import { useCaseForm } from "../hooks/useCaseForm";
 import ContactInfoField from "../components/CaseForm/ContactInfoField";
@@ -27,35 +26,13 @@ const categories = [
   "อื่น ๆ",
 ];
 
-const steps = [
-  {
-    label: "กรอกข้อมูล Facebook",
-    completed: false,
-  },
-  {
-    label: "เลือกหมวดหมู่",
-    completed: false,
-  },
-  {
-    label: "ระบุรายละเอียด",
-    completed: false,
-  },
-];
-
 const CaseOpen: React.FC = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [cookies] = useCookies(["auth_token"]);
-  const {
-    formData,
-    setFormData,
-    errors,
-    setErrors,
-    stepStatus,
-    activeStep,
-    validateForm,
-  } = useCaseForm();
+  const { formData, setFormData, errors, setErrors, stepStatus, validateForm } =
+    useCaseForm();
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
@@ -116,13 +93,8 @@ const CaseOpen: React.FC = () => {
             สร้างเคสใหม่
           </Typography>
 
-          <StepProgress
-            activeStep={activeStep}
-            steps={steps.map((step, index) => ({
-              ...step,
-              completed: Object.values(stepStatus)[index],
-            }))}
-          />
+          {/* StepProgress has been replaced with ProgressIndicator */}
+          <ProgressIndicator stepStatus={stepStatus} />
         </Box>
 
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
@@ -207,14 +179,16 @@ const CaseOpen: React.FC = () => {
                 backgroundColor:
                   stepStatus.facebook &&
                   stepStatus.categories &&
-                  stepStatus.details
+                  stepStatus.details &&
+                  stepStatus.contact
                     ? "#4CAF50"
                     : "#943131",
                 "&:hover": {
                   backgroundColor:
                     stepStatus.facebook &&
                     stepStatus.categories &&
-                    stepStatus.details
+                    stepStatus.details &&
+                    stepStatus.contact
                       ? "#45a049"
                       : "#7a2828",
                 },
@@ -230,7 +204,8 @@ const CaseOpen: React.FC = () => {
             >
               {stepStatus.facebook &&
               stepStatus.categories &&
-              stepStatus.details
+              stepStatus.details &&
+              stepStatus.contact
                 ? "ส่งข้อมูล"
                 : "กรุณากรอกข้อมูลให้ครบถ้วน"}
             </Button>
@@ -238,7 +213,7 @@ const CaseOpen: React.FC = () => {
         </Box>
       </Paper>
 
-      <ProgressIndicator stepStatus={stepStatus} />
+      {/* Removed the extra ProgressIndicator here since we already moved it to the header section */}
     </Container>
   );
 };

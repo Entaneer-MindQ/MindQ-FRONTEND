@@ -2,6 +2,7 @@ import React from "react";
 import { useAppController } from "./App_controller";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import "../src/styles/global.css";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -23,11 +24,11 @@ const LoginPage: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         {/* Logo Section */}
         <div className="flex justify-center mb-8">
-          <div className="rounded-full bg-[#943131] p-4 w-24 h-24 flex items-center justify-center">
+          <div className="rounded-full bg-[var(--primary-color)] p-4 w-24 h-24 flex items-center justify-center">
             <img
-              src="src\utils\login.png"
+              src="src\utils\login2.png"
               alt="CMU Logo"
-              className="w-20 h-20 object-contain"
+              className="h-auto max-w-[100px]  object-contain"
             />
           </div>
         </div>
@@ -44,16 +45,9 @@ const LoginPage: React.FC = () => {
         <div className="space-y-4">
           <button
             onClick={handleCMULogin}
-            className="w-full bg-gray-400 hover:bg-gray-500 text-white font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2"
+            className="w-full bg-[var(--primary-color)] hover:bg-[var(--hover-color)] text-white transition-all duration-200 hover:text-[#575feb] font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2"
           >
             <span>Login as Student</span>
-          </button>
-
-          <button
-            onClick={handleCMULogin}
-            className="w-full bg-red-800 hover:bg-red-900 text-white font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2"
-          >
-            <span>Login as Employee</span>
           </button>
         </div>
 

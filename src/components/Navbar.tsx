@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
         <img
           src="src/utils/IMG_0363 1.png"
           alt="Logo"
-          className="w-full h-auto max-w-[40px] sm:max-w-[48px] mx-auto"
+          className=" h-auto max-w-[40px] sm:max-w-[48px] mx-auto"
         />
       ),
       label: "",
@@ -128,7 +128,7 @@ const Navbar: React.FC = () => {
       label: "History",
       path: `/history/${mind_code}`,
     },
-    ...(userProfile?.role === "บุคลากร" && isLogin
+    ...(userProfile?.personalID === "650610804" && isLogin
       ? [
           {
             icon: (

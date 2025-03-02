@@ -3,7 +3,7 @@ import { Container, Paper, Box, Typography, Alert, Fade } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import { useCases } from "../hooks/useCases";
 import { CaseCard } from "../components/CaseView/CaseCard";
-import { CaseStats } from "../components/CaseView/CaseStats";
+//import { CaseStats } from "../components/CaseView/CaseStats";
 import { LoadingState } from "../components/CaseView/LoadingState";
 import { ErrorState } from "../components/CaseView/ErrorState";
 import "../styles/global.css";
@@ -25,13 +25,14 @@ const CaseView = () => {
   }
 
   return (
-    <Container className="w-full mt-5">
+    <Container maxWidth="md" sx={{ py: 4 }}>
       <Fade in timeout={800}>
         <Paper
           elevation={3}
           sx={{
             borderRadius: 2,
             overflow: "hidden",
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
           }}
         >
           <Box
@@ -44,8 +45,10 @@ const CaseView = () => {
               gap: 2,
             }}
           >
-            <HistoryIcon sx={{ fontSize: 32 }} />
-            <Typography variant="h5">ประวัติการปรึกษา</Typography>
+            <HistoryIcon sx={{ fontSize: 28 }} />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              ข้อมูลเคสของคุณ
+            </Typography>
           </Box>
 
           <Box sx={{ p: 3 }}>
@@ -55,15 +58,16 @@ const CaseView = () => {
                 sx={{
                   borderRadius: 2,
                   fontSize: "1rem",
+                  py: 2,
                   "& .MuiAlert-icon": {
                     fontSize: "2rem",
                   },
                 }}
               >
-                ไม่พบประวัติการปรึกษา
+                ไม่พบข้อมูล กรุณาสร้างเคสใหม่เพื่อเริ่มการปรึกษา
               </Alert>
             ) : (
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {cases.map((caseItem) => (
                   <CaseCard
                     key={caseItem.cid}
@@ -77,7 +81,7 @@ const CaseView = () => {
         </Paper>
       </Fade>
 
-      {cases.length > 0 && <CaseStats totalCases={cases.length} />}
+      {/* {cases.length > 0 && <CaseStats totalCases={cases.length} />} */}
     </Container>
   );
 };

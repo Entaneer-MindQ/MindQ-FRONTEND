@@ -68,7 +68,7 @@ export const useCalendar = (selectedPsychologist: number) => {
         token: authToken,
         phyId: selectedPsychologist,
       })) as NotAvailableTimeResponse;
-
+      console.log("response", response);
       if (response.status === 200 && response.data) {
         const availabilityMap: DayAvailability[] = [];
 

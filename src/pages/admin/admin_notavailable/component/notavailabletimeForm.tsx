@@ -1,10 +1,8 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useCookies } from "react-cookie";
 import { post } from "../../../../services/api";
 import "./style.css";
-
 
 interface SlotOption {
   id: number;
@@ -33,7 +31,6 @@ const thaiMonths = [
   "ตุลาคม",
   "พฤศจิกายน",
   "ธันวาคม",
-
 ];
 
 const formatThaiDate = (dateString: string): string => {
@@ -51,10 +48,21 @@ const NotAvailableTimeForm = () => {
 
   const startDate: string = watch("start_date");
   const endDate: string = watch("end_date");
+  const reason: string = watch("reason");
 
-  const isSameDay = startDate && endDate && startDate === endDate;
+  useEffect(() => {
+    // Clear selected slots if switching from same day to multiple days
+    if (
+      startDate &&
+      endDate &&
+      startDate !== endDate &&
+      selectedSlots.length > 0
+    ) {
+      setSelectedSlots([]);
+    }
+  }, [startDate, endDate, selectedSlots.length]);
+
   const handleSlotSelect = (slotId: number) => {
-    if (!isSameDay) return;
     setSelectedSlots((prev) =>
       prev.includes(slotId)
         ? prev.filter((s) => s !== slotId)
@@ -90,8 +98,10 @@ const NotAvailableTimeForm = () => {
   return (
     <div className="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="bg-[var(--primary-color)] text-white p-6">
-        <h2 className="text-xl font-semibold">ตั้งค่าเวลาที่ไม่พร้อม</h2>
+      <div className="bg-[var(--primary-color)]  p-6">
+        <h2 className=" text-white text-lg sm:text-xl lg:text-2xl font-semibold">
+          ตั้งค่าเวลาที่ไม่ว่าง
+        </h2>
       </div>
 
       {/* Content */}
@@ -111,7 +121,8 @@ const NotAvailableTimeForm = () => {
               <input
                 type="date"
                 {...register("start_date", { required: true })}
-                className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-20 transition-colors"
+                className="w-full p-2  border-2 border-gray-200 rounded-lg focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-20 transition-colors"
+                style={{ colorScheme: "light" }}
               />
             </div>
 
@@ -123,51 +134,59 @@ const NotAvailableTimeForm = () => {
                 type="date"
                 {...register("end_date", { required: true })}
                 className="w-full p-2 border-2 border-gray-200 rounded-lg focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-20 transition-colors"
+                style={{ colorScheme: "light" }}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              ช่วงเวลาที่ไม่พร้อม
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {slotOptions.map((slot) => (
-                <button
-                  key={slot.id}
-                  type="button"
-                  onClick={() => handleSlotSelect(slot.id)}
-                  disabled={!isSameDay}
-                  className={`p-2 rounded-lg border-2 transition-all duration-200 ${
-                    selectedSlots.includes(slot.id)
-                      ? "border-[var(--primary-color)] bg-[var(--primary-color)] text-white"
-                      : "border-gray-200 hover:border-[var(--primary-color)] hover:bg-[var(--hover-color)]"
-                  } ${
-                    !isSameDay
-                      ? "opacity-50 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
-                >
-                  {slot.label}
-                </button>
-              ))}
+          {/* ช่วงเวลา - แสดงเฉพาะเมื่อเลือกวันเดียว */}
+          {startDate && endDate && startDate === endDate && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                ช่วงเวลา
+              </label>
+
+              {selectedSlots.length === 0 && (
+                <p className="text-amber-600 text-sm mb-2">
+                  กรุณาเลือกช่วงเวลา
+                </p>
+              )}
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {slotOptions.map((slot) => (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    onClick={() => handleSlotSelect(slot.id)}
+                    className={`p-2 rounded-lg border-2 transition-all duration-200 ${
+                      selectedSlots.includes(slot.id)
+                        ? "border-[var(--primary-color)] bg-[var(--primary-color)] text-white"
+                        : "border-gray-200 hover:border-[var(--primary-color)] hover:bg-[var(--hover-color)]"
+                    } cursor-pointer`}
+                  >
+                    {slot.label}
+                  </button>
+                ))}
+              </div>
             </div>
-            {isSameDay && selectedSlots.length === 0 && (
-              <p className="text-amber-600 text-sm mt-2">กรุณาเลือกช่วงเวลา</p>
-            )}
-            {!isSameDay && (
-              <p className="text-gray-500 text-sm mt-2">
-                เลือกต่างวัน slot จะเป็น 7 อัตโนมัติ
+          )}
+
+          {/* ข้อความเมื่อเลือกหลายวัน */}
+          {startDate && endDate && startDate !== endDate && (
+            <div className="mb-4 p-3 bg-amber-50 text-amber-700 rounded-lg border border-amber-200">
+              <p className="text-sm">
+                เนื่องจากเลือกหลายวัน
+                ระบบจะลงทะเบียนว่าไม่ว่างทั้งวันโดยอัตโนมัติ
               </p>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              เหตุผล
+              เหตุผล <span className="text-red-500">*</span>
             </label>
             <textarea
-              {...register("reason")}
+              {...register("reason", { required: true })}
               className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-20 transition-colors resize-none h-24"
               placeholder="กรุณาระบุเหตุผล..."
             />
@@ -178,15 +197,15 @@ const NotAvailableTimeForm = () => {
             disabled={
               !startDate ||
               !endDate ||
-              (isSameDay && selectedSlots.length === 0)
-                ? true
-                : false
+              !reason ||
+              (startDate === endDate && selectedSlots.length === 0)
             }
             className={`w-full p-3 rounded-lg text-white transition-all duration-200 
               ${
                 !startDate ||
                 !endDate ||
-                (isSameDay && selectedSlots.length === 0)
+                !reason ||
+                (startDate === endDate && selectedSlots.length === 0)
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-[var(--primary-color)] hover:bg-[var(--hover-color)] cursor-pointer"
               }`}

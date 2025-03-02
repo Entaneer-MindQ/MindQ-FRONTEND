@@ -9,6 +9,7 @@ interface LocationState {
   date: number;
   availableSlots?: number[];
   mind_code?: string;
+  selectedPsychologist?: number; // Add this line
 }
 
 interface SlotOption {
@@ -42,6 +43,7 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
     date: "",
     details: "",
     mind_code: "",
+    selectedPsychologist: 1, // Default value
   });
   const [availableSlots, setAvailableSlots] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,24 +68,35 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
         ...prev,
         date: `${state.date} ${state.month}`,
         mind_code: `${state.mind_code}`,
+        selectedPsychologist: state.selectedPsychologist || 1, // Use the provided psychologist ID or default to 1
       }));
 
       if (state.availableSlots) {
         setAvailableSlots(state.availableSlots);
         setLoading(false);
       } else {
-        fetchAvailableSlots(state.date, state.month);
+        fetchAvailableSlots(
+          state.date,
+          state.month,
+          state.selectedPsychologist || 1
+        );
       }
     }
   }, [location.state, navigate]);
 
-  const fetchAvailableSlots = async (date: number, Month: string) => {
+  const fetchAvailableSlots = async (
+    date: number,
+    Month: string,
+    psychologistId: number
+  ) => {
     try {
       const token = cookies["auth_token"];
       const response = (await post("/api/getNotAvailableTimesbyPhyId", {
-        phyId: 1,
+        token,
+        phyId: psychologistId,
       })) as ApiResponse;
 
+      console.log("API Response:", response.data);
       if (response.data) {
         console.log("API Response:", response.data);
 
@@ -168,7 +181,11 @@ const ConfirmBookingPage = ({ cid }: { cid: number | null }) => {
       const responseData = {
         cid: cid,
         token: cookies["auth_token"],
-        formData,
+        formData: {
+          ...formData,
+          // Make sure selectedPsychologist is included in the API request
+          selectedPsychologist: formData.selectedPsychologist,
+        },
       };
 
       console.log("Sending data:", responseData);

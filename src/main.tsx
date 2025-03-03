@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./index.css";
 import App from "./App";
-import Navbar from "./components/Navbar";
+import Navbar from "./Navbar/Navbar";
 import Home from "./pages/Home";
 import Opencase from "./pages/CaseOpen";
 import CaseView from "./pages/CaseView";
@@ -49,41 +49,29 @@ root.render(
             <Route path="/account" element={<Account />} />
             <Route path="/history/:mindCode" element={<History />} />
           </Route>
-          <Route element = {<AdminCheck />}>
-          <Route path="/admin-history" element={<Admin_History_page />} />
-              <Route path="/home-page" element={<HomePage />} />
-              <Route path="/admin-jong" element={<AdminJong />} />
-                {/*adminJong is new admin_appointment*/}
-                <Route path="/admin-request" element={<Admin_Request />} />
-                <Route path="/admin-profile" element={<Admin_Profile />} />
-                <Route
-                  path="/admin-notavailable"
-                  element={<AdminNotAvailablePage />}
-                />
-                <Route
-                  path="/admin-shownonavailable"
-                  element={<AdminshowNotAvai />}
-                />
-                <Route path="/admin-queue">
-                  <Route index element={<Admin_AllQueue />} />
-                  <Route path="details" element={<Admin_QueueDetails />} />
-                </Route>
-                <Route path="/admin-request" element={<Admin_Request />} />
+          <Route element={<AdminCheck />}>
+            <Route path="/admin-history" element={<Admin_History_page />} />
+            <Route path="/home-page" element={<HomePage />} />
+            <Route path="/admin-jong" element={<AdminJong />} />
+            {/*adminJong is new admin_appointment*/}
+            <Route path="/admin-request" element={<Admin_Request />} />
             <Route path="/admin-profile" element={<Admin_Profile />} />
             <Route
               path="/admin-notavailable"
               element={<AdminNotAvailablePage />}
             />
-            <Route path="/admin-calendar" element={<AdminCalendar />} />
+            <Route
+              path="/admin-shownonavailable"
+              element={<AdminshowNotAvai />}
+            />
             <Route path="/admin-queue">
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />
             </Route>
 
-                <Route path="/admin-history" element={<Admin_History_page />} />
-              </Route>
+            <Route path="/admin-calendar" element={<AdminCalendar />} />
+          </Route>
           <Route path="/*" element={<NotFound />} />
-
         </Routes>
       </BookingProvider>
     </UserProvider>

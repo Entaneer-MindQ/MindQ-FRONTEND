@@ -15,7 +15,7 @@ interface ApiResponse {
 const timeSlots: Record<number, string> = {
   1: "9:00-10:00",
   2: "10:00-11:00",
-  3: "12:00-13:00",
+  3: "11:00-12:00",
   4: "13:00-14:00",
   5: "14:00-15:00",
   6: "15:00-16:00",
@@ -38,7 +38,7 @@ const formatThaiDate = (date: Date): string => {
   ];
   const day = date.getDate();
   const month = thaiMonths[date.getMonth()];
-  const year = date.getFullYear() + 543;
+  const year = date.getFullYear();
   return `${day} ${month} ${year}`;
 };
 
@@ -87,6 +87,7 @@ const HomePage: React.FC = () => {
         5: false,
         6: false,
       };
+      console.log(response.data);
       for (let i = 1; i <= 6; i++) {
         // Find an item with slot equal to i
         const item = response.data.find((d) => d.slot === i);

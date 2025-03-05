@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { post } from "../../services/api";
 import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router-dom";
 
 interface ApiResponse {
   status: number;
@@ -43,10 +44,11 @@ const formatThaiDate = (date: Date): string => {
 };
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState<ApiResponse["data"] | null>(null);
   // Create a map: key = slot number (1-6), value = mind_code (if exists) or false.
   const [mindCodeMap, setMindCodeMap] = useState<
-    Record<number, string | false>
+    Record<number, { mindCode: string; qid: number } | false>
   >({
     1: false,
     2: false,
@@ -79,19 +81,23 @@ const HomePage: React.FC = () => {
       setData(response.data);
 
       // Build the mindCodeMap for slots 1-6
-      const newMap: Record<number, string | false> = {
-        1: false,
-        2: false,
-        3: false,
-        4: false,
-        5: false,
-        6: false,
-      };
+      const newMap: Record<number, { mindCode: string; qid: number } | false> =
+        {
+          1: false,
+          2: false,
+          3: false,
+          4: false,
+          5: false,
+          6: false,
+        };
       console.log(response.data);
       for (let i = 1; i <= 6; i++) {
         // Find an item with slot equal to i
         const item = response.data.find((d) => d.slot === i);
-        newMap[i] = item && item.mind_code ? item.mind_code : false;
+        newMap[i] =
+          item && item.mind_code
+            ? { mindCode: item.mind_code, qid: item.qid }
+            : false;
       }
       console.log("newMap:", newMap);
       setMindCodeMap(newMap);
@@ -125,19 +131,23 @@ const HomePage: React.FC = () => {
       <div className="p-4">
         {[1, 2, 3, 4, 5, 6].map((slotNumber) => {
           const mindCode = mindCodeMap[slotNumber];
+          // console.log(data ? (data[index].qid ? data[index].qid : 0) : 0);
           return (
             <div
               key={slotNumber}
               className="flex justify-between items-center my-2 border rounded p-2 shadow-sm"
             >
               {mindCode ? (
-                <button className="px-4 py-2 rounded w-36 text-sm font-semibold bg-blue-400 text-white">
+                <button
+                  className="px-4 py-2 rounded w-36 text-sm font-semibold bg-blue-400 text-white"
+                  onClick={() => navigate(`/queue-complete/${mindCode.qid}`)}
+                >
                   {`Slot ${timeSlots[slotNumber]}`}
                 </button>
               ) : (
                 <span className="text-sm text-gray-700">{`Slot ${timeSlots[slotNumber]}`}</span>
               )}
-              {mindCode}
+              {mindCode ? mindCode.mindCode : "ไม่มีการจอง"}
             </div>
           );
         })}

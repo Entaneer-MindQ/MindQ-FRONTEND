@@ -117,31 +117,40 @@ const QueueComplete: FC = () => {
 
   return (
     <div className="max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-center text-2xl font-bold text-gray-700 border-b-2 pb-2">
+      <h2 className="text-center text-2xl font-bold text-black border-b-2 pb-2">
         บันทึกประวัติบุคคล
       </h2>
       <p>QID: {qid}</p>
 
       {/* ข้อมูลผู้ป่วย */}
-      <div className="border p-4 my-4 rounded">
-        <h3 className="font-semibold text-lg text-gray-700 mb-4">
+      <div className="border p-6 my-6 rounded-xl shadow-lg bg-white relative">
+        <h3 className="font-semibold text-lg mb-4">
           ข้อมูลผู้ป่วยที่มีอยู่แล้ว
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <p>
             ชื่อจริง:{" "}
-            <span className="font-medium">{data?.fullname || "N/A"}</span>
+            <span className="font-medium text-gray-700">
+              {data?.fullname || "N/A"}
+            </span>
           </p>
           <p>
             ชื่อเล่น:{" "}
-            <span className="font-medium">{data?.nickname || "N/A"}</span>
+            <span className="font-medium text-gray-700">
+              {data?.nickname || "N/A"}
+            </span>
           </p>
           <p className="md:col-span-2">
-            เบอร์โทร: <span className="font-medium">{data?.tel || "N/A"}</span>
+            เบอร์โทร:{" "}
+            <span className="font-medium text-gray-700">
+              {data?.tel || "N/A"}
+            </span>
           </p>
           <p className="md:col-span-2">
             ผู้ให้คำปรึกษา:{" "}
-            <span className="font-medium">{data?.phy_name || "N/A"}</span>
+            <span className="font-medium text-gray-700">
+              {data?.phy_name || "N/A"}
+            </span>
           </p>
 
           {/* Dropdown for severity */}
@@ -164,9 +173,7 @@ const QueueComplete: FC = () => {
 
       {/* คิวปัจจุบัน */}
       <div className="border p-6 my-6 rounded-xl shadow-lg bg-white relative">
-        <h3 className="font-semibold text-lg text-gray-700 mb-4">
-          คิวปัจจุบัน
-        </h3>
+        <h3 className="font-semibold text-lg mb-4">คิวปัจจุบัน</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col">
             <label className="text-gray-600 text-sm mb-1">วันที่:</label>
@@ -191,7 +198,7 @@ const QueueComplete: FC = () => {
         <div className="flex justify-end mt-4">
           <button
             onClick={handleSave}
-            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all transform hover:scale-105"
+            className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium px-6 py-3 rounded-lg shadow-md transition-all transform hover:scale-95"
           >
             บันทึก
           </button>
@@ -199,8 +206,8 @@ const QueueComplete: FC = () => {
       </div>
 
       {/* ประวัติ */}
-      <div className="border p-4 my-4 rounded">
-        <h3 className="font-semibold">ประวัติ</h3>
+      <div className="border p-6 my-6 rounded-xl shadow-lg bg-white relative">
+        <h3 className="font-semibold font-semibold text-lg mb-4">ประวัติ</h3>
         {data?.history_complete?.length ? (
           <ul>
             {data.history_complete.map((history, index) => (

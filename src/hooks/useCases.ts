@@ -19,7 +19,7 @@ export const useCases = () => {
           token: token,
         })) as ApiResponse;
 
-        console.log("API Response:", response);
+        // console.log("API Response:", response);
 
         if (response.data) {
           setCases([response.data]);

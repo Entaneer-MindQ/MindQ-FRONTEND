@@ -53,13 +53,25 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     const currentYear = new Date().getFullYear();
 
     const genObj = (mind_code: string, slot: string) => {
-      return {mind_code, slot};
-    }
+      return { mind_code, slot };
+    };
 
     for (let i = 0; i < totalDays; i++) {
       const dayNumber = i - firstDayOfMonth + 1;
-      const mindCodes = respond?.filter((item) => item.date === formatThaiDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), dayNumber))).map((item) => genObj(item.mind_code, item.slot));
-      
+      const mindCodes = respond
+        ?.filter(
+          (item) =>
+            item.date ===
+            formatThaiDate(
+              new Date(
+                currentDate.getFullYear(),
+                currentDate.getMonth(),
+                dayNumber
+              )
+            )
+        )
+        .map((item) => genObj(item.mind_code, item.slot));
+
       const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
       const holiday = isCurrentMonth ? isHoliday(dayNumber) : undefined;
       const isToday =
@@ -76,6 +88,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             isCurrentMonth,
             isToday,
             holiday,
+            _,
           }}
           isDateAvailable={isCurrentMonth && isDateAvailable(dayNumber)}
           onDateSelect={onDateSelect}

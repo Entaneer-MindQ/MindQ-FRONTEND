@@ -4,7 +4,7 @@ import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useCalendar } from "../../../hooks/useCalendar";
 import { CalendarNavigation } from "../../../components/Calendar/CalendarNavigation"; // left right arrow
-import { MonthSelector } from "../../../components/Calendar/MonthSelector"; 
+import { MonthSelector } from "../../../components/Calendar/MonthSelector";
 import { CalendarHeader } from "../../../components/Calendar/CalendarHeader";
 import { CalendarGrid } from "./CalendarGrid";
 import { LoadingState } from "../../../components/Calendar/LoadingState";
@@ -43,7 +43,7 @@ const formatThaiMonth = (date: Date): string => {
     "ธันวาคม",
   ];
   const month = thaiMonths[date.getMonth()];
-  const year = date.getFullYear() + 543;
+  const year = date.getFullYear();
   return `${month} ${year}`;
 };
 
@@ -70,7 +70,7 @@ const AdminCalendar: React.FC = () => {
         requestBody
       )) as Queued_user;
       setData(response.data);
-      console.log("HEE");
+      console.log("ถถถถ");
       console.log(response.status);
       console.log(response.data);
 

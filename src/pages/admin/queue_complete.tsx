@@ -5,7 +5,7 @@ import { post } from "../../services/api";
 
 interface Queue {
   qid: number;
-  current_date: string;
+  date: string;
   slot: string;
 }
 
@@ -71,6 +71,8 @@ const QueueComplete: FC = () => {
         "/api/adminGetPersonalData",
         requestBody
       )) as ApiResponse;
+
+      console.log(response?.data);
       if (response?.data) {
         setData(response.data);
       } else {
@@ -179,8 +181,7 @@ const QueueComplete: FC = () => {
             <label className="text-gray-600 text-sm mb-1">วันที่:</label>
 
             <span className="border border-gray-300 bg-gray-100 text-gray-800 p-2 rounded-lg w-full text-center">
-              {timeSlots[Number(data?.current_queue?.slot)] ||
-                data?.current_queue?.current_date}
+              {data?.current_queue?.date}
             </span>
           </div>
 

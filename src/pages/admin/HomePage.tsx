@@ -121,11 +121,11 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Schedule Button */}
-      <div className="flex justify-center my-4">
+      {/* <div className="flex justify-center my-4">
         <button className="bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md text-sm font-semibold">
           จัดตารางเวลา
         </button>
-      </div>
+      </div> */}
 
       {/* Schedule Section: For each slot 1-6 */}
       <div className="p-4">

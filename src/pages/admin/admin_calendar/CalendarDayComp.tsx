@@ -29,7 +29,11 @@ const slotColors: Record<string, string> = {
   "6": "bg-purple-300 hover:bg-purple-400 text-purple-900",
 };
 
-const BookingPopup: React.FC<{ isOpen: boolean; onClose: () => void; mindData: { mind_code: string; slot: string }[] }> = ({ isOpen, onClose, mindData }) => {
+const BookingPopup: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  mindData: { mind_code: string; slot: string }[];
+}> = ({ isOpen, onClose, mindData }) => {
   if (!isOpen) return null;
 
   const navigate = useNavigate();
@@ -44,14 +48,18 @@ const BookingPopup: React.FC<{ isOpen: boolean; onClose: () => void; mindData: {
           ✖
         </button>
 
-        <h2 className="text-center text-lg font-semibold mb-4 text-gray-800">📅 รายการจอง</h2>
+        <h2 className="text-center text-lg font-semibold mb-4 text-gray-800">
+          📅 รายการจอง
+        </h2>
 
         <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
           {mindData.map((item, index) => (
             <button
               key={index}
-              className= {`flex-1 min-h-[40px] p-2 rounded-lg cursor-pointer text-sm font-medium ${slotColors[item.slot]} text-center flex items-center justify-center hover:shadow-lg transition duration-200`}
-              onClick={() => navigate( `/history/${item.mind_code}`)} //alert(`รายละเอียดของ ${item.mind_code}`)}
+              className={`flex-1 min-h-[40px] p-2 rounded-lg cursor-pointer text-sm font-medium ${
+                slotColors[item.slot]
+              } text-center flex items-center justify-center hover:shadow-lg transition duration-200`}
+              onClick={() => navigate(`/history/${item.mind_code}`)} //alert(`รายละเอียดของ ${item.mind_code}`)}
             >
               {item.mind_code} ({slotTimes[item.slot]})
             </button>
@@ -63,12 +71,21 @@ const BookingPopup: React.FC<{ isOpen: boolean; onClose: () => void; mindData: {
   );
 };
 
-const CalendarDayComp: React.FC<CalendarDayProps> = ({ day, onDateSelect, isDateAvailable, isPastDate, mindData }) => {
+const CalendarDayComp: React.FC<CalendarDayProps> = ({
+  day,
+  onDateSelect,
+  isDateAvailable,
+  isPastDate,
+  mindData,
+}) => {
   const { dayNumber, isCurrentMonth, isToday, holiday } = day;
   const [isPopupOpen, setPopupOpen] = useState(false);
+  console.log(mindData);
 
   if (!isCurrentMonth) {
-    return <div className="h-full p-1 relative border rounded-lg bg-gray-50 border-gray-100" />;
+    return (
+      <div className="h-full p-1 relative border rounded-lg bg-gray-50 border-gray-100" />
+    );
   }
 
   return (
@@ -95,15 +112,19 @@ const CalendarDayComp: React.FC<CalendarDayProps> = ({ day, onDateSelect, isDate
       <div className="flex-1 flex flex-col justify-center items-center">
         {mindData.length > 0 && (
           <p
-        className="bg-green-200 text-green-600 text-xs font-medium cursor-pointer hover:bg-green-300 hover:text-green-700 transition duration-150 p-1 rounded"
-        onClick={() => setPopupOpen(true)}
+            className="bg-green-200 text-green-600 text-xs font-medium cursor-pointer hover:bg-green-300 hover:text-green-700 transition duration-150 p-1 rounded"
+            onClick={() => setPopupOpen(true)}
           >
-        👤 {mindData.length}
+            👤 {mindData.length}
           </p>
         )}
       </div>
 
-      <BookingPopup isOpen={isPopupOpen} onClose={() => setPopupOpen(false)} mindData={mindData} />
+      <BookingPopup
+        isOpen={isPopupOpen}
+        onClose={() => setPopupOpen(false)}
+        mindData={mindData}
+      />
     </div>
   );
 };

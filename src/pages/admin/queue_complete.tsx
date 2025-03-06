@@ -177,12 +177,10 @@ const QueueComplete: FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col">
             <label className="text-gray-600 text-sm mb-1">วันที่:</label>
-            <input
-              type="date"
-              className="border border-gray-300 p-3 rounded-lg w-full bg-gray-50 text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-300"
-              value={data?.current_queue?.current_date}
-              readOnly
-            />
+
+            <span className="border border-gray-300 bg-gray-100 text-gray-800 p-2 rounded-lg w-full text-center">
+              {data?.current_queue?.current_date}
+            </span>
           </div>
 
           <div className="flex flex-col">

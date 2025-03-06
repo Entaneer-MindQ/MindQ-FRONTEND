@@ -179,7 +179,8 @@ const QueueComplete: FC = () => {
             <label className="text-gray-600 text-sm mb-1">วันที่:</label>
 
             <span className="border border-gray-300 bg-gray-100 text-gray-800 p-2 rounded-lg w-full text-center">
-              {data?.current_queue?.current_date}
+              {timeSlots[Number(data?.current_queue?.slot)] ||
+                data?.current_queue?.current_date}
             </span>
           </div>
 

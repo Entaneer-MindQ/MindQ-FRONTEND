@@ -24,10 +24,11 @@ import AdminshowNotAvai from "./pages/admin/admin_shownonavailable/page";
 import HomePage from "./pages/admin/HomePage";
 import AdminJong from "./pages/admin/adminJong";
 import Admin_History_page from "./pages/admin/admin_history/page";
-import Admin_appointment from "./pages/admin/admin_apppointment/page";
+// import Admin_appointment from "./pages/admin/admin_apppointment/page";
 import AdminCalendar from "./pages/admin/admin_calendar/page";
 import Admin_Profile from "./pages/admin/admin_profile/page";
 import NotFound from "./routes/Notfound404";
+import QueueComplete from "./pages/admin/queue_complete";
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
@@ -68,7 +69,6 @@ root.render(
               <Route index element={<Admin_AllQueue />} />
               <Route path="details" element={<Admin_QueueDetails />} />
             </Route>
-
             <Route path="/admin-calendar" element={<AdminCalendar />} />
           </Route>
           <Route path="/*" element={<NotFound />} />

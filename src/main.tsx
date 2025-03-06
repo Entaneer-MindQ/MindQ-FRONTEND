@@ -56,6 +56,7 @@ root.render(
             <Route path="/admin-jong" element={<AdminJong />} />
             {/*adminJong is new admin_appointment*/}
             <Route path="/admin-request" element={<Admin_Request />} />
+            <Route path="/queue-complete/:qid" element={<QueueComplete />} />
             <Route path="/admin-profile" element={<Admin_Profile />} />
             <Route
               path="/admin-notavailable"
